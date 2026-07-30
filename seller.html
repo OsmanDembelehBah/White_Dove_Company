@@ -1,0 +1,2461 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes"
+    />
+    <title>Seller POS — White Dove Engineering Firm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: "#EFF6FF",
+                100: "#DBEAFE",
+                200: "#BFDBFE",
+                300: "#93C5FD",
+                400: "#60A5FA",
+                500: "#3B82F6",
+                600: "#2563EB",
+                700: "#1D4ED8",
+                800: "#1E40AF",
+                900: "#0A3D91",
+                950: "#050D1A",
+              },
+              surface: {
+                dark: "#050D1A",
+                card: "#0D1B30",
+                border: "#1A3050",
+                hover: "#162840",
+              },
+              success: "#10B981",
+              warning: "#F59E0B",
+              danger: "#EF4444",
+            },
+            fontFamily: {
+              sans: ["Inter", "system-ui", "sans-serif"],
+              heading: ["Outfit", "sans-serif"],
+            },
+            boxShadow: {
+              glow: "0 0 40px rgba(10,61,145,0.3)",
+              "glow-sm": "0 0 20px rgba(10,61,145,0.2)",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        transition:
+          background 0.25s,
+          color 0.25s;
+      }
+      .font-heading {
+        font-family: "Outfit", sans-serif;
+      }
+
+      :root[data-theme="light"] {
+        --bg: #f1f5f9;
+        --bg2: #ffffff;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --text: #0f172a;
+        --text2: #475569;
+        --text3: #94a3b8;
+        --blue-bg: #eff6ff;
+        --sidebar-bg: #ffffff;
+        --notif-bg: #f1f5f9;
+      }
+      :root[data-theme="dark"] {
+        --bg: #050d1a;
+        --bg2: #0d1b30;
+        --card: #0d1b30;
+        --border: #1a3050;
+        --text: #f1f5f9;
+        --text2: #94a3b8;
+        --text3: #475569;
+        --blue-bg: rgba(10, 61, 145, 0.15);
+        --sidebar-bg: #070f1d;
+        --notif-bg: #0d1b30;
+      }
+
+      .app-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+      .app-bg-dark {
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 50% -10%,
+            rgba(10, 61, 145, 0.2) 0%,
+            transparent 60%
+          ),
+          #050d1a;
+      }
+      .app-bg-light {
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 50% -10%,
+            rgba(10, 61, 145, 0.06) 0%,
+            transparent 60%
+          ),
+          #f1f5f9;
+      }
+
+      .sidebar {
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--border);
+        transition: width 0.2s;
+        width: 240px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 64px !important;
+        }
+        .sidebar .nav-text,
+        .sidebar .brand-text,
+        .sidebar .seller-name {
+          display: none;
+        }
+        .sidebar .brand-icon {
+          margin: 0 auto;
+        }
+        .sidebar .nav-item {
+          justify-content: center;
+          padding: 0.6rem 0;
+        }
+        .wd-card .pos-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .wd-card .product-grid {
+          grid-template-columns: repeat(
+            auto-fill,
+            minmax(130px, 1fr)
+          ) !important;
+        }
+        .wd-card .cart-side {
+          margin-top: 1rem;
+        }
+      }
+
+      .wd-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        transition:
+          background 0.25s,
+          border 0.25s;
+      }
+
+      .wd-input {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+        width: 100%;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+        font-family: "Inter", sans-serif;
+      }
+      .wd-input:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+      }
+      .wd-input::placeholder {
+        color: var(--text3);
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        color: var(--text2);
+        background: transparent;
+        border: none;
+        width: 100%;
+        text-align: left;
+      }
+      .nav-item:hover {
+        background: var(--bg2);
+        color: var(--text);
+        transform: translateX(4px);
+      }
+      .nav-item.active {
+        background: rgba(16, 185, 129, 0.12);
+        color: #34d399;
+        font-weight: 600;
+      }
+
+      .badge-in-stock {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      .badge-low-stock {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+      }
+      .badge-out-stock {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+
+      .wd-table thead th {
+        background: var(--bg);
+        color: var(--text3);
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .wd-table tbody td {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+      }
+      .wd-table tbody tr:hover {
+        background: var(--bg);
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        animation: fadeIn 0.2s ease-out;
+      }
+      .modal-box {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 580px;
+        box-shadow: 0 40px 120px rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s ease-out;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .kpi-card {
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        cursor: default;
+      }
+      .kpi-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .whatsapp-btn {
+        background: #25d366;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+      .whatsapp-btn:hover {
+        background: #1da851;
+        transform: scale(1.02);
+      }
+
+      .receipt-print {
+        background: white;
+        color: #0f172a;
+        padding: 2rem;
+        border-radius: 12px;
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      .receipt-print .company-name {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: #0a3d91;
+        font-family: "Outfit", sans-serif;
+        text-align: center;
+      }
+      .receipt-print .company-sub {
+        font-size: 0.7rem;
+        color: #64748b;
+        text-align: center;
+      }
+      .receipt-print .divider {
+        border-top: 2px dashed #e2e8f0;
+        margin: 1rem 0;
+      }
+      .receipt-print .receipt-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.25rem 0;
+        font-size: 0.8rem;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .receipt-print .receipt-total {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-top: 2px solid #0a3d91;
+        font-size: 1rem;
+        font-weight: 800;
+        color: #0a3d91;
+      }
+      .receipt-print .receipt-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px dashed #e2e8f0;
+        font-size: 0.7rem;
+        color: #94a3b8;
+      }
+
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #10b981;
+        position: relative;
+      }
+      .pulse-dot::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        background: rgba(16, 185, 129, 0.3);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.8;
+        }
+        50% {
+          transform: scale(1.5);
+          opacity: 0;
+        }
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .toast-container {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        max-width: 380px;
+      }
+      .toast {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(40px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
+        }
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+      // ─── CONSTANTS ───────────────────────────────────────────────
+      const BROADCAST_KEY = "wd_realtime_sale";
+      const DATA_KEY = "wd_data_v3";
+      const USERS_KEY = "wd_users";
+
+      // ─── AUTH GUARD ──────────────────────────────────────────────
+      const userRole = sessionStorage.getItem("userRole");
+      if (!userRole || userRole !== "seller") {
+        window.location.href = "index.html";
+      }
+
+      // ─── DATA LAYER ────────────────────────────────────────────────
+      const getStoredData = () => {
+        try {
+          const raw = localStorage.getItem(DATA_KEY);
+          if (raw) return JSON.parse(raw);
+        } catch {}
+        return null;
+      };
+      const saveData = (data) => {
+        try {
+          localStorage.setItem(DATA_KEY, JSON.stringify(data));
+        } catch {}
+      };
+
+      // ─── LOGO (integrated image as requested) ────────────────────
+      const Logo = ({ size = 40, className = "" }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 120 120"
+          fill="none"
+          className={className}
+        >
+          <circle
+            cx="60"
+            cy="60"
+            r="56"
+            stroke="rgba(74,144,226,0.3)"
+            strokeWidth="2"
+          />
+          <path
+            d="M55 38 C62 30 75 32 78 40 C82 50 72 58 62 60 L76 66 C64 75 52 68 48 58 C44 48 47 40 55 38Z"
+            fill="#0A3D91"
+            opacity="0.95"
+          />
+          <path
+            d="M50 42 C38 34 24 40 26 52 C34 46 42 46 50 48Z"
+            fill="#0A3D91"
+            opacity="0.8"
+          />
+          <line
+            x1="75"
+            y1="33"
+            x2="85"
+            y2="22"
+            stroke="#22C55E"
+            strokeWidth="1.5"
+          />
+          <ellipse
+            cx="82"
+            cy="25"
+            rx="3"
+            ry="4.5"
+            fill="#22C55E"
+            transform="rotate(-30 82 25)"
+          />
+          <ellipse
+            cx="87"
+            cy="20"
+            rx="2.5"
+            ry="4"
+            fill="#22C55E"
+            transform="rotate(-45 87 20)"
+          />
+          <rect x="28" y="68" width="10" height="28" fill="#0A3D91" rx="1" />
+          <rect x="40" y="62" width="10" height="34" fill="#0A3D91" rx="1" />
+          <rect x="52" y="70" width="10" height="26" fill="#6B7280" rx="1" />
+          <polygon points="62,62 72,72 52,72" fill="#0A3D91" />
+          <circle
+            cx="88"
+            cy="80"
+            r="12"
+            fill="none"
+            stroke="#0A3D91"
+            strokeWidth="3"
+          />
+          <circle cx="88" cy="80" r="5" fill="#0A3D91" />
+          <rect x="86" y="65" width="4" height="6" fill="#0A3D91" rx="1" />
+          <rect x="86" y="89" width="4" height="6" fill="#0A3D91" rx="1" />
+          <rect x="73" y="78" width="6" height="4" fill="#0A3D91" rx="1" />
+          <rect x="97" y="78" width="6" height="4" fill="#0A3D91" rx="1" />
+          <path
+            d="M90 74 L86 80 L89 80 L86 87 L92 79 L89 79Z"
+            fill="white"
+            opacity="0.9"
+          />
+          <text
+            x="60"
+            y="108"
+            fontFamily="'Outfit', sans-serif"
+            fontSize="8"
+            fontWeight="800"
+            fill="#0A3D91"
+            textAnchor="middle"
+          >
+            WHITE DOVE
+          </text>
+        </svg>
+      );
+
+      const Icon = ({ name, size = 20, className = "" }) => {
+        const icons = {
+          dashboard: (
+            <>
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+            </>
+          ),
+          inventory: (
+            <>
+              <path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </>
+          ),
+          sales: (
+            <>
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+            </>
+          ),
+          analytics: (
+            <>
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </>
+          ),
+          users: (
+            <>
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </>
+          ),
+          logs: (
+            <>
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </>
+          ),
+          settings: (
+            <>
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </>
+          ),
+          logout: (
+            <>
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </>
+          ),
+          cart: (
+            <>
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+            </>
+          ),
+          receipt: (
+            <>
+              <path d="M4 4v16l2-2 2 2 2-2 2 2 2-2 2 2V4H4z" />
+              <polyline points="8 8 16 8" />
+              <polyline points="8 12 12 12" />
+              <polyline points="8 16 16 16" />
+            </>
+          ),
+          check: <polyline points="20 6 9 17 4 12" />,
+          whatsapp: (
+            <>
+              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+            </>
+          ),
+          download: (
+            <>
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </>
+          ),
+          x: (
+            <>
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </>
+          ),
+          moon: <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />,
+          sun: (
+            <>
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </>
+          ),
+          monitor: (
+            <>
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </>
+          ),
+          search: (
+            <>
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </>
+          ),
+          plus: (
+            <>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </>
+          ),
+          trend: (
+            <>
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
+            </>
+          ),
+          package: (
+            <>
+              <path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </>
+          ),
+        };
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+          >
+            {icons[name]}
+          </svg>
+        );
+      };
+
+      const fmt = (n) =>
+        `SLE ${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const fmtDate = (iso) =>
+        new Date(iso).toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      const isToday = (iso) =>
+        iso && iso.startsWith(new Date().toISOString().split("T")[0]);
+
+      const ToastContainer = ({ toasts, onDismiss }) => (
+        <div className="toast-container">
+          {toasts.map((t) => (
+            <div key={t.id} className="toast">
+              <div
+                className={`mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm ${t.type === "sale" ? "bg-emerald-500/20 text-emerald-400" : t.type === "success" ? "bg-emerald-500/20 text-emerald-400" : t.type === "error" ? "bg-red-500/20 text-red-400" : "bg-amber-500/20 text-amber-400"}`}
+              >
+                {t.type === "sale"
+                  ? "💰"
+                  : t.type === "success"
+                    ? "✓"
+                    : t.type === "error"
+                      ? "✕"
+                      : "●"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="font-semibold text-sm"
+                  style={{ color: "var(--text)" }}
+                >
+                  {t.title}
+                </div>
+                <div
+                  className="text-xs mt-0.5"
+                  style={{ color: "var(--text2)" }}
+                >
+                  {t.message}
+                </div>
+              </div>
+              <button
+                onClick={() => onDismiss(t.id)}
+                className="text-slate-400 hover:text-slate-200 flex-shrink-0 mt-0.5"
+              >
+                <Icon name="x" size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+      );
+
+      const KpiCard = ({ title, value, sub, icon, color }) => (
+        <div
+          className="wd-card kpi-card"
+          style={{
+            padding: "1.25rem 1.5rem",
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.75rem",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                color: "var(--text2)",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+              }}
+            >
+              {title}
+            </span>
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "10px",
+                background: `${color}20`,
+                color,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Icon name={icon} size={18} />
+            </div>
+          </div>
+          <div>
+            <div
+              className="font-heading"
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: 800,
+                color: "var(--text)",
+                lineHeight: 1,
+              }}
+            >
+              {value}
+            </div>
+            {sub && (
+              <div
+                style={{
+                  fontSize: "0.7rem",
+                  color: "var(--text3)",
+                  marginTop: "0.2rem",
+                }}
+              >
+                {sub}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+
+      // ─── MAIN DASHBOARD ────────────────────────────────────────────
+      const Dashboard = ({
+        session,
+        onLogout,
+        theme,
+        onThemeChange,
+        addToast,
+        dismissToast,
+        toasts,
+      }) => {
+        const [section, setSection] = useState("pos");
+        const [products, setProducts] = useState(() => {
+          const stored = getStoredData();
+          return (
+            stored?.products || [
+              {
+                id: "p1",
+                name: "400W Solar Panel",
+                sku: "SOL-400W",
+                category: "Solar",
+                price: 1850,
+                stock: 24,
+                emoji: "☀️",
+              },
+              {
+                id: "p2",
+                name: "5kVA Hybrid Inverter",
+                sku: "INV-5KVA",
+                category: "Solar",
+                price: 5400,
+                stock: 8,
+                emoji: "⚡",
+              },
+              {
+                id: "p3",
+                name: "200Ah Gel Battery",
+                sku: "BAT-200AH",
+                category: "Solar",
+                price: 2900,
+                stock: 15,
+                emoji: "🔋",
+              },
+              {
+                id: "p4",
+                name: "5MP CCTV Camera",
+                sku: "CCTV-5MP",
+                category: "Security",
+                price: 450,
+                stock: 30,
+                emoji: "📹",
+              },
+              {
+                id: "p5",
+                name: "8-Channel NVR",
+                sku: "NVR-08CH",
+                category: "Security",
+                price: 1250,
+                stock: 6,
+                emoji: "💾",
+              },
+              {
+                id: "p6",
+                name: "2.5mm Copper Cable",
+                sku: "CAB-2.5MM",
+                category: "Cables",
+                price: 680,
+                stock: 45,
+                emoji: "🔌",
+              },
+              {
+                id: "p7",
+                name: "4.0mm Twin Cable",
+                sku: "CAB-4.0MM",
+                category: "Cables",
+                price: 1150,
+                stock: 18,
+                emoji: "🔌",
+              },
+              {
+                id: "p8",
+                name: "63A MCB",
+                sku: "BRE-63A",
+                category: "Breakers",
+                price: 160,
+                stock: 50,
+                emoji: "🔧",
+              },
+              {
+                id: "p9",
+                name: "12-Way Consumer Unit",
+                sku: "DB-12WAY",
+                category: "Breakers",
+                price: 420,
+                stock: 3,
+                emoji: "🔧",
+              },
+              {
+                id: "p10",
+                name: "12,000 BTU AC",
+                sku: "AC-12K",
+                category: "AC",
+                price: 4800,
+                stock: 4,
+                emoji: "❄️",
+              },
+            ]
+          );
+        });
+        const [sales, setSales] = useState(() => {
+          const stored = getStoredData();
+          return stored?.sales || [];
+        });
+        const [cart, setCart] = useState([]);
+        const [receiptSale, setReceiptSale] = useState(null);
+        const [searchTerm, setSearchTerm] = useState("");
+
+        const userName = sessionStorage.getItem("userName") || "Seller";
+        const sellerName = sessionStorage.getItem("sellerName") || userName;
+
+        useEffect(() => saveData({ products, sales }), [products, sales]);
+
+        const addToCart = (product) => {
+          const existing = cart.find((i) => i.id === product.id);
+          if (existing) {
+            if (existing.qty >= product.stock) {
+              addToast({
+                type: "error",
+                title: "Stock limit",
+                message: `Only ${product.stock} available`,
+              });
+              return;
+            }
+            setCart(
+              cart.map((i) =>
+                i.id === product.id ? { ...i, qty: i.qty + 1 } : i,
+              ),
+            );
+          } else {
+            setCart([...cart, { ...product, qty: 1 }]);
+          }
+          addToast({ type: "success", title: "Added", message: product.name });
+        };
+
+        const handleCheckout = ({
+          customerName,
+          customerPhone,
+          payment,
+          subtotal,
+          total,
+        }) => {
+          const saleItems = cart.map((item) => ({
+            productId: item.id,
+            name: item.name,
+            qty: item.qty,
+            unitPrice: item.price,
+            total: item.price * item.qty,
+          }));
+          const updatedProducts = products.map((p) => {
+            const sold = cart.find((i) => i.id === p.id);
+            return sold ? { ...p, stock: Math.max(0, p.stock - sold.qty) } : p;
+          });
+          setProducts(updatedProducts);
+          const saleRecord = {
+            id: `s${Date.now()}`,
+            receiptNo: `WD-${String(sales.length + 1).padStart(3, "0")}`,
+            sellerName: sellerName,
+            items: saleItems,
+            subtotal,
+            total,
+            payment,
+            customer: customerName,
+            customerPhone: customerPhone,
+            timestamp: new Date().toISOString(),
+          };
+          setSales([saleRecord, ...sales]);
+          setCart([]);
+          setReceiptSale(saleRecord);
+          addToast({
+            type: "sale",
+            title: `💰 Sale Complete!`,
+            message: `${fmt(total)} · ${customerName}`,
+          });
+        };
+
+        const filteredProducts = products.filter(
+          (p) =>
+            p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            p.sku.toLowerCase().includes(searchTerm.toLowerCase()),
+        );
+
+        const navItems = [
+          { id: "pos", icon: "cart", label: "POS" },
+          { id: "dashboard", icon: "dashboard", label: "Dashboard" },
+          { id: "history", icon: "receipt", label: "History" },
+        ];
+
+        const mySales = sales.filter((s) => s.sellerName === sellerName);
+        const todayMySales = mySales.filter((s) => isToday(s.timestamp));
+        const todayRevenue = todayMySales.reduce((a, s) => a + s.total, 0);
+        const totalRevenue = mySales.reduce((a, s) => a + s.total, 0);
+
+        return (
+          <>
+            <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+            <div
+              style={{
+                display: "flex",
+                height: "100vh",
+                overflow: "hidden",
+                background: "var(--bg)",
+              }}
+            >
+              {/* Sidebar */}
+              <div className="sidebar">
+                <div
+                  style={{
+                    padding: "1.25rem 1rem",
+                    borderBottom: "1px solid var(--border)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.6rem",
+                  }}
+                >
+                  <Logo size={36} className="brand-icon" />
+                  <div className="brand-text">
+                    <div
+                      className="font-heading"
+                      style={{
+                        fontSize: "0.8rem",
+                        fontWeight: 800,
+                        color: "var(--text)",
+                      }}
+                    >
+                      WHITE DOVE
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "0.55rem",
+                        color: "var(--text3)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      Seller POS
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style={{
+                    padding: "0.75rem 1rem",
+                    borderBottom: "1px solid var(--border)",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.6rem",
+                      padding: "0.4rem 0.5rem",
+                      background: "rgba(16,185,129,0.08)",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "28px",
+                        height: "28px",
+                        borderRadius: "8px",
+                        background: "linear-gradient(135deg, #059669, #10B981)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: 700,
+                        color: "white",
+                        fontSize: "0.7rem",
+                      }}
+                    >
+                      {sellerName.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="seller-name">
+                      <div
+                        style={{
+                          fontSize: "0.7rem",
+                          fontWeight: 700,
+                          color: "var(--text)",
+                        }}
+                      >
+                        {sellerName}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "0.55rem",
+                          color: "#34D399",
+                          fontWeight: 600,
+                        }}
+                      >
+                        SELLER
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <nav
+                  style={{
+                    flex: 1,
+                    padding: "0.75rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.25rem",
+                    overflowY: "auto",
+                  }}
+                >
+                  {navItems.map((item) => (
+                    <button
+                      key={item.id}
+                      className={`nav-item ${section === item.id ? "active" : ""}`}
+                      onClick={() => setSection(item.id)}
+                    >
+                      <Icon name={item.icon} size={18} />
+                      <span
+                        className="nav-text"
+                        style={{ fontSize: "0.85rem" }}
+                      >
+                        {item.label}
+                      </span>
+                    </button>
+                  ))}
+                </nav>
+                <div
+                  style={{
+                    padding: "0.75rem",
+                    borderTop: "1px solid var(--border)",
+                  }}
+                >
+                  <button
+                    onClick={onLogout}
+                    className="nav-item"
+                    style={{ color: "#EF4444", justifyContent: "flex-start" }}
+                  >
+                    <Icon name="logout" size={18} />
+                    <span className="nav-text" style={{ fontSize: "0.85rem" }}>
+                      Sign Out
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Main */}
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    padding: "0.7rem 1.5rem",
+                    borderBottom: "1px solid var(--border)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    background: "var(--bg2)",
+                  }}
+                >
+                  <div>
+                    <h1
+                      className="font-heading"
+                      style={{
+                        fontSize: "1.1rem",
+                        fontWeight: 800,
+                        color: "var(--text)",
+                      }}
+                    >
+                      {section === "pos"
+                        ? "Point of Sale"
+                        : section === "dashboard"
+                          ? "My Dashboard"
+                          : "Sales History"}
+                    </h1>
+                    <p style={{ fontSize: "0.65rem", color: "var(--text3)" }}>
+                      White Dove Engineering · {sellerName}
+                    </p>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        background: "var(--bg)",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        border: "1px solid var(--border)",
+                      }}
+                    >
+                      {["dark", "light", "system"].map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => onThemeChange(t)}
+                          style={{
+                            padding: "0.3rem 0.5rem",
+                            background:
+                              theme === t
+                                ? "rgba(16,185,129,0.15)"
+                                : "transparent",
+                            border: "none",
+                            color: theme === t ? "#34D399" : "var(--text3)",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <Icon
+                            name={
+                              t === "dark"
+                                ? "moon"
+                                : t === "light"
+                                  ? "sun"
+                                  : "monitor"
+                            }
+                            size={15}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.3rem",
+                        fontSize: "0.65rem",
+                        fontWeight: 600,
+                        color: "#10B981",
+                        background: "rgba(16,185,129,0.08)",
+                        padding: "0.2rem 0.7rem",
+                        borderRadius: "100px",
+                      }}
+                    >
+                      <div
+                        className="pulse-dot"
+                        style={{ width: "6px", height: "6px" }}
+                      />
+                      Live
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
+                  {section === "pos" && (
+                    <div
+                      className="pos-grid"
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 340px",
+                        gap: "1.5rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "1rem",
+                        }}
+                      >
+                        <input
+                          className="wd-input"
+                          placeholder="Search products..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <div
+                          className="product-grid"
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns:
+                              "repeat(auto-fill, minmax(150px, 1fr))",
+                            gap: "0.75rem",
+                            maxHeight: "500px",
+                            overflowY: "auto",
+                            padding: "0.2rem",
+                          }}
+                        >
+                          {filteredProducts.map((p) => {
+                            const stockStatus =
+                              p.stock === 0
+                                ? "out"
+                                : p.stock <= 5
+                                  ? "low"
+                                  : "in";
+                            return (
+                              <div
+                                key={p.id}
+                                className="wd-card"
+                                style={{
+                                  padding: "0.9rem",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  gap: "0.3rem",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <span style={{ fontSize: "1.6rem" }}>
+                                    {p.emoji}
+                                  </span>
+                                  <span
+                                    className={`badge-${stockStatus === "in" ? "in-stock" : stockStatus === "low" ? "low-stock" : "out-stock"}`}
+                                    style={{
+                                      fontSize: "0.55rem",
+                                      fontWeight: 700,
+                                      padding: "0.1rem 0.5rem",
+                                      borderRadius: "100px",
+                                    }}
+                                  >
+                                    {p.stock === 0
+                                      ? "Out"
+                                      : p.stock <= 5
+                                        ? "Low"
+                                        : "In Stock"}
+                                  </span>
+                                </div>
+                                <div
+                                  style={{
+                                    fontWeight: 600,
+                                    fontSize: "0.8rem",
+                                    color: "var(--text)",
+                                    lineHeight: 1.2,
+                                  }}
+                                >
+                                  {p.name}
+                                </div>
+                                <div
+                                  style={{
+                                    fontSize: "0.6rem",
+                                    color: "var(--text3)",
+                                  }}
+                                >
+                                  {p.sku}
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <div
+                                    className="font-heading"
+                                    style={{
+                                      fontWeight: 700,
+                                      color: "#10B981",
+                                      fontSize: "0.85rem",
+                                    }}
+                                  >
+                                    {fmt(p.price)}
+                                  </div>
+                                  <div
+                                    style={{
+                                      fontSize: "0.6rem",
+                                      color: "var(--text3)",
+                                    }}
+                                  >
+                                    📦 {p.stock}
+                                  </div>
+                                </div>
+                                <button
+                                  onClick={() => addToCart(p)}
+                                  disabled={p.stock === 0}
+                                  style={{
+                                    width: "100%",
+                                    padding: "0.3rem",
+                                    borderRadius: "8px",
+                                    border: "none",
+                                    background:
+                                      p.stock === 0
+                                        ? "var(--bg)"
+                                        : "linear-gradient(135deg, #059669, #10B981)",
+                                    color:
+                                      p.stock === 0 ? "var(--text3)" : "white",
+                                    fontWeight: 600,
+                                    cursor:
+                                      p.stock === 0 ? "not-allowed" : "pointer",
+                                    fontSize: "0.7rem",
+                                  }}
+                                >
+                                  {p.stock === 0 ? "Out of Stock" : "Add"}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div
+                        className="wd-card cart-side"
+                        style={{
+                          padding: "1.25rem",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "0.75rem",
+                          height: "100%",
+                          minHeight: "380px",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <div
+                            className="font-heading"
+                            style={{
+                              fontWeight: 700,
+                              color: "var(--text)",
+                              fontSize: "1rem",
+                            }}
+                          >
+                            🛒 Order
+                          </div>
+                          <span
+                            style={{
+                              fontSize: "0.65rem",
+                              color: "var(--text3)",
+                              background: "var(--bg)",
+                              padding: "0.1rem 0.5rem",
+                              borderRadius: "6px",
+                            }}
+                          >
+                            {cart.length} items
+                          </span>
+                        </div>
+                        <input
+                          className="wd-input"
+                          id="customerName"
+                          placeholder="Customer Name *"
+                        />
+                        <input
+                          className="wd-input"
+                          id="customerPhone"
+                          placeholder="Phone (WhatsApp)"
+                        />
+                        <select className="wd-input" id="paymentMethod">
+                          {[
+                            "Cash",
+                            "Orange Money",
+                            "Afrimoney",
+                            "Visa",
+                            "MasterCard",
+                            "Bank Transfer",
+                            "Mobile Money",
+                          ].map((m) => (
+                            <option key={m}>{m}</option>
+                          ))}
+                        </select>
+                        <div
+                          style={{
+                            flex: 1,
+                            overflowY: "auto",
+                            maxHeight: "180px",
+                          }}
+                        >
+                          {cart.length === 0 ? (
+                            <div
+                              style={{
+                                textAlign: "center",
+                                padding: "1.5rem 0",
+                                color: "var(--text3)",
+                              }}
+                            >
+                              🛒 Empty
+                            </div>
+                          ) : (
+                            cart.map((item) => (
+                              <div
+                                key={item.id}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: "0.4rem",
+                                  padding: "0.4rem",
+                                  background: "var(--bg)",
+                                  borderRadius: "8px",
+                                  marginBottom: "0.3rem",
+                                }}
+                              >
+                                <span style={{ fontSize: "1.1rem" }}>
+                                  {item.emoji}
+                                </span>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                  <div
+                                    style={{
+                                      fontSize: "0.7rem",
+                                      fontWeight: 600,
+                                      color: "var(--text)",
+                                    }}
+                                  >
+                                    {item.name}
+                                  </div>
+                                  <div
+                                    style={{
+                                      fontSize: "0.6rem",
+                                      color: "var(--text3)",
+                                    }}
+                                  >
+                                    {fmt(item.price)}
+                                  </div>
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.2rem",
+                                  }}
+                                >
+                                  <button
+                                    onClick={() => {
+                                      if (item.qty > 1)
+                                        setCart(
+                                          cart.map((i) =>
+                                            i.id === item.id
+                                              ? { ...i, qty: i.qty - 1 }
+                                              : i,
+                                          ),
+                                        );
+                                      else
+                                        setCart(
+                                          cart.filter((i) => i.id !== item.id),
+                                        );
+                                    }}
+                                    style={{
+                                      width: "22px",
+                                      height: "22px",
+                                      borderRadius: "6px",
+                                      border: "1px solid var(--border)",
+                                      background: "var(--bg)",
+                                      color: "var(--text)",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    −
+                                  </button>
+                                  <span
+                                    style={{
+                                      fontWeight: 700,
+                                      minWidth: "16px",
+                                      textAlign: "center",
+                                      fontSize: "0.75rem",
+                                    }}
+                                  >
+                                    {item.qty}
+                                  </span>
+                                  <button
+                                    onClick={() => {
+                                      if (item.qty < item.stock)
+                                        setCart(
+                                          cart.map((i) =>
+                                            i.id === item.id
+                                              ? { ...i, qty: i.qty + 1 }
+                                              : i,
+                                          ),
+                                        );
+                                      else
+                                        addToast({
+                                          type: "error",
+                                          title: "Stock limit",
+                                          message: `Only ${item.stock} available`,
+                                        });
+                                    }}
+                                    style={{
+                                      width: "22px",
+                                      height: "22px",
+                                      borderRadius: "6px",
+                                      border: "1px solid var(--border)",
+                                      background: "var(--bg)",
+                                      color: "var(--text)",
+                                      cursor: "pointer",
+                                    }}
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                                <div
+                                  style={{
+                                    fontWeight: 700,
+                                    color: "#10B981",
+                                    fontSize: "0.7rem",
+                                    minWidth: "50px",
+                                    textAlign: "right",
+                                  }}
+                                >
+                                  {fmt(item.price * item.qty)}
+                                </div>
+                                <button
+                                  onClick={() =>
+                                    setCart(
+                                      cart.filter((i) => i.id !== item.id),
+                                    )
+                                  }
+                                  style={{
+                                    background: "none",
+                                    border: "none",
+                                    color: "#EF4444",
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <Icon name="x" size={14} />
+                                </button>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                        <div
+                          style={{
+                            borderTop: "1px solid var(--border)",
+                            paddingTop: "0.75rem",
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              fontSize: "1.1rem",
+                              fontWeight: 800,
+                            }}
+                          >
+                            <span>Total</span>
+                            <span style={{ color: "#10B981" }}>
+                              {fmt(
+                                cart.reduce((s, i) => s + i.price * i.qty, 0),
+                              )}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => {
+                              const customerName =
+                                document
+                                  .getElementById("customerName")
+                                  .value.trim() || "Walk-in";
+                              const customerPhone =
+                                document
+                                  .getElementById("customerPhone")
+                                  .value.trim() || "N/A";
+                              const payment =
+                                document.getElementById("paymentMethod").value;
+                              const total = cart.reduce(
+                                (s, i) => s + i.price * i.qty,
+                                0,
+                              );
+                              if (cart.length === 0) {
+                                addToast({
+                                  type: "error",
+                                  title: "Cart empty",
+                                  message: "Add items before checkout",
+                                });
+                                return;
+                              }
+                              handleCheckout({
+                                customerName,
+                                customerPhone,
+                                payment,
+                                subtotal: total,
+                                total,
+                              });
+                            }}
+                            disabled={cart.length === 0}
+                            style={{
+                              width: "100%",
+                              marginTop: "0.5rem",
+                              padding: "0.7rem",
+                              borderRadius: "12px",
+                              border: "none",
+                              background:
+                                cart.length === 0
+                                  ? "var(--bg)"
+                                  : "linear-gradient(135deg, #059669, #10B981)",
+                              color:
+                                cart.length === 0 ? "var(--text3)" : "white",
+                              fontWeight: 700,
+                              fontSize: "0.9rem",
+                              cursor:
+                                cart.length === 0 ? "not-allowed" : "pointer",
+                            }}
+                          >
+                            <Icon
+                              name="check"
+                              size={16}
+                              style={{ marginRight: "0.4rem" }}
+                            />{" "}
+                            Complete Sale
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {section === "dashboard" && (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1.5rem",
+                      }}
+                    >
+                      <div
+                        className="wd-card"
+                        style={{
+                          padding: "1.5rem 2rem",
+                          background:
+                            "linear-gradient(135deg, rgba(16,185,129,0.05), rgba(10,61,145,0.05))",
+                          borderColor: "rgba(16,185,129,0.15)",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                            gap: "1rem",
+                          }}
+                        >
+                          <div>
+                            <div
+                              style={{
+                                fontSize: "0.65rem",
+                                color: "#34D399",
+                                fontWeight: 600,
+                                letterSpacing: "0.1em",
+                                textTransform: "uppercase",
+                              }}
+                            >
+                              👋 Welcome back
+                            </div>
+                            <div
+                              className="font-heading"
+                              style={{
+                                fontSize: "1.4rem",
+                                fontWeight: 800,
+                                color: "var(--text)",
+                              }}
+                            >
+                              {sellerName}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "0.75rem",
+                                color: "var(--text2)",
+                              }}
+                            >
+                              Seller · White Dove Engineering
+                            </div>
+                          </div>
+                          <div style={{ textAlign: "right" }}>
+                            <div
+                              style={{
+                                fontSize: "0.65rem",
+                                color: "var(--text3)",
+                              }}
+                            >
+                              Today's Revenue
+                            </div>
+                            <div
+                              className="font-heading"
+                              style={{
+                                fontWeight: 800,
+                                fontSize: "1.2rem",
+                                color: "#10B981",
+                              }}
+                            >
+                              {fmt(todayRevenue)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          display: "grid",
+                          gridTemplateColumns:
+                            "repeat(auto-fit, minmax(170px, 1fr))",
+                          gap: "1rem",
+                        }}
+                      >
+                        <KpiCard
+                          title="Today's Revenue"
+                          value={fmt(todayRevenue)}
+                          sub={`${todayMySales.length} sales`}
+                          icon="sales"
+                          color="#10B981"
+                        />
+                        <KpiCard
+                          title="Total Revenue"
+                          value={fmt(totalRevenue)}
+                          sub="all time"
+                          icon="trend"
+                          color="#0A3D91"
+                        />
+                        <KpiCard
+                          title="Transactions"
+                          value={mySales.length}
+                          sub="total sales"
+                          icon="receipt"
+                          color="#8B5CF6"
+                        />
+                        <KpiCard
+                          title="Items Sold"
+                          value={mySales.reduce(
+                            (a, s) =>
+                              a + s.items.reduce((b, i) => b + i.qty, 0),
+                            0,
+                          )}
+                          sub="total units"
+                          icon="package"
+                          color="#F59E0B"
+                        />
+                      </div>
+                      <div className="wd-card" style={{ overflow: "hidden" }}>
+                        <div
+                          style={{
+                            padding: "0.8rem 1.5rem",
+                            borderBottom: "1px solid var(--border)",
+                          }}
+                        >
+                          <div
+                            className="font-heading"
+                            style={{
+                              fontWeight: 700,
+                              color: "var(--text)",
+                              fontSize: "0.9rem",
+                            }}
+                          >
+                            📋 Recent Sales
+                          </div>
+                        </div>
+                        <div style={{ maxHeight: "280px", overflowY: "auto" }}>
+                          {mySales.length === 0 ? (
+                            <div
+                              style={{
+                                textAlign: "center",
+                                padding: "2rem",
+                                color: "var(--text3)",
+                              }}
+                            >
+                              No sales yet
+                            </div>
+                          ) : (
+                            <table
+                              className="wd-table"
+                              style={{
+                                width: "100%",
+                                borderCollapse: "collapse",
+                              }}
+                            >
+                              <thead>
+                                <tr>
+                                  <th
+                                    style={{
+                                      textAlign: "left",
+                                      padding: "0.5rem 1rem",
+                                      fontSize: "0.6rem",
+                                      color: "var(--text3)",
+                                      borderBottom: "1px solid var(--border)",
+                                    }}
+                                  >
+                                    Receipt
+                                  </th>
+                                  <th
+                                    style={{
+                                      textAlign: "left",
+                                      padding: "0.5rem 1rem",
+                                      fontSize: "0.6rem",
+                                      color: "var(--text3)",
+                                      borderBottom: "1px solid var(--border)",
+                                    }}
+                                  >
+                                    Customer
+                                  </th>
+                                  <th
+                                    style={{
+                                      textAlign: "right",
+                                      padding: "0.5rem 1rem",
+                                      fontSize: "0.6rem",
+                                      color: "var(--text3)",
+                                      borderBottom: "1px solid var(--border)",
+                                    }}
+                                  >
+                                    Total
+                                  </th>
+                                  <th
+                                    style={{
+                                      textAlign: "left",
+                                      padding: "0.5rem 1rem",
+                                      fontSize: "0.6rem",
+                                      color: "var(--text3)",
+                                      borderBottom: "1px solid var(--border)",
+                                    }}
+                                  >
+                                    Time
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {mySales.slice(0, 8).map((s) => (
+                                  <tr key={s.id}>
+                                    <td
+                                      style={{
+                                        padding: "0.4rem 1rem",
+                                        fontSize: "0.75rem",
+                                        color: "#60A5FA",
+                                        fontFamily: "monospace",
+                                      }}
+                                    >
+                                      {s.receiptNo}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "0.4rem 1rem",
+                                        fontSize: "0.8rem",
+                                      }}
+                                    >
+                                      {s.customer}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "0.4rem 1rem",
+                                        fontSize: "0.8rem",
+                                        fontWeight: 700,
+                                        color: "#10B981",
+                                        textAlign: "right",
+                                      }}
+                                    >
+                                      {fmt(s.total)}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: "0.4rem 1rem",
+                                        fontSize: "0.65rem",
+                                        color: "var(--text3)",
+                                      }}
+                                    >
+                                      {new Date(
+                                        s.timestamp,
+                                      ).toLocaleTimeString()}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {section === "history" && (
+                    <div className="wd-card" style={{ overflow: "hidden" }}>
+                      <div
+                        style={{
+                          padding: "0.8rem 1.5rem",
+                          borderBottom: "1px solid var(--border)",
+                        }}
+                      >
+                        <div
+                          className="font-heading"
+                          style={{
+                            fontWeight: 700,
+                            color: "var(--text)",
+                            fontSize: "0.9rem",
+                          }}
+                        >
+                          📄 All Sales ({mySales.length})
+                        </div>
+                      </div>
+                      <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
+                        {mySales.length === 0 ? (
+                          <div
+                            style={{
+                              textAlign: "center",
+                              padding: "3rem 0",
+                              color: "var(--text3)",
+                            }}
+                          >
+                            No transactions
+                          </div>
+                        ) : (
+                          <table
+                            className="wd-table"
+                            style={{
+                              width: "100%",
+                              borderCollapse: "collapse",
+                            }}
+                          >
+                            <thead>
+                              <tr>
+                                <th>Receipt</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Payment</th>
+                                <th style={{ textAlign: "right" }}>Total</th>
+                                <th>Date</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {mySales.map((s) => (
+                                <tr key={s.id}>
+                                  <td
+                                    style={{
+                                      fontWeight: 700,
+                                      fontSize: "0.8rem",
+                                      color: "#60A5FA",
+                                      fontFamily: "monospace",
+                                    }}
+                                  >
+                                    {s.receiptNo}
+                                  </td>
+                                  <td style={{ fontSize: "0.8rem" }}>
+                                    {s.customer}
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontSize: "0.7rem",
+                                      color: "var(--text3)",
+                                    }}
+                                  >
+                                    {s.items
+                                      ?.map(
+                                        (i) =>
+                                          `${i.qty}×${i.name.slice(0, 12)}`,
+                                      )
+                                      .join(", ")}
+                                  </td>
+                                  <td>
+                                    <span
+                                      style={{
+                                        fontSize: "0.65rem",
+                                        background: "var(--bg)",
+                                        border: "1px solid var(--border)",
+                                        padding: "0.1rem 0.4rem",
+                                        borderRadius: "6px",
+                                      }}
+                                    >
+                                      {s.payment}
+                                    </span>
+                                  </td>
+                                  <td
+                                    style={{
+                                      textAlign: "right",
+                                      fontWeight: 700,
+                                      color: "#10B981",
+                                    }}
+                                  >
+                                    {fmt(s.total)}
+                                  </td>
+                                  <td
+                                    style={{
+                                      fontSize: "0.65rem",
+                                      color: "var(--text3)",
+                                    }}
+                                  >
+                                    {fmtDate(s.timestamp)}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Receipt Modal */}
+            {receiptSale && (
+              <div
+                className="modal-overlay"
+                onClick={(e) =>
+                  e.target === e.currentTarget && setReceiptSale(null)
+                }
+              >
+                <div className="modal-box">
+                  <div
+                    style={{
+                      padding: "1rem 1.5rem",
+                      borderBottom: "1px solid var(--border)",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <div
+                      className="font-heading"
+                      style={{
+                        fontWeight: 700,
+                        fontSize: "1rem",
+                        color: "var(--text)",
+                      }}
+                    >
+                      🧾 {receiptSale.receiptNo}
+                    </div>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button
+                        onClick={() => {
+                          const { jsPDF } = window.jspdf;
+                          const doc = new jsPDF({ unit: "mm", format: "a4" });
+                          const pw = 210;
+                          let y = 20;
+                          doc.setFontSize(18);
+                          doc.setTextColor("#0A3D91");
+                          doc.setFont("helvetica", "bold");
+                          doc.text("WHITE DOVE", pw / 2, y, {
+                            align: "center",
+                          });
+                          y += 7;
+                          doc.setFontSize(9);
+                          doc.setTextColor("#475569");
+                          doc.setFont("helvetica", "normal");
+                          doc.text("ENGINEERING FIRM", pw / 2, y, {
+                            align: "center",
+                          });
+                          y += 5;
+                          doc.text(
+                            "Building Your Vision, Powering Your Future.",
+                            pw / 2,
+                            y,
+                            { align: "center" },
+                          );
+                          y += 5;
+                          doc.text("+232 75 862 299 · Freetown", pw / 2, y, {
+                            align: "center",
+                          });
+                          y += 8;
+                          doc.line(20, y, pw - 20, y);
+                          y += 6;
+                          doc.setFontSize(9);
+                          doc.setTextColor("#0F172A");
+                          doc.setFont("helvetica", "bold");
+                          doc.text(`Receipt: ${receiptSale.receiptNo}`, 20, y);
+                          doc.text(
+                            `Date: ${fmtDate(receiptSale.timestamp)}`,
+                            110,
+                            y,
+                          );
+                          y += 5;
+                          doc.text(`Customer: ${receiptSale.customer}`, 20, y);
+                          doc.text(`Payment: ${receiptSale.payment}`, 110, y);
+                          y += 5;
+                          doc.text(`Seller: ${receiptSale.sellerName}`, 20, y);
+                          y += 8;
+                          doc.line(20, y, pw - 20, y);
+                          y += 5;
+                          doc.setFont("helvetica", "bold");
+                          doc.setTextColor("#64748B");
+                          doc.text("Item", 20, y);
+                          doc.text("Qty", 130, y);
+                          doc.text("Price", 150, y);
+                          doc.text("Total", 180, y);
+                          y += 4;
+                          doc.line(20, y, pw - 20, y);
+                          y += 5;
+                          doc.setFont("helvetica", "normal");
+                          doc.setTextColor("#0F172A");
+                          receiptSale.items.forEach((item) => {
+                            const name =
+                              item.name.length > 22
+                                ? item.name.substring(0, 20) + "…"
+                                : item.name;
+                            doc.text(name, 20, y);
+                            doc.text(item.qty.toString(), 130, y);
+                            doc.text(fmt(item.unitPrice), 150, y);
+                            doc.text(fmt(item.total), 180, y, {
+                              align: "right",
+                            });
+                            y += 5;
+                          });
+                          y += 4;
+                          doc.line(20, y, pw - 20, y);
+                          y += 6;
+                          doc.setFont("helvetica", "bold");
+                          doc.setTextColor("#0A3D91");
+                          doc.setFontSize(13);
+                          doc.text("TOTAL", 20, y);
+                          doc.text(fmt(receiptSale.total), pw - 20, y, {
+                            align: "right",
+                          });
+                          y += 8;
+                          doc.setFontSize(8);
+                          doc.setTextColor("#94A3B8");
+                          doc.setFont("helvetica", "normal");
+                          doc.text(
+                            "Thank you for choosing White Dove!",
+                            pw / 2,
+                            y,
+                            { align: "center" },
+                          );
+                          doc.save(`receipt_${receiptSale.receiptNo}.pdf`);
+                        }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.3rem",
+                          padding: "0.4rem 0.8rem",
+                          borderRadius: "8px",
+                          background: "#0A3D91",
+                          border: "none",
+                          color: "white",
+                          cursor: "pointer",
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                        }}
+                      >
+                        <Icon name="download" size={14} /> PDF
+                      </button>
+                      <button
+                        onClick={() => {
+                          const phone =
+                            receiptSale.customerPhone || "+23278123456";
+                          const clean = phone
+                            .replace(/\s/g, "")
+                            .replace(/^\+/, "");
+                          const items = receiptSale.items
+                            .map(
+                              (i) => `${i.name} × ${i.qty} = ${fmt(i.total)}`,
+                            )
+                            .join("\n");
+                          const msg = `🧾 *WHITE DOVE ENGINEERING FIRM*\n\nBuilding Your Vision, Powering Your Future.\n\nReceipt: ${receiptSale.receiptNo}\nDate: ${fmtDate(receiptSale.timestamp)}\nCustomer: ${receiptSale.customer}\n\n*Items:*\n${items}\n\n*Total: ${fmt(receiptSale.total)}*\n\nPayment: ${receiptSale.payment}\nSeller: ${receiptSale.sellerName}\n\nThank you! 🕊️`;
+                          window.open(
+                            `https://wa.me/${clean}?text=${encodeURIComponent(msg)}`,
+                            "_blank",
+                          );
+                        }}
+                        className="whatsapp-btn"
+                        style={{
+                          padding: "0.3rem 0.8rem",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        <Icon name="whatsapp" size={14} /> WhatsApp
+                      </button>
+                      <button
+                        onClick={() => setReceiptSale(null)}
+                        style={{
+                          padding: "0.3rem",
+                          background: "none",
+                          border: "none",
+                          color: "var(--text3)",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Icon name="x" size={18} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="receipt-print">
+                    <div
+                      style={{
+                        textAlign: "center",
+                        marginBottom: "1.5rem",
+                        paddingBottom: "1rem",
+                        borderBottom: "2px dashed #E2E8F0",
+                      }}
+                    >
+                      <Logo
+                        size={44}
+                        style={{ margin: "0 auto", display: "block" }}
+                      />
+                      <div className="company-name">WHITE DOVE</div>
+                      <div className="company-sub">ENGINEERING FIRM</div>
+                      <div style={{ fontSize: "0.6rem", color: "#94A3B8" }}>
+                        Building Your Vision, Powering Your Future.
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "0.3rem",
+                        fontSize: "0.7rem",
+                        marginBottom: "0.8rem",
+                      }}
+                    >
+                      <div>
+                        <span style={{ color: "#94A3B8" }}>Receipt:</span>{" "}
+                        <strong style={{ color: "#0A3D91" }}>
+                          {receiptSale.receiptNo}
+                        </strong>
+                      </div>
+                      <div>
+                        <span style={{ color: "#94A3B8" }}>Date:</span>{" "}
+                        <strong>{fmtDate(receiptSale.timestamp)}</strong>
+                      </div>
+                      <div>
+                        <span style={{ color: "#94A3B8" }}>Seller:</span>{" "}
+                        <strong>{receiptSale.sellerName}</strong>
+                      </div>
+                      <div>
+                        <span style={{ color: "#94A3B8" }}>Customer:</span>{" "}
+                        <strong>{receiptSale.customer}</strong>
+                      </div>
+                      <div>
+                        <span style={{ color: "#94A3B8" }}>Payment:</span>{" "}
+                        <strong>{receiptSale.payment}</strong>
+                      </div>
+                    </div>
+                    <div className="divider"></div>
+                    {receiptSale.items.map((item, i) => (
+                      <div key={i} className="receipt-item">
+                        <span>
+                          {item.name} × {item.qty}
+                        </span>
+                        <span>{fmt(item.total)}</span>
+                      </div>
+                    ))}
+                    <div className="divider"></div>
+                    <div className="receipt-total">
+                      <span>TOTAL</span>
+                      <span>{fmt(receiptSale.total)}</span>
+                    </div>
+                    <div className="receipt-footer">
+                      <div style={{ fontWeight: 600, color: "#475569" }}>
+                        Thank you for choosing White Dove!
+                      </div>
+                      <div>
+                        Quality Work · Reliable Solutions · Your Satisfaction,
+                        Our Mission.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        );
+      };
+
+      // ─── APP ──────────────────────────────────────────────────────
+      const App = () => {
+        const [theme, setTheme] = useState(
+          () => localStorage.getItem("wd_theme") || "dark",
+        );
+        const [toasts, setToasts] = useState([]);
+        const userName = sessionStorage.getItem("userName") || "Seller";
+
+        const applyTheme = useCallback((t) => {
+          const resolved =
+            t === "system"
+              ? window.matchMedia("(prefers-color-scheme: light)").matches
+                ? "light"
+                : "dark"
+              : t;
+          document.documentElement.setAttribute("data-theme", resolved);
+          setTheme(t);
+          localStorage.setItem("wd_theme", t);
+        }, []);
+
+        useEffect(() => applyTheme(theme), []);
+
+        const addToast = useCallback((toast) => {
+          const id = Date.now() + Math.random();
+          setToasts((prev) => [{ ...toast, id }, ...prev].slice(0, 5));
+          setTimeout(
+            () => setToasts((prev) => prev.filter((t) => t.id !== id)),
+            5000,
+          );
+        }, []);
+
+        const dismissToast = useCallback(
+          (id) => setToasts((prev) => prev.filter((t) => t.id !== id)),
+          [],
+        );
+
+        const handleLogout = useCallback(() => {
+          sessionStorage.removeItem("userRole");
+          sessionStorage.removeItem("userName");
+          sessionStorage.removeItem("userEmail");
+          sessionStorage.removeItem("sellerName");
+          window.location.href = "index.html";
+        }, []);
+
+        const session = {
+          userId: "seller",
+          userName,
+          userTitle: "Sales Representative",
+          avatar: userName.charAt(0).toUpperCase(),
+          role: "seller",
+        };
+
+        return (
+          <Dashboard
+            session={session}
+            onLogout={handleLogout}
+            theme={theme}
+            onThemeChange={applyTheme}
+            addToast={addToast}
+            dismissToast={dismissToast}
+            toasts={toasts}
+          />
+        );
+      };
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1299 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>White Dove Engineering Firm — Enterprise Portal</title>
+    <meta
+      name="description"
+      content="White Dove Engineering Firm — Building Your Vision, Powering Your Future. Sierra Leone's premier engineering and electrical solutions company."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,300&family=Outfit:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --blue: #0a3d91;
+        --royal: #1255c4;
+        --blue-light: #4a90e2;
+        --blue-glow: rgba(10, 61, 145, 0.3);
+        --white: #ffffff;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f4f9;
+        --gray-200: #e2e8f0;
+        --gray-400: #94a3b8;
+        --gray-600: #475569;
+        --gray-900: #0f172a;
+        --silver: #9ba3af;
+        --success: #10b981;
+        --danger: #ef4444;
+      }
+
+      html,
+      body {
+        height: 100%;
+        font-family:
+          "Inter",
+          system-ui,
+          -apple-system,
+          sans-serif;
+        background: #050d1a;
+        color: #ffffff;
+        overflow-x: hidden;
+      }
+
+      .bg-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background:
+          radial-gradient(
+            ellipse 100% 80% at 50% 0%,
+            rgba(10, 61, 145, 0.35) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 10% 80%,
+            rgba(18, 85, 196, 0.15) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 90% 70%,
+            rgba(74, 144, 226, 0.1) 0%,
+            transparent 60%
+          ),
+          #050d1a;
+        animation: bgPulse 10s ease-in-out infinite alternate;
+      }
+
+      @keyframes bgPulse {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 100% 50%;
+        }
+      }
+
+      .orb {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.15;
+        animation: float 12s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .orb-1 {
+        width: 600px;
+        height: 600px;
+        background: #0a3d91;
+        top: -200px;
+        left: -100px;
+        animation-delay: 0s;
+      }
+      .orb-2 {
+        width: 400px;
+        height: 400px;
+        background: #1255c4;
+        bottom: -100px;
+        right: -50px;
+        animation-delay: -4s;
+      }
+      .orb-3 {
+        width: 300px;
+        height: 300px;
+        background: #4a90e2;
+        top: 40%;
+        left: 60%;
+        animation-delay: -8s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        33% {
+          transform: translate(30px, -30px) scale(1.05);
+        }
+        66% {
+          transform: translate(-20px, 20px) scale(0.95);
+        }
+      }
+
+      .grid-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+      }
+
+      .content {
+        position: relative;
+        z-index: 10;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        gap: 3rem;
+      }
+
+      .header {
+        text-align: center;
+        animation: fadeUp 0.8s ease-out both;
+      }
+
+      .logo-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 96px;
+        height: 96px;
+        background: linear-gradient(
+          135deg,
+          rgba(10, 61, 145, 0.3),
+          rgba(18, 85, 196, 0.15)
+        );
+        border: 1px solid rgba(74, 144, 226, 0.3);
+        border-radius: 24px;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(10px);
+        box-shadow:
+          0 0 60px rgba(10, 61, 145, 0.3),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      .badge {
+        display: inline-block;
+        background: linear-gradient(
+          90deg,
+          rgba(10, 61, 145, 0.4),
+          rgba(18, 85, 196, 0.3)
+        );
+        border: 1px solid rgba(74, 144, 226, 0.4);
+        border-radius: 100px;
+        padding: 0.375rem 1rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        color: #93c5fd;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-family: "Outfit", sans-serif;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 900;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+
+      h1 span.blue {
+        color: #60a5fa;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 400;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        font-size: 0.78rem;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 780px;
+        animation: fadeUp 0.8s ease-out 0.2s both;
+      }
+
+      .portal-card {
+        position: relative;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 2.5rem 2rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        overflow: hidden;
+        display: block;
+        backdrop-filter: blur(20px);
+      }
+
+      .portal-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(
+          135deg,
+          transparent,
+          rgba(255, 255, 255, 0.02)
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .portal-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(74, 144, 226, 0.4);
+        box-shadow:
+          0 24px 64px rgba(0, 0, 0, 0.4),
+          0 0 0 1px rgba(74, 144, 226, 0.2),
+          0 0 80px rgba(10, 61, 145, 0.2);
+      }
+
+      .portal-card:hover::before {
+        opacity: 1;
+      }
+
+      .card-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .card-manager .card-icon {
+        background: linear-gradient(135deg, #0a3d91, #1255c4);
+        box-shadow: 0 8px 32px rgba(10, 61, 145, 0.4);
+      }
+
+      .card-seller .card-icon {
+        background: linear-gradient(135deg, #0d7b3e, #10b981);
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+      }
+
+      .card-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      .card-manager .card-label {
+        color: #60a5fa;
+      }
+      .card-seller .card-label {
+        color: #34d399;
+      }
+
+      .card-title {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.01em;
+      }
+
+      .card-desc {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.45);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+
+      .card-features {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .card-feature {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.55);
+      }
+
+      .card-feature .dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .card-manager .dot {
+        background: #60a5fa;
+      }
+      .card-seller .dot {
+        background: #34d399;
+      }
+
+      .card-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.875rem 1.25rem;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .card-manager .card-btn {
+        background: linear-gradient(135deg, #0a3d91, #1255c4);
+        color: white;
+        box-shadow: 0 4px 16px rgba(10, 61, 145, 0.4);
+      }
+      .card-seller .card-btn {
+        background: linear-gradient(135deg, #059669, #10b981);
+        color: white;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+      }
+      .card-btn:hover {
+        filter: brightness(1.1);
+        transform: scale(1.01);
+      }
+      .arrow {
+        font-size: 1rem;
+        transition: transform 0.2s;
+      }
+      .portal-card:hover .arrow {
+        transform: translateX(4px);
+      }
+
+      .stats-strip {
+        display: flex;
+        align-items: center;
+        gap: 2.5rem;
+        animation: fadeUp 0.8s ease-out 0.4s both;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .stat {
+        text-align: center;
+      }
+      .stat-value {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: white;
+      }
+      .stat-label {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.35);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 500;
+      }
+      .stat-divider {
+        width: 1px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      /* LOGIN MODAL */
+      .login-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(12px);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      .login-modal.active {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .login-box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 28px;
+        padding: 40px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(20px);
+      }
+
+      .login-box .close-btn {
+        float: right;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 24px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .login-box .close-btn:hover {
+        color: white;
+        transform: rotate(90deg);
+      }
+
+      .login-box .login-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .login-box .login-header .login-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        margin-bottom: 12px;
+      }
+
+      .login-box .login-header .login-icon.manager-icon {
+        background: linear-gradient(135deg, #0a3d91, #1255c4);
+        box-shadow: 0 8px 32px rgba(10, 61, 145, 0.4);
+      }
+
+      .login-box .login-header .login-icon.seller-icon {
+        background: linear-gradient(135deg, #0d7b3e, #10b981);
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+      }
+
+      .login-box .login-header h2 {
+        font-family: "Outfit", sans-serif;
+        font-weight: 700;
+        font-size: 24px;
+        margin-bottom: 4px;
+      }
+
+      .login-box .login-header p {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 14px;
+      }
+
+      .login-box .form-group {
+        margin-bottom: 18px;
+      }
+
+      .login-box .form-group label {
+        display: block;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 6px;
+      }
+
+      .login-box .form-group input {
+        width: 100%;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        color: white;
+        font-size: 15px;
+        transition: 0.3s;
+      }
+
+      .login-box .form-group input:focus {
+        outline: none;
+        border-color: #2563eb;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .login-box .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      .login-box .login-btn {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 6px;
+      }
+
+      .login-box .login-btn.manager-login {
+        background: linear-gradient(135deg, #0a3d91, #1255c4);
+        box-shadow: 0 4px 16px rgba(10, 61, 145, 0.4);
+      }
+
+      .login-box .login-btn.seller-login {
+        background: linear-gradient(135deg, #059669, #10b981);
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+      }
+
+      .login-box .login-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+      }
+
+      .login-box .error-msg {
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        margin-bottom: 16px;
+        display: none;
+      }
+
+      .login-box .error-msg.show {
+        display: block;
+      }
+
+      .login-box .demo-hint {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 12px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .login-box .demo-hint strong {
+        color: rgba(255, 255, 255, 0.4);
+      }
+
+      footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        background: rgba(5, 13, 26, 0.8);
+        backdrop-filter: blur(10px);
+        z-index: 20;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.3);
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      footer a {
+        color: rgba(255, 255, 255, 0.4);
+        text-decoration: none;
+      }
+      footer a:hover {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 80px;
+        right: 30px;
+        background: #0a3d91;
+        color: white;
+        padding: 14px 24px;
+        border-radius: 40px;
+        font-weight: 600;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        opacity: 0;
+        transform: translateY(20px);
+        transition: 0.3s;
+        z-index: 2000;
+        font-size: 14px;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .toast.error {
+        background: #dc2626;
+      }
+      .toast.success {
+        background: #16a34a;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .content {
+          padding: 6rem 1rem 5rem;
+        }
+        .stats-strip {
+          gap: 1.5rem;
+        }
+        footer {
+          font-size: 0.65rem;
+          justify-content: center;
+        }
+        .login-box {
+          padding: 30px 20px;
+          margin: 0 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Animated background -->
+    <div class="bg-canvas"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="header">
+        <div class="logo-wrap">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="56"
+            height="56"
+            viewBox="0 0 120 120"
+            fill="none"
+          >
+            <circle
+              cx="60"
+              cy="60"
+              r="56"
+              stroke="rgba(74,144,226,0.4)"
+              stroke-width="2"
+            />
+            <path
+              d="M55 38 C62 30 75 32 78 40 C82 50 72 58 62 60 L76 66 C64 75 52 68 48 58 C44 48 47 40 55 38Z"
+              fill="white"
+              opacity="0.95"
+            />
+            <path
+              d="M50 42 C38 34 24 40 26 52 C34 46 42 46 50 48Z"
+              fill="white"
+              opacity="0.85"
+            />
+            <line
+              x1="75"
+              y1="33"
+              x2="85"
+              y2="22"
+              stroke="#22C55E"
+              stroke-width="1.5"
+            />
+            <ellipse
+              cx="82"
+              cy="25"
+              rx="3"
+              ry="4.5"
+              fill="#22C55E"
+              transform="rotate(-30 82 25)"
+            />
+            <ellipse
+              cx="87"
+              cy="20"
+              rx="2.5"
+              ry="4"
+              fill="#22C55E"
+              transform="rotate(-45 87 20)"
+            />
+            <rect x="28" y="68" width="10" height="28" fill="#0A3D91" rx="1" />
+            <rect x="40" y="62" width="10" height="34" fill="#0A3D91" rx="1" />
+            <rect x="52" y="70" width="10" height="26" fill="#6B7280" rx="1" />
+            <polygon points="62,62 72,72 52,72" fill="#0A3D91" />
+            <circle
+              cx="88"
+              cy="80"
+              r="12"
+              fill="none"
+              stroke="#0A3D91"
+              stroke-width="3"
+            />
+            <circle cx="88" cy="80" r="5" fill="#0A3D91" />
+            <rect x="86" y="65" width="4" height="6" fill="#0A3D91" rx="1" />
+            <rect x="86" y="89" width="4" height="6" fill="#0A3D91" rx="1" />
+            <rect x="73" y="78" width="6" height="4" fill="#0A3D91" rx="1" />
+            <rect x="97" y="78" width="6" height="4" fill="#0A3D91" rx="1" />
+            <rect
+              x="76.5"
+              y="68.5"
+              width="4"
+              height="5"
+              fill="#0A3D91"
+              rx="1"
+              transform="rotate(45 78.5 71)"
+            />
+            <rect
+              x="96.5"
+              y="88.5"
+              width="4"
+              height="5"
+              fill="#0A3D91"
+              rx="1"
+              transform="rotate(45 98.5 91)"
+            />
+            <rect
+              x="76.5"
+              y="88.5"
+              width="4"
+              height="5"
+              fill="#0A3D91"
+              rx="1"
+              transform="rotate(-45 78.5 91)"
+            />
+            <rect
+              x="96.5"
+              y="68.5"
+              width="4"
+              height="5"
+              fill="#0A3D91"
+              rx="1"
+              transform="rotate(-45 98.5 71)"
+            />
+            <path
+              d="M90 74 L86 80 L89 80 L86 87 L92 79 L89 79Z"
+              fill="white"
+              opacity="0.9"
+            />
+          </svg>
+        </div>
+
+        <div class="badge">Enterprise Platform · Sierra Leone</div>
+
+        <h1><span class="blue">WHITE DOVE</span><br />Engineering Firm</h1>
+        <p class="subtitle">Building Your Vision, Powering Your Future.</p>
+      </div>
+
+      <div class="cards">
+        <!-- Manager Portal -->
+        <div class="portal-card card-manager" id="managerCard">
+          <div class="card-icon">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+            </svg>
+          </div>
+          <div class="card-label">Executive Access</div>
+          <div class="card-title">Manager Portal</div>
+          <div class="card-desc">
+            Full executive control — analytics, inventory management, real-time
+            sales monitoring, employee management, and reporting.
+          </div>
+          <div class="card-features">
+            <div class="card-feature">
+              <span class="dot"></span>Revenue & analytics dashboard
+            </div>
+            <div class="card-feature">
+              <span class="dot"></span>Full inventory CRUD management
+            </div>
+            <div class="card-feature">
+              <span class="dot"></span>Live transaction notifications
+            </div>
+            <div class="card-feature">
+              <span class="dot"></span>Employee & activity management
+            </div>
+          </div>
+          <div class="card-btn" id="managerBtn">
+            <span>Enter Manager Portal</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+
+        <!-- Seller POS Portal -->
+        <div class="portal-card card-seller" id="sellerCard">
+          <div class="card-icon">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 01-8 0" />
+            </svg>
+          </div>
+          <div class="card-label">Sales Representative</div>
+          <div class="card-title">Seller POS Portal</div>
+          <div class="card-desc">
+            High-speed point-of-sale interface — search products, process
+            transactions, and generate professional receipts instantly.
+          </div>
+          <div class="card-features">
+            <div class="card-feature">
+              <span class="dot"></span>Instant product search & lookup
+            </div>
+            <div class="card-feature">
+              <span class="dot"></span>Fast transaction processing
+            </div>
+            <div class="card-feature">
+              <span class="dot"></span>Professional receipt generation
+            </div>
+            <div class="card-feature">
+              <span class="dot"></span>Daily personal sales summary
+            </div>
+          </div>
+          <div class="card-btn" id="sellerBtn">
+            <span>Enter Seller POS</span>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat">
+          <div class="stat-value">14+</div>
+          <div class="stat-label">Product Categories</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Manager Portals</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value">Live</div>
+          <div class="stat-label">Real-Time Sync</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-value">SLE</div>
+          <div class="stat-label">Currency</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal">
+      <div class="login-box">
+        <button class="close-btn" id="closeModal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="login-header">
+          <div class="login-icon" id="modalIcon">
+            <i class="fa-solid fa-user-tie"></i>
+          </div>
+          <h2 id="modalTitle">Manager Login</h2>
+          <p id="modalSubtitle">
+            Enter your credentials to access the manager dashboard
+          </p>
+        </div>
+
+        <div class="error-msg" id="errorMsg">
+          <i class="fa-solid fa-circle-exclamation"></i> Invalid credentials.
+          Please try again.
+        </div>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail"
+              ><i class="fa-regular fa-envelope"></i> Email Address</label
+            >
+            <input
+              type="email"
+              id="loginEmail"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword"
+              ><i class="fa-solid fa-lock"></i> Password</label
+            >
+            <input
+              type="password"
+              id="loginPassword"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+        </form>
+
+        <div class="demo-hint">
+          <strong>Demo Credentials:</strong><br />
+          Manager: manager@whitedove.com / admin123<br />
+          Seller: seller@whitedove.com / seller123
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">Message</div>
+
+    <!-- Footer -->
+    <footer>
+      <span>© 2024 White Dove Engineering Firm · Freetown, Sierra Leone</span>
+      <div style="display: flex; gap: 1.5rem">
+        <a href="tel:+23275862299">+232 75 862 299</a>
+        <a href="tel:+23234592373">+232 34 592 373</a>
+      </div>
+      <span>Professional · Reliable · Affordable</span>
+    </footer>
+
+    <script>
+      (function () {
+        "use strict";
+
+        // ---------- DEMO CREDENTIALS ----------
+        const USERS = {
+          manager: [
+            {
+              email: "manager@whitedove.com",
+              password: "admin123",
+              name: "Admin Manager",
+            },
+            {
+              email: "admin@whitedove.com",
+              password: "admin123",
+              name: "System Admin",
+            },
+          ],
+          seller: [
+            {
+              email: "seller@whitedove.com",
+              password: "seller123",
+              name: "Osman Bah",
+            },
+            {
+              email: "seller2@whitedove.com",
+              password: "seller123",
+              name: "Aminata Kamara",
+            },
+          ],
+        };
+
+        // ---------- DOM REFS ----------
+        const managerCard = document.getElementById("managerCard");
+        const sellerCard = document.getElementById("sellerCard");
+        const managerBtn = document.getElementById("managerBtn");
+        const sellerBtn = document.getElementById("sellerBtn");
+        const loginModal = document.getElementById("loginModal");
+        const closeModal = document.getElementById("closeModal");
+        const modalIcon = document.getElementById("modalIcon");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalSubtitle = document.getElementById("modalSubtitle");
+        const loginForm = document.getElementById("loginForm");
+        const loginEmail = document.getElementById("loginEmail");
+        const loginPassword = document.getElementById("loginPassword");
+        const loginBtn = document.getElementById("loginBtn");
+        const errorMsg = document.getElementById("errorMsg");
+        const toastEl = document.getElementById("toast");
+
+        // ---------- TOAST ----------
+        function showToast(msg, type = "") {
+          toastEl.textContent = msg;
+          toastEl.className = "toast show " + type;
+          clearTimeout(toastEl._timer);
+          toastEl._timer = setTimeout(
+            () => toastEl.classList.remove("show"),
+            3000,
+          );
+        }
+
+        // ---------- OPEN LOGIN MODAL ----------
+        function openLoginModal(role) {
+          // Clear any previous error
+          errorMsg.classList.remove("show");
+
+          if (role === "manager") {
+            modalIcon.className = "login-icon manager-icon";
+            modalIcon.innerHTML = '<i class="fa-solid fa-user-tie"></i>';
+            modalTitle.textContent = "Manager Login";
+            modalSubtitle.textContent =
+              "Enter your credentials to access the manager dashboard";
+            loginBtn.className = "login-btn manager-login";
+            loginBtn.innerHTML =
+              '<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In as Manager';
+            loginBtn.dataset.role = "manager";
+            loginEmail.placeholder = "manager@whitedove.com";
+            loginEmail.value = "manager@whitedove.com";
+            loginPassword.value = "admin123";
+          } else {
+            modalIcon.className = "login-icon seller-icon";
+            modalIcon.innerHTML = '<i class="fa-solid fa-user"></i>';
+            modalTitle.textContent = "Seller Login";
+            modalSubtitle.textContent =
+              "Enter your credentials to access the POS system";
+            loginBtn.className = "login-btn seller-login";
+            loginBtn.innerHTML =
+              '<i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In as Seller';
+            loginBtn.dataset.role = "seller";
+            loginEmail.placeholder = "seller@whitedove.com";
+            loginEmail.value = "seller@whitedove.com";
+            loginPassword.value = "seller123";
+          }
+
+          loginModal.classList.add("active");
+        }
+
+        // ---------- CLOSE MODAL ----------
+        function closeLoginModal() {
+          loginModal.classList.remove("active");
+          errorMsg.classList.remove("show");
+        }
+
+        // ---------- HANDLE LOGIN ----------
+        function handleLogin(e) {
+          e.preventDefault();
+
+          const email = loginEmail.value.trim();
+          const password = loginPassword.value.trim();
+          const role = loginBtn.dataset.role || "manager";
+
+          if (!email || !password) {
+            errorMsg.textContent = "Please enter both email and password";
+            errorMsg.classList.add("show");
+            return;
+          }
+
+          const users = role === "manager" ? USERS.manager : USERS.seller;
+          const user = users.find(
+            (u) =>
+              u.email.toLowerCase() === email.toLowerCase() &&
+              u.password === password,
+          );
+
+          if (user) {
+            // Clear all existing sessions
+            sessionStorage.clear();
+
+            // Set the appropriate session
+            if (role === "manager") {
+              sessionStorage.setItem("userRole", "manager");
+              sessionStorage.setItem("userName", user.name);
+              sessionStorage.setItem("userEmail", user.email);
+              showToast(`Welcome back, ${user.name}!`, "success");
+              setTimeout(() => {
+                window.location.href = "manager.html";
+              }, 500);
+            } else {
+              sessionStorage.setItem("userRole", "seller");
+              sessionStorage.setItem("userName", user.name);
+              sessionStorage.setItem("userEmail", user.email);
+              showToast(`Welcome back, ${user.name}!`, "success");
+              setTimeout(() => {
+                window.location.href = "seller.html";
+              }, 500);
+            }
+          } else {
+            errorMsg.textContent =
+              "Invalid email or password. Please try again.";
+            errorMsg.classList.add("show");
+            loginForm.style.animation = "shake 0.5s";
+            setTimeout(() => (loginForm.style.animation = ""), 500);
+          }
+        }
+
+        // ---------- HANDLE PORTAL CLICK ----------
+        function handlePortalClick(role) {
+          // Check if already logged in
+          const userRole = sessionStorage.getItem("userRole");
+
+          if (userRole === role) {
+            // Already logged in as this role, redirect
+            window.location.href =
+              role === "manager" ? "manager.html" : "seller.html";
+            return;
+          } else if (userRole) {
+            // Logged in as different role, clear session and open correct modal
+            sessionStorage.clear();
+          }
+
+          openLoginModal(role);
+        }
+
+        // ---------- EVENT LISTENERS ----------
+        // Manager Portal
+        managerCard.addEventListener("click", function (e) {
+          if (e.target.closest(".card-btn")) return;
+          handlePortalClick("manager");
+        });
+
+        managerBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          handlePortalClick("manager");
+        });
+
+        // Seller Portal
+        sellerCard.addEventListener("click", function (e) {
+          if (e.target.closest(".card-btn")) return;
+          handlePortalClick("seller");
+        });
+
+        sellerBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          e.preventDefault();
+          handlePortalClick("seller");
+        });
+
+        // Close modal
+        closeModal.addEventListener("click", closeLoginModal);
+        loginModal.addEventListener("click", function (e) {
+          if (e.target === this) closeLoginModal();
+        });
+
+        // Form submit
+        loginForm.addEventListener("submit", handleLogin);
+
+        // Enter key on password field
+        loginPassword.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") loginForm.dispatchEvent(new Event("submit"));
+        });
+
+        // ---------- ADD SHAKE ANIMATION ----------
+        const style = document.createElement("style");
+        style.textContent = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20% { transform: translateX(-10px); }
+          40% { transform: translateX(10px); }
+          60% { transform: translateX(-10px); }
+          80% { transform: translateX(10px); }
+        }
+      `;
+        document.head.appendChild(style);
+
+        // ---------- CHECK IF ALREADY LOGGED IN ----------
+        const userRole = sessionStorage.getItem("userRole");
+        if (userRole === "manager") {
+          window.location.href = "manager.html";
+        } else if (userRole === "seller") {
+          window.location.href = "seller.html";
+        }
+
+        // ---------- INIT PRODUCTS IN LOCALSTORAGE (if not exists) ----------
+        if (!localStorage.getItem("whiteDoveProducts")) {
+          const defaultProducts = [
+            {
+              id: 1,
+              name: "1.5mm Twin & Earth Cable",
+              sku: "WD-1001",
+              category: "Electrical Cable",
+              price: 850,
+              stock: 42,
+              image: "assets/products/cable.jpg",
+            },
+            {
+              id: 2,
+              name: "100W Solar Panel",
+              sku: "WD-2045",
+              category: "Solar",
+              price: 950,
+              stock: 8,
+              image: "assets/products/solar.jpg",
+            },
+            {
+              id: 3,
+              name: "LED Bulb 12W",
+              sku: "WD-3012",
+              category: "Lighting",
+              price: 120,
+              stock: 120,
+              image: "assets/products/bulb.jpg",
+            },
+            {
+              id: 4,
+              name: "Extension Cord 5m",
+              sku: "WD-4005",
+              category: "Accessories",
+              price: 280,
+              stock: 35,
+              image: "assets/products/cord.jpg",
+            },
+            {
+              id: 5,
+              name: "Solar Charge Controller",
+              sku: "WD-2050",
+              category: "Solar",
+              price: 640,
+              stock: 15,
+              image: "assets/products/controller.jpg",
+            },
+            {
+              id: 6,
+              name: "Wire Stripper Tool",
+              sku: "WD-6010",
+              category: "Tools",
+              price: 210,
+              stock: 28,
+              image: "assets/products/stripper.jpg",
+            },
+          ];
+          localStorage.setItem(
+            "whiteDoveProducts",
+            JSON.stringify(defaultProducts),
+          );
+          localStorage.setItem("whiteDoveTotalSales", "0");
+          localStorage.setItem("whiteDoveTxnCount", "0");
+          localStorage.setItem("whiteDoveSalesHistory", "[]");
+        }
+
+        console.log("White Dove Enterprise Portal · Ready");
+      })();
+    </script>
+  </body>
+</html>

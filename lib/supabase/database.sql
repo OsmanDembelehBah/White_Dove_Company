@@ -1,0 +1,2 @@
+-- Export of Database Schema for White Dove Electrical & Engineering Co.
+-- See supabase/schema.sql for the complete version.
