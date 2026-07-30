@@ -138,6 +138,8 @@
         flex-direction: column;
         height: 100vh;
         overflow: hidden;
+        position: sticky;
+        top: 0;
       }
       @media (max-width: 768px) {
         .sidebar {
@@ -155,17 +157,31 @@
           justify-content: center;
           padding: 0.6rem 0;
         }
-        .wd-card .pos-grid {
+        .pos-grid {
           grid-template-columns: 1fr !important;
         }
-        .wd-card .product-grid {
+        .product-grid {
           grid-template-columns: repeat(
             auto-fill,
             minmax(130px, 1fr)
           ) !important;
         }
-        .wd-card .cart-side {
+        .cart-side {
           margin-top: 1rem;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .stats-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .sidebar {
+          width: 56px !important;
+        }
+        .sidebar .nav-item {
+          padding: 0.4rem 0;
         }
       }
 
@@ -1208,6 +1224,8 @@
                     alignItems: "center",
                     justifyContent: "space-between",
                     background: "var(--bg2)",
+                    flexWrap: "wrap",
+                    gap: "0.5rem",
                   }}
                 >
                   <div>
@@ -1234,6 +1252,7 @@
                       display: "flex",
                       alignItems: "center",
                       gap: "0.5rem",
+                      flexWrap: "wrap",
                     }}
                   >
                     <div
@@ -1830,6 +1849,7 @@
                         </div>
                       </div>
                       <div
+                        className="stats-grid"
                         style={{
                           display: "grid",
                           gridTemplateColumns:
@@ -2143,6 +2163,8 @@
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
+                      flexWrap: "wrap",
+                      gap: "0.5rem",
                     }}
                   >
                     <div
@@ -2155,7 +2177,13 @@
                     >
                       🧾 {receiptSale.receiptNo}
                     </div>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "0.5rem",
+                        flexWrap: "wrap",
+                      }}
+                    >
                       <button
                         onClick={() => {
                           const { jsPDF } = window.jspdf;
