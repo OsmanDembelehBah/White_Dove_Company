@@ -1,6 +1,4 @@
 'use client';
-
-import React, { useState } from 'react';
 import { useApp } from '@/lib/store/app-store';
 import { InventoryItem, SaleTransaction } from '@/lib/supabase/types';
 import AddEditProductModal from '@/components/AddEditProductModal';
