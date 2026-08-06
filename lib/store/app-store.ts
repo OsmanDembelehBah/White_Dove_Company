@@ -2,11 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Profile, InventoryItem, SaleTransaction } from "../supabase/types";
-import {
-  INITIAL_PROFILES,
-  INITIAL_INVENTORY,
-  INITIAL_SALES,
-} from "./seed-data";
+import { INITIAL_PROFILES, INITIAL_INVENTORY, INITIAL_SALES } from "./seed-data";
 import { isSupabaseConfigured, supabase } from "../supabase/client";
 
 interface AppContextType {
@@ -18,38 +14,18 @@ interface AppContextType {
   realtimeToast: { sale: SaleTransaction; id: string } | null;
   dismissToast: () => void;
   isRealtimeActive: boolean;
-
-  // Actions
   logSale: (saleData: {
     product_id: string;
     quantity_sold: number;
     rate_per_unit: number;
     customer_name?: string;
-    payment_method?:
-      | "Cash"
-      | "Orange Money"
-      | "Afrimoney"
-      | "Bank Transfer"
-      | "Credit";
+    payment_method?: "Cash" | "Orange Money" | "Afrimoney" | "Bank Transfer" | "Credit";
   }) => Promise<{ success: boolean; sale?: SaleTransaction; error?: string }>;
-
-  addInventoryItem: (
-    itemData: Omit<InventoryItem, "id" | "created_at" | "updated_at">,
-  ) => Promise<{ success: boolean; error?: string }>;
-  updateInventoryItem: (
-    id: string,
-    itemData: Partial<InventoryItem>,
-  ) => Promise<{ success: boolean; error?: string }>;
-  restockProduct: (
-    id: string,
-    additionalStock: number,
-  ) => Promise<{ success: boolean; error?: string }>;
-  deleteInventoryItem: (
-    id: string,
-  ) => Promise<{ success: boolean; error?: string }>;
+  addInventoryItem: (itemData: Omit<InventoryItem, "id" | "created_at" | "updated_at">) => Promise<{ success: boolean; error?: string }>;
+  updateInventoryItem: (id: string, itemData: Partial<InventoryItem>) => Promise<{ success: boolean; error?: string }>;
+  restockProduct: (id: string, additionalStock: number) => Promise<{ success: boolean; error?: string }>;
+  deleteInventoryItem: (id: string) => Promise<{ success: boolean; error?: string }>;
   resetSeedData: () => void;
-
-  // Computed metrics
   sellerDailyRevenue: number;
   sellerDailySalesCount: number;
   totalDailyRevenue: number;
@@ -64,51 +40,30 @@ const LOCAL_STORAGE_KEY_INVENTORY = "whitedove_inventory_v1";
 const LOCAL_STORAGE_KEY_SALES = "whitedove_sales_v1";
 const BROADCAST_CHANNEL_NAME = "whitedove_realtime_sales";
 
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [profiles] = useState<Profile[]>(INITIAL_PROFILES);
-  const [currentProfile, setCurrentProfile] = useState<Profile>(
-    INITIAL_PROFILES[2],
-  ); // Mohamed Bangura (Seller) by default
-  const [inventory, setInventory] =
-    useState<InventoryItem[]>(INITIAL_INVENTORY);
+  const [currentProfile, setCurrentProfile] = useState<Profile>(INITIAL_PROFILES[2]);
+  const [inventory, setInventory] = useState<InventoryItem[]>(INITIAL_INVENTORY);
   const [sales, setSales] = useState<SaleTransaction[]>(INITIAL_SALES);
-  const [realtimeToast, setRealtimeToast] = useState<{
-    sale: SaleTransaction;
-    id: string;
-  } | null>(null);
+  const [realtimeToast, setRealtimeToast] = useState<{ sale: SaleTransaction; id: string } | null>(null);
   const [isRealtimeActive, setIsRealtimeActive] = useState<boolean>(false);
 
-  // Load local state or Supabase on mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedInventory = localStorage.getItem(LOCAL_STORAGE_KEY_INVENTORY);
       if (savedInventory) {
-        try {
-          setInventory(JSON.parse(savedInventory));
-        } catch (e) {
-          console.error(e);
-        }
+        try { setInventory(JSON.parse(savedInventory)); } catch (e) { console.error(e); }
       }
       const savedSales = localStorage.getItem(LOCAL_STORAGE_KEY_SALES);
       if (savedSales) {
-        try {
-          setSales(JSON.parse(savedSales));
-        } catch (e) {
-          console.error(e);
-        }
+        try { setSales(JSON.parse(savedSales)); } catch (e) { console.error(e); }
       }
     }
   }, []);
 
-  // Save to local storage whenever inventory or sales change
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY_INVENTORY,
-        JSON.stringify(inventory),
-      );
+      localStorage.setItem(LOCAL_STORAGE_KEY_INVENTORY, JSON.stringify(inventory));
     }
   }, [inventory]);
 
@@ -118,7 +73,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [sales]);
 
-  // Set up Supabase Realtime OR Local BroadcastChannel
   useEffect(() => {
     let channel: any = null;
     let bc: BroadcastChannel | null = null;
@@ -127,38 +81,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       setIsRealtimeActive(true);
       channel = supabase
         .channel("public:sales")
-        .on(
-          "postgres_changes",
-          { event: "INSERT", schema: "public", table: "sales" },
-          (payload) => {
-            const newSale = payload.new as SaleTransaction;
-            setSales((prev) => [newSale, ...prev]);
-
-            // Deduct local inventory copy if needed
-            setInventory((prev) =>
-              prev.map((item) =>
-                item.id === newSale.product_id
-                  ? {
-                      ...item,
-                      stock_quantity: Math.max(
-                        0,
-                        item.stock_quantity - newSale.quantity_sold,
-                      ),
-                    }
-                  : item,
-              ),
-            );
-
-            // Show Realtime Toast Popup
-            setRealtimeToast({
-              sale: newSale,
-              id: `${Date.now()}-${Math.random()}`,
-            });
-          },
-        )
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "sales" }, (payload) => {
+          const newSale = payload.new as SaleTransaction;
+          setSales((prev) => [newSale, ...prev]);
+          setInventory((prev) =>
+            prev.map((item) =>
+              item.id === newSale.product_id
+                ? { ...item, stock_quantity: Math.max(0, item.stock_quantity - newSale.quantity_sold) }
+                : item
+            )
+          );
+          setRealtimeToast({ sale: newSale, id: `${Date.now()}-${Math.random()}` });
+        })
         .subscribe();
     } else {
-      // Local BroadcastChannel simulation for real-time WebSocket experience across tabs!
       setIsRealtimeActive(true);
       if (typeof window !== "undefined" && "BroadcastChannel" in window) {
         bc = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
@@ -169,20 +105,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
             setInventory((prev) =>
               prev.map((item) =>
                 item.id === newSale.product_id
-                  ? {
-                      ...item,
-                      stock_quantity: Math.max(
-                        0,
-                        item.stock_quantity - newSale.quantity_sold,
-                      ),
-                    }
-                  : item,
-              ),
+                  ? { ...item, stock_quantity: Math.max(0, item.stock_quantity - newSale.quantity_sold) }
+                  : item
+              )
             );
-            setRealtimeToast({
-              sale: newSale,
-              id: `${Date.now()}-${Math.random()}`,
-            });
+            setRealtimeToast({ sale: newSale, id: `${Date.now()}-${Math.random()}` });
           }
         };
       }
@@ -196,24 +123,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const dismissToast = () => setRealtimeToast(null);
 
-  // LOG SALE ACTION & DEDUCTION ENGINE
   const logSale = async (saleData: {
     product_id: string;
     quantity_sold: number;
     rate_per_unit: number;
     customer_name?: string;
-    payment_method?:
-      | "Cash"
-      | "Orange Money"
-      | "Afrimoney"
-      | "Bank Transfer"
-      | "Credit";
+    payment_method?: "Cash" | "Orange Money" | "Afrimoney" | "Bank Transfer" | "Credit";
   }) => {
     const product = inventory.find((item) => item.id === saleData.product_id);
     if (!product) {
       return { success: false, error: "Selected electrical product not found" };
     }
-
     if (product.stock_quantity < saleData.quantity_sold) {
       return {
         success: false,
@@ -221,9 +141,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       };
     }
 
-    const total_price = Number(
-      (saleData.quantity_sold * saleData.rate_per_unit).toFixed(2),
-    );
+    const total_price = Number((saleData.quantity_sold * saleData.rate_per_unit).toFixed(2));
     const newSale: SaleTransaction = {
       id: `sale-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       seller_id: currentProfile.id,
@@ -238,7 +156,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
       sold_at: new Date().toISOString(),
     };
 
-    // If Supabase is configured, save to Postgres database
     if (isSupabaseConfigured()) {
       try {
         const { error } = await supabase.from("sales").insert({
@@ -252,72 +169,46 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
           customer_name: newSale.customer_name,
           payment_method: newSale.payment_method,
         });
-
-        if (error) {
-          console.error("Supabase Sale Insert Error:", error);
-        }
+        if (error) console.error("Supabase Sale Insert Error:", error);
       } catch (err) {
         console.error("Supabase error:", err);
       }
     }
 
-    // Deduct stock locally
     setInventory((prev) =>
       prev.map((item) =>
         item.id === product.id
-          ? {
-              ...item,
-              stock_quantity: item.stock_quantity - saleData.quantity_sold,
-              updated_at: new Date().toISOString(),
-            }
-          : item,
-      ),
+          ? { ...item, stock_quantity: item.stock_quantity - saleData.quantity_sold, updated_at: new Date().toISOString() }
+          : item
+      )
     );
 
-    // Append sale
     setSales((prev) => [newSale, ...prev]);
 
-    // Broadcast to other open browser windows/tabs for real-time WebSocket simulation
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
       const bc = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
       bc.postMessage({ type: "NEW_SALE", sale: newSale });
       bc.close();
     }
 
-    // Trigger local toast notification for manager view test
-    setRealtimeToast({
-      sale: newSale,
-      id: `${Date.now()}-${Math.random()}`,
-    });
-
+    setRealtimeToast({ sale: newSale, id: `${Date.now()}-${Math.random()}` });
     return { success: true, sale: newSale };
   };
 
-  // MANAGER INVENTORY ACTIONS
-  const addInventoryItem = async (
-    itemData: Omit<InventoryItem, "id" | "created_at" | "updated_at">,
-  ) => {
+  const addInventoryItem = async (itemData: Omit<InventoryItem, "id" | "created_at" | "updated_at">) => {
     const newItem: InventoryItem = {
       ...itemData,
       id: `prod-${Date.now()}`,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
-
     setInventory((prev) => [newItem, ...prev]);
     return { success: true };
   };
 
-  const updateInventoryItem = async (
-    id: string,
-    itemData: Partial<InventoryItem>,
-  ) => {
+  const updateInventoryItem = async (id: string, itemData: Partial<InventoryItem>) => {
     setInventory((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, ...itemData, updated_at: new Date().toISOString() }
-          : item,
-      ),
+      prev.map((item) => (item.id === id ? { ...item, ...itemData, updated_at: new Date().toISOString() } : item))
     );
     return { success: true };
   };
@@ -326,13 +217,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     setInventory((prev) =>
       prev.map((item) =>
         item.id === id
-          ? {
-              ...item,
-              stock_quantity: item.stock_quantity + additionalStock,
-              updated_at: new Date().toISOString(),
-            }
-          : item,
-      ),
+          ? { ...item, stock_quantity: item.stock_quantity + additionalStock, updated_at: new Date().toISOString() }
+          : item
+      )
     );
     return { success: true };
   };
@@ -351,7 +238,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     setSales(INITIAL_SALES);
   };
 
-  // COMPUTED METRICS
   const todayStr = new Date().toISOString().split("T")[0];
 
   const sellerTodaySales = sales.filter((s) => {
@@ -359,38 +245,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     return s.seller_id === currentProfile.id && saleDateStr === todayStr;
   });
 
-  const sellerDailyRevenue = sellerTodaySales.reduce(
-    (acc, curr) => acc + curr.total_price,
-    0,
-  );
-  const sellerDailySalesCount = sellerTodaySales.reduce(
-    (acc, curr) => acc + curr.quantity_sold,
-    0,
-  );
+  const sellerDailyRevenue = sellerTodaySales.reduce((acc, curr) => acc + curr.total_price, 0);
+  const sellerDailySalesCount = sellerTodaySales.reduce((acc, curr) => acc + curr.quantity_sold, 0);
 
   const todayAllSales = sales.filter((s) => {
     const saleDateStr = new Date(s.sold_at).toISOString().split("T")[0];
     return saleDateStr === todayStr;
   });
 
-  const totalDailyRevenue = todayAllSales.reduce(
-    (acc, curr) => acc + curr.total_price,
-    0,
-  );
-  const totalDailyItemsSold = todayAllSales.reduce(
-    (acc, curr) => acc + curr.quantity_sold,
-    0,
-  );
+  const totalDailyRevenue = todayAllSales.reduce((acc, curr) => acc + curr.total_price, 0);
+  const totalDailyItemsSold = todayAllSales.reduce((acc, curr) => acc + curr.quantity_sold, 0);
 
   const activeSellersSet = new Set(todayAllSales.map((s) => s.seller_id));
-  const activeSellersCount =
-    activeSellersSet.size || (sales.length > 0 ? 2 : 1);
+  const activeSellersCount = activeSellersSet.size || (sales.length > 0 ? 2 : 1);
 
-  const lowStockCount = inventory.filter(
-    (item) => item.stock_quantity <= item.low_stock_threshold,
-  ).length;
+  const lowStockCount = inventory.filter((item) => item.stock_quantity <= item.low_stock_threshold).length;
 
-  // FIXED: The value prop is now properly on the same line as the opening tag
   const contextValue = {
     profiles,
     currentProfile,
@@ -414,9 +284,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({
     lowStockCount,
   };
 
-  return (
-    <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
-  );
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
 };
 
 export const useApp = () => {
