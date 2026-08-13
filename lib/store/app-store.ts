@@ -1,42 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-
-// Define types
-export interface Profile {
-  id: string;
-  full_name: string;
-  email: string;
-  role: "manager" | "seller";
-  avatar?: string;
-}
-
-export interface InventoryItem {
-  id: string;
-  product_name: string;
-  sku: string;
-  category: string;
-  price: number;
-  stock_quantity: number;
-  low_stock_threshold: number;
-  unit: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface SaleTransaction {
-  id: string;
-  seller_id: string;
-  seller_name: string;
-  product_id: string;
-  product_name: string;
-  quantity_sold: number;
-  rate_per_unit: number;
-  total_price: number;
-  customer_name: string;
-  payment_method: string;
-  sold_at: string;
-}
+import { createContext, useContext, useState, ReactNode } from "react";
+import { Profile, InventoryItem, SaleTransaction, PaymentMethod } from "../types";
 
 // Sample data
 const INITIAL_PROFILES: Profile[] = [
@@ -89,7 +54,6 @@ const INITIAL_SALES: SaleTransaction[] = [
   },
 ];
 
-// Define the context type
 interface AppContextType {
   profiles: Profile[];
   currentProfile: Profile;
@@ -99,9 +63,15 @@ interface AppContextType {
   realtimeToast: { sale: SaleTransaction; id: string } | null;
   dismissToast: () => void;
   isRealtimeActive: boolean;
-  logSale: (saleData: any) => Promise<{ success: boolean; sale?: SaleTransaction; error?: string }>;
-  addInventoryItem: (itemData: any) => Promise<{ success: boolean; error?: string }>;
-  updateInventoryItem: (id: string, itemData: any) => Promise<{ success: boolean; error?: string }>;
+  logSale: (saleData: {
+    product_id: string;
+    quantity_sold: number;
+    rate_per_unit: number;
+    customer_name?: string;
+    payment_method?: PaymentMethod;
+  }) => Promise<{ success: boolean; sale?: SaleTransaction; error?: string }>;
+  addInventoryItem: (itemData: Omit<InventoryItem, "id" | "created_at" | "updated_at">) => Promise<{ success: boolean; error?: string }>;
+  updateInventoryItem: (id: string, itemData: Partial<InventoryItem>) => Promise<{ success: boolean; error?: string }>;
   restockProduct: (id: string, additionalStock: number) => Promise<{ success: boolean; error?: string }>;
   deleteInventoryItem: (id: string) => Promise<{ success: boolean; error?: string }>;
   resetSeedData: () => void;
@@ -113,10 +83,8 @@ interface AppContextType {
   lowStockCount: number;
 }
 
-// CREATE the context (this is the key fix - exporting it)
 export const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Provider component
 export function AppProvider({ children }: { children: ReactNode }) {
   const [profiles] = useState<Profile[]>(INITIAL_PROFILES);
   const [currentProfile, setCurrentProfile] = useState<Profile>(INITIAL_PROFILES[2]);
@@ -127,7 +95,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const dismissToast = () => setRealtimeToast(null);
 
-  const logSale = async (saleData: any) => {
+  const logSale = async (saleData: {
+    product_id: string;
+    quantity_sold: number;
+    rate_per_unit: number;
+    customer_name?: string;
+    payment_method?: PaymentMethod;
+  }) => {
     const product = inventory.find((item) => item.id === saleData.product_id);
     if (!product) {
       return { success: false, error: "Product not found" };
@@ -164,7 +138,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return { success: true, sale: newSale };
   };
 
-  const addInventoryItem = async (itemData: any) => {
+  const addInventoryItem = async (itemData: Omit<InventoryItem, "id" | "created_at" | "updated_at">) => {
     const newItem: InventoryItem = {
       ...itemData,
       id: `prod-${Date.now()}`,
@@ -175,9 +149,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return { success: true };
   };
 
-  const updateInventoryItem = async (id: string, itemData: any) => {
+  const updateInventoryItem = async (id: string, itemData: Partial<InventoryItem>) => {
     setInventory((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...itemData } : item))
+      prev.map((item) => (item.id === id ? { ...item, ...itemData, updated_at: new Date().toISOString() } : item))
     );
     return { success: true };
   };
@@ -185,7 +159,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const restockProduct = async (id: string, additionalStock: number) => {
     setInventory((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, stock_quantity: item.stock_quantity + additionalStock } : item
+        item.id === id
+          ? { ...item, stock_quantity: item.stock_quantity + additionalStock, updated_at: new Date().toISOString() }
+          : item
       )
     );
     return { success: true };
@@ -201,7 +177,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSales(INITIAL_SALES);
   };
 
-  // Computed metrics
   const todayStr = new Date().toISOString().split("T")[0];
   const sellerTodaySales = sales.filter((s) => {
     const saleDateStr = new Date(s.sold_at).toISOString().split("T")[0];
@@ -221,7 +196,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const activeSellersCount = new Set(todayAllSales.map((s) => s.seller_id)).size || 1;
   const lowStockCount = inventory.filter((item) => item.stock_quantity <= item.low_stock_threshold).length;
 
-  const contextValue = {
+  const value = {
     profiles,
     currentProfile,
     setCurrentProfile,
@@ -244,11 +219,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     lowStockCount,
   };
 
-  // Use the exported AppContext here
-  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
 
-// Hook to use the context
 export function useApp() {
   const context = useContext(AppContext);
   if (!context) {
