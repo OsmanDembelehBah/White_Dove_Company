@@ -1,323 +1,223 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { InventoryItem } from '@/lib/supabase/types';
-import { useApp } from '@/lib/store/app-store';
-import { X, PackagePlus, Edit3, PlusCircle, CheckCircle, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useApp } from "../lib/store/app-store";
+import { InventoryItem } from "../lib/types";
+
+const CATEGORIES = [
+  "Solar Energy",
+  "CCTV & Security",
+  "Wiring & Cables",
+  "Breakers & Distribution",
+  "Air Conditioning",
+  "Lighting",
+  "Power Accessories",
+  "Tools & Equipment",
+];
 
 interface AddEditProductModalProps {
   isOpen: boolean;
   onClose: () => void;
   productToEdit?: InventoryItem | null;
-  mode?: 'add' | 'edit' | 'restock';
 }
 
-const CATEGORIES = [
-  'Solar Energy',
-  'CCTV & Security',
-  'Wiring & Cables',
-  'Breakers & Distribution',
-  'Air Conditioning',
-  'Lighting & Fixtures',
-  'Power Accessories',
-  'Tools & Equipment',
-];
+export default function AddEditProductModal({ isOpen, onClose, productToEdit }: AddEditProductModalProps) {
+  const { addInventoryItem, updateInventoryItem } = useApp();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-export default function AddEditProductModal({
-  isOpen,
-  onClose,
-  productToEdit,
-  mode = 'add',
-}: AddEditProductModalProps) {
-  const { addInventoryItem, updateInventoryItem, restockProduct } = useApp();
-
-  const [productName, setProductName] = useState('');
-  const [sku, setSku] = useState('');
+  // Form state
+  const [productName, setProductName] = useState("");
+  const [sku, setSku] = useState("");
   const [category, setCategory] = useState(CATEGORIES[0]);
-  const [stockQuantity, setStockQuantity] = useState(10);
-  const [unitPrice, setUnitPrice] = useState(100.0);
+  const [stockQuantity, setStockQuantity] = useState(0);
+  const [price, setPrice] = useState(0); // Changed from unit_price to price
   const [lowStockThreshold, setLowStockThreshold] = useState(5);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [restockAmount, setRestockAmount] = useState(10);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
   useEffect(() => {
-    if (productToEdit && mode !== 'add') {
-      setProductName(productToEdit.product_name);
-      setSku(productToEdit.sku || '');
+    if (productToEdit) {
+      setProductName(productToEdit.product_name || "");
+      setSku(productToEdit.sku || "");
       setCategory(productToEdit.category || CATEGORIES[0]);
-      setStockQuantity(productToEdit.stock_quantity);
-      setUnitPrice(productToEdit.unit_price);
+      setStockQuantity(productToEdit.stock_quantity || 0);
+      setPrice(productToEdit.price || 0); // Changed from unit_price to price
       setLowStockThreshold(productToEdit.low_stock_threshold || 5);
-      setDescription(productToEdit.description || '');
-      setRestockAmount(10);
+      setDescription((productToEdit as any).description || "");
     } else {
-      setProductName('');
-      setSku('');
-      setCategory(CATEGORIES[0]);
-      setStockQuantity(10);
-      setUnitPrice(150.0);
-      setLowStockThreshold(5);
-      setDescription('');
-      setRestockAmount(10);
+      resetForm();
     }
-    setErrorMsg(null);
-  }, [productToEdit, mode, isOpen]);
+  }, [productToEdit, isOpen]);
 
-  if (!isOpen) return null;
+  const resetForm = () => {
+    setProductName("");
+    setSku("");
+    setCategory(CATEGORIES[0]);
+    setStockQuantity(0);
+    setPrice(0);
+    setLowStockThreshold(5);
+    setDescription("");
+    setRestockAmount(10);
+    setError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setErrorMsg(null);
+    setLoading(true);
+    setError("");
 
-    try {
-      if (mode === 'restock' && productToEdit) {
-        if (restockAmount <= 0) {
-          setErrorMsg('Restock quantity must be greater than 0');
-          setIsSubmitting(false);
-          return;
-        }
-        await restockProduct(productToEdit.id, restockAmount);
-      } else if (mode === 'edit' && productToEdit) {
-        await updateInventoryItem(productToEdit.id, {
-          product_name: productName,
-          sku,
-          category,
-          stock_quantity: stockQuantity,
-          unit_price: unitPrice,
-          low_stock_threshold: lowStockThreshold,
-          description,
-        });
-      } else {
-        // Add new
-        if (!productName.trim()) {
-          setErrorMsg('Product name is required');
-          setIsSubmitting(false);
-          return;
-        }
-        await addInventoryItem({
-          product_name: productName,
-          sku: sku || `SKU-${Date.now().toString().slice(-6)}`,
-          category,
-          stock_quantity: Number(stockQuantity),
-          unit_price: Number(unitPrice),
-          low_stock_threshold: Number(lowStockThreshold),
-          description,
-        });
-      }
-      onClose();
-    } catch (err: any) {
-      setErrorMsg(err.message || 'An error occurred while saving product.');
-    } finally {
-      setIsSubmitting(false);
+    if (!productName || !sku || price <= 0) {
+      setError("Please fill in all required fields");
+      setLoading(false);
+      return;
     }
+
+    const itemData = {
+      product_name: productName,
+      sku: sku,
+      category: category,
+      price: price,
+      stock_quantity: stockQuantity,
+      low_stock_threshold: lowStockThreshold,
+      unit: "pcs",
+      description: description,
+    };
+
+    let result;
+    if (productToEdit) {
+      result = await updateInventoryItem(productToEdit.id, itemData);
+    } else {
+      result = await addInventoryItem(itemData);
+    }
+
+    if (result.success) {
+      resetForm();
+      onClose();
+    } else {
+      setError(result.error || "Failed to save product");
+    }
+    setLoading(false);
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#0F233D] border border-whitedove-slate w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden relative text-slate-100">
-        
-        {/* Header */}
-        <div className="px-6 py-4 bg-[#07101E] border-b border-whitedove-slate flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-lg bg-blue-600/20 border border-blue-500/40 text-blue-400">
-              {mode === 'restock' ? (
-                <PlusCircle className="w-5 h-5" />
-              ) : mode === 'edit' ? (
-                <Edit3 className="w-5 h-5" />
-              ) : (
-                <PackagePlus className="w-5 h-5" />
-              )}
-            </div>
-            <div>
-              <h3 className="text-lg font-bold font-heading text-white">
-                {mode === 'restock'
-                  ? `Quick Restock Inventory`
-                  : mode === 'edit'
-                  ? `Edit Product Details`
-                  : `Add New Electrical Product`}
-              </h3>
-              <p className="text-xs text-slate-400">Executive Manager Inventory Control</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-whitedove-slate/50 transition-colors"
-          >
-            <X className="w-5 h-5" />
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            {productToEdit ? "Edit Product" : "Add New Product"}
+          </h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+            ✕
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          
-          {errorMsg && (
-            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center space-x-2">
-              <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-              <span>{errorMsg}</span>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Product Name *</label>
+              <input
+                type="text"
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                required
+              />
             </div>
-          )}
-
-          {mode === 'restock' && productToEdit ? (
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-[#07101E] border border-whitedove-slate/80">
-                <p className="text-xs text-slate-400 font-bold uppercase">{productToEdit.category}</p>
-                <h4 className="text-base font-bold text-white">{productToEdit.product_name}</h4>
-                <div className="mt-2 text-xs flex justify-between text-slate-300">
-                  <span>Current Stock: <strong className="text-amber-400">{productToEdit.stock_quantity} units</strong></span>
-                  <span>Unit Price: <strong>SLE {productToEdit.unit_price.toLocaleString()}</strong></span>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                  Additional Stock Quantity to Add
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  value={restockAmount}
-                  onChange={(e) => setRestockAmount(parseInt(e.target.value) || 1)}
-                  className="w-full px-4 py-3 bg-[#07101E] border border-whitedove-slate rounded-xl text-white font-bold text-lg focus:outline-none focus:border-blue-500"
-                />
-                <p className="text-[11px] text-slate-400 mt-1">
-                  New Stock total after restock will be: <strong className="text-emerald-400">{productToEdit.stock_quantity + restockAmount} units</strong>.
-                </p>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">SKU *</label>
+              <input
+                type="text"
+                value={sku}
+                onChange={(e) => setSku(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                required
+              />
             </div>
-          ) : (
-            <>
-              {/* Product Name & SKU */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                    Product Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={productName}
-                    onChange={(e) => setProductName(e.target.value)}
-                    placeholder="e.g. 400W Monocrystalline Solar Panel"
-                    className="w-full px-3 py-2 bg-[#07101E] border border-whitedove-slate rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                    SKU Code
-                  </label>
-                  <input
-                    type="text"
-                    value={sku}
-                    onChange={(e) => setSku(e.target.value)}
-                    placeholder="SOL-400W"
-                    className="w-full px-3 py-2 bg-[#07101E] border border-whitedove-slate rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-              </div>
+          </div>
 
-              {/* Category & Unit Price */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                    Category *
-                  </label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 bg-[#07101E] border border-whitedove-slate rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
-                  >
-                    {CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Category</label>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                {CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Price (SLE) *</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                required
+              />
+            </div>
+          </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                    Unit Price (SLE) *
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={unitPrice}
-                    onChange={(e) => setUnitPrice(parseFloat(e.target.value) || 0)}
-                    className="w-full px-3 py-2 bg-[#07101E] border border-whitedove-slate rounded-xl text-xs font-bold text-amber-300 focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Stock Quantity</label>
+              <input
+                type="number"
+                min="0"
+                value={stockQuantity}
+                onChange={(e) => setStockQuantity(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Low Stock Threshold</label>
+              <input
+                type="number"
+                min="0"
+                value={lowStockThreshold}
+                onChange={(e) => setLowStockThreshold(Number(e.target.value))}
+                className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+          </div>
 
-              {/* Initial Stock & Low Stock Threshold */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                    Initial Stock Qty *
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    required
-                    value={stockQuantity}
-                    onChange={(e) => setStockQuantity(parseInt(e.target.value) || 0)}
-                    className="w-full px-3 py-2 bg-[#07101E] border border-whitedove-slate rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
-                  />
-                </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              className="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              placeholder="Product description..."
+            />
+          </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                    Low Stock Threshold
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={lowStockThreshold}
-                    onChange={(e) => setLowStockThreshold(parseInt(e.target.value) || 5)}
-                    className="w-full px-3 py-2 bg-[#07101E] border border-whitedove-slate rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
-                  />
-                </div>
-              </div>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
-              {/* Description */}
-              <div>
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-                  Description / Specification
-                </label>
-                <textarea
-                  rows={2}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Optional item details or technical specs..."
-                  className="w-full px-3 py-2 bg-[#07101E] border border-whitedove-slate rounded-xl text-xs text-white focus:outline-none focus:border-amber-500"
-                />
-              </div>
-            </>
-          )}
-
-          {/* Form Actions */}
-          <div className="flex items-center justify-end space-x-3 pt-3 border-t border-whitedove-slate/50">
+          <div className="flex gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-whitedove-slate bg-transparent text-slate-300 text-xs font-semibold hover:bg-whitedove-slate/40 transition-all"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-whitedove-blue hover:from-blue-500 hover:to-whitedove-blue text-white text-xs font-bold shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50"
+              disabled={loading}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              {isSubmitting ? 'Saving...' : mode === 'restock' ? 'Confirm Restock' : 'Save Product'}
+              {loading ? "Saving..." : productToEdit ? "Update Product" : "Add Product"}
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   );

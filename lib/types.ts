@@ -17,6 +17,7 @@ export interface InventoryItem {
   stock_quantity: number;
   low_stock_threshold: number;
   unit: string;
+  description?: string;
   created_at: string;
   updated_at: string;
 }
