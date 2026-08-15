@@ -1,10 +1,16 @@
-export type PaymentMethod = "Cash" | "Orange Money" | "Afrimoney" | "Bank Transfer" | "Credit";
+export type PaymentMethod =
+  | "Cash"
+  | "Orange Money"
+  | "Afrimoney"
+  | "Bank Transfer"
+  | "Credit";
 
 export interface Profile {
   id: string;
   full_name: string;
-  email: string;
+  email?: string;
   role: "manager" | "seller";
+  phone_number?: string;
   avatar?: string;
 }
 
@@ -13,12 +19,14 @@ export interface InventoryItem {
   product_name: string;
   sku: string;
   category: string;
-  price: number;
+  price?: number;
+  unit_price: number;
   stock_quantity: number;
   low_stock_threshold: number;
-  unit: string;
+  unit?: string;
+  description?: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
 }
 
 export interface SaleTransaction {
