@@ -12,6 +12,7 @@ export interface Profile {
   role: "manager" | "seller";
   phone_number?: string;
   avatar?: string;
+  created_at?: string;
 }
 
 export interface InventoryItem {
@@ -20,7 +21,7 @@ export interface InventoryItem {
   sku: string;
   category: string;
   price?: number;
-  unit_price: number;
+  unit_price?: number; // Made optional to support components passing 'price'
   stock_quantity: number;
   low_stock_threshold: number;
   unit?: string;
