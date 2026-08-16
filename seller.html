@@ -38,10 +38,10 @@
       @media (max-width: 768px) { .sidebar { width: 64px !important; } .sidebar .nav-text, .sidebar .brand-text, .sidebar .seller-name { display: none; } .sidebar .brand-icon { margin: 0 auto; } .sidebar .nav-item { justify-content: center; padding: 0.6rem 0; } }
       .wd-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; transition: background 0.25s, border 0.25s; }
       .wd-input { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 0.625rem 0.875rem; font-size: 0.875rem; width: 100%; outline: none; transition: border-color 0.2s, box-shadow 0.2s; font-family: "Inter", sans-serif; }
-      .wd-input:focus { border-color: #0a3d91; box-shadow: 0 0 0 3px rgba(10,61,145,0.15); }
+      .wd-input:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.15); }
       .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 10px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s; color: var(--text2); background: transparent; border: none; width: 100%; text-align: left; }
       .nav-item:hover { background: var(--bg2); color: var(--text); transform: translateX(4px); }
-      .nav-item.active { background: rgba(10,61,145,0.15); color: #60a5fa; font-weight: 600; }
+      .nav-item.active { background: rgba(16,185,129,0.12); color: #34d399; font-weight: 600; }
       .badge-in-stock { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
       .badge-low-stock { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
       .badge-out-stock { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
@@ -65,8 +65,8 @@
       .notif-panel-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
       .notif-panel-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
       .notif-item { padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; background: var(--bg); border: 1px solid var(--border); transition: all 0.2s; cursor: pointer; }
-      .notif-item:hover { border-color: rgba(10,61,145,0.3); }
-      .notif-item.unread { border-left: 3px solid #0a3d91; background: var(--blue-bg); }
+      .notif-item:hover { border-color: rgba(16,185,129,0.3); }
+      .notif-item.unread { border-left: 3px solid #10b981; background: var(--blue-bg); }
       .notif-item .notif-time { font-size: 0.65rem; color: var(--text3); margin-top: 0.25rem; }
       .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
       .overlay.show { opacity: 1; pointer-events: all; }
@@ -106,9 +106,8 @@
       const saveUsers = (users) => { try { localStorage.setItem(USERS_KEY, JSON.stringify(users)); } catch {} };
       const getSession = () => { try { const raw = sessionStorage.getItem(AUTH_KEY) || localStorage.getItem(AUTH_KEY + "_remember"); if (!raw) return null; const session = JSON.parse(raw); if (Date.now() > session.expiresAt) { sessionStorage.removeItem(AUTH_KEY); localStorage.removeItem(AUTH_KEY + "_remember"); return null; } return session; } catch { return null; } };
 
+      // SELLER USERS - Only sellers can log in here
       const DEFAULT_USERS = [
-        { id: "u1", name: "Achmed Thoronka", email: "achmed@whitedove.com", password: "Manager@2024", role: "seller", title: "Chief Executive Officer", phone: "+232 79 419 105", avatar: "AT", created: new Date().toISOString() },
-        { id: "u2", name: "Mariama Sesay", email: "mariama@whitedove.com", password: "Manager@2024", role: "seller", title: "Operations Manager", phone: "+232 34 592 373", avatar: "MS", created: new Date().toISOString() },
         { id: "u3", name: "Mohamed Bangura", email: "mohamed@whitedove.com", password: "seller123", role: "seller", title: "Sales Representative", phone: "+232 78 400 785", avatar: "MB", created: new Date().toISOString() },
         { id: "u4", name: "Sorie Kamara", email: "sorie@whitedove.com", password: "seller123", role: "seller", title: "Sales Representative", phone: "+232 76 123 456", avatar: "SK", created: new Date().toISOString() }
       ];
@@ -190,6 +189,7 @@
 
       const INITIAL_SALES = [];
 
+      // ─── ICONS ──────────────────────────────────────────────────────
       const Icon = ({ name, size = 20, className = "" }) => {
         const icons = {
           dashboard: (<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>),
@@ -259,8 +259,8 @@
         <div className="toast-container">
           {toasts.map((t) => (
             <div key={t.id} className="toast">
-              <div className={`mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm ${t.type === "sale" ? "bg-blue-500/20 text-blue-400" : t.type === "success" ? "bg-emerald-500/20 text-emerald-400" : t.type === "error" ? "bg-red-500/20 text-red-400" : "bg-amber-500/20 text-amber-400"}`}>
-                {t.type === "sale" ? "⚡" : t.type === "success" ? "✓" : t.type === "error" ? "✕" : "●"}
+              <div className={`mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm ${t.type === "sale" ? "bg-emerald-500/20 text-emerald-400" : t.type === "success" ? "bg-emerald-500/20 text-emerald-400" : t.type === "error" ? "bg-red-500/20 text-red-400" : "bg-amber-500/20 text-amber-400"}`}>
+                {t.type === "sale" ? "💰" : t.type === "success" ? "✓" : t.type === "error" ? "✕" : "●"}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-sm" style={{ color: "var(--text)" }}>{t.title}</div>
@@ -271,76 +271,6 @@
           ))}
         </div>
       );
-
-      const LoginPage = ({ onLogin }) => {
-        const [email, setEmail] = useState("");
-        const [password, setPassword] = useState("");
-        const [remember, setRemember] = useState(false);
-        const [error, setError] = useState("");
-        const [loading, setLoading] = useState(false);
-        const [showPw, setShowPw] = useState(false);
-        const [showReset, setShowReset] = useState(false);
-        const [resetEmail, setResetEmail] = useState("");
-        const [resetMessage, setResetMessage] = useState("");
-
-        const handleLogin = async (e) => {
-          e.preventDefault();
-          setLoading(true);
-          setError("");
-          await new Promise((r) => setTimeout(r, 600));
-          const users = getUsers() || DEFAULT_USERS;
-          const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-          if (user) {
-            const session = {
-              userId: user.id,
-              userName: user.name,
-              userTitle: user.title || "Manager",
-              avatar: user.avatar,
-              role: user.role || "seller",
-              expiresAt: Date.now() + (remember ? 30 * 24 * 60 * 60 * 1000 : 8 * 60 * 60 * 1000)
-            };
-            if (remember) { localStorage.setItem(AUTH_KEY + "_remember", JSON.stringify(session)); }
-            else { sessionStorage.setItem(AUTH_KEY, JSON.stringify(session)); }
-            onLogin(session);
-          } else {
-            setError("Invalid email or password. Please try again.");
-          }
-          setLoading(false);
-        };
-
-        return (
-          <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(10,61,145,0.25) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0 }} />
-            <div className="animate-in" style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "420px" }}>
-              <a href="index.html" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", color: "var(--text3)", fontSize: "0.8rem", marginBottom: "2rem", textDecoration: "none" }}>← Back to Portal</a>
-              <div className="wd-card" style={{ borderRadius: "20px", padding: "clamp(1.5rem, 4vw, 2.5rem)", boxShadow: "0 40px 120px rgba(0,0,0,0.4)" }}>
-                <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-                  <Logo size={48} />
-                  <div style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#60A5FA", marginTop: "0.5rem" }}>EXECUTIVE ACCESS</div>
-                  <div className="font-heading" style={{ fontSize: "clamp(1.2rem, 3vw, 1.5rem)", fontWeight: 800, color: "var(--text)" }}>Seller POS</div>
-                  <div style={{ fontSize: "0.8rem", color: "var(--text2)", marginTop: "0.25rem" }}>White Dove Engineering Firm</div>
-                </div>
-                <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <input type="email" className="wd-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-                  <div style={{ position: "relative" }}>
-                    <input type={showPw ? "text" : "password"} className="wd-input" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required style={{ paddingRight: "2.5rem" }} />
-                    <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: "0.75rem", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--text3)", cursor: "pointer" }}><Icon name="eye" size={16} /></button>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <input type="checkbox" id="remember" checked={remember} onChange={(e) => setRemember(e.target.checked)} style={{ accentColor: "#0A3D91" }} />
-                      <label htmlFor="remember" style={{ fontSize: "0.8rem", color: "var(--text2)" }}>Remember me</label>
-                    </div>
-                    <button type="button" onClick={() => setShowReset(true)} style={{ fontSize: "0.8rem", color: "#60A5FA", background: "none", border: "none", cursor: "pointer" }}>Forgot password?</button>
-                  </div>
-                  {error && <div style={{ color: "#EF4444", fontSize: "0.8rem" }}>{error}</div>}
-                  <button type="submit" disabled={loading} style={{ background: loading ? "#1A3050" : "linear-gradient(135deg, #0A3D91, #1255C4)", color: "white", border: "none", borderRadius: "12px", padding: "0.875rem", fontSize: "0.9rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", transition: "all 0.2s", boxShadow: "0 4px 16px rgba(10,61,145,0.4)" }}>{loading ? "Signing in..." : "Sign In"}</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        );
-      };
 
       const KpiCard = ({ title, value, sub, icon, color, trend }) => (
         <div className="wd-card kpi-card" style={{ borderRadius: "16px", padding: "clamp(1rem, 2vw, 1.25rem) clamp(1rem, 2vw, 1.5rem)", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
@@ -361,6 +291,7 @@
         </div>
       );
 
+      // ─── REVENUE CHART ─────────────────────────────────────────────
       const RevenueChart = ({ theme }) => {
         const canvasRef = useRef(null);
         const chartRef = useRef(null);
@@ -372,7 +303,7 @@
           const data = [0, 0, 0, 0, 0, 0, 0];
           chartRef.current = new Chart(canvasRef.current, {
             type: "line",
-            data: { labels, datasets: [{ label: "Revenue (SLE)", data, borderColor: "#1255C4", backgroundColor: "rgba(18,85,196,0.08)", borderWidth: 2.5, pointBackgroundColor: "#1255C4", pointRadius: 4, tension: 0.4, fill: true }] },
+            data: { labels, datasets: [{ label: "Revenue (SLE)", data, borderColor: "#10B981", backgroundColor: "rgba(16,185,129,0.08)", borderWidth: 2.5, pointBackgroundColor: "#10B981", pointRadius: 4, tension: 0.4, fill: true }] },
             options: {
               responsive: true,
               maintainAspectRatio: false,
@@ -440,7 +371,7 @@
                           <div style={{ fontSize: "0.75rem", color: "var(--text2)" }}>{n.message}</div>
                           <div className="notif-time">{fmtDate(n.timestamp)}</div>
                         </div>
-                        {!n.read && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#0A3D91", flexShrink: 0, marginTop: "0.3rem" }} />}
+                        {!n.read && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10B981", flexShrink: 0, marginTop: "0.3rem" }} />}
                       </div>
                     </div>
                   ))
@@ -459,6 +390,7 @@
         window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, "_blank");
       };
 
+      // ─── EMPLOYEE MANAGEMENT ─────────────────────────────────────
       const EmployeeManagement = ({ users, onUpdateUsers, currentUser }) => {
         const [showAddModal, setShowAddModal] = useState(false);
         const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "seller", title: "Sales Representative", phone: "" });
@@ -488,7 +420,7 @@
                       <tr key={u.id}>
                         <td><div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}><div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "white", fontSize: "0.75rem", flexShrink: 0 }}>{u.avatar || u.name.slice(0, 2).toUpperCase()}</div><div><div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text)" }}>{u.name}</div><div style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{u.title}</div></div></div></td>
                         <td style={{ fontSize: "0.8rem", color: "var(--text2)" }}>{u.email}</td>
-                        <td><span style={{ fontSize: "0.7rem", fontWeight: 700, padding: "0.2rem 0.625rem", borderRadius: "100px", background: u.role === "seller" ? "rgba(10,61,145,0.15)" : "rgba(16,185,129,0.12)", color: u.role === "seller" ? "#60A5FA" : "#34D399" }}>{u.role}</span></td>
+                        <td><span style={{ fontSize: "0.7rem", fontWeight: 700, padding: "0.2rem 0.625rem", borderRadius: "100px", background: u.role === "seller" ? "rgba(16,185,129,0.12)" : "rgba(16,185,129,0.12)", color: "#34D399" }}>{u.role}</span></td>
                         <td style={{ fontSize: "0.8rem", color: "var(--text2)" }}>{u.phone || "—"}</td>
                         <td style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{u.created ? fmtDate(u.created) : "—"}</td>
                         <td style={{ textAlign: "right" }}><div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.375rem" }}>{u.id !== currentUser.userId && <button onClick={() => handleDeleteUser(u.id)} style={{ padding: "0.375rem", borderRadius: "8px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)", color: "#EF4444", cursor: "pointer" }}><Icon name="trash" size={15} /></button>}{u.id === currentUser.userId && <span style={{ fontSize: "0.65rem", color: "var(--text3)" }}>You</span>}</div></td>
@@ -506,7 +438,7 @@
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Full Name *</label><input className="wd-input" value={newUser.name} onChange={(e) => setNewUser({ ...newUser, name: e.target.value })} placeholder="John Doe" /></div>
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Email *</label><input type="email" className="wd-input" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} placeholder="john@whitedove.com" /></div>
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Password *</label><input type="password" className="wd-input" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} placeholder="••••••••" /></div>
-                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Role</label><select className="wd-input" value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}>{["seller", "seller"].map((r) => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}</select></div>
+                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Role</label><select className="wd-input" value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}>{["seller"].map((r) => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}</select></div>
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Title</label><input className="wd-input" value={newUser.title} onChange={(e) => setNewUser({ ...newUser, title: e.target.value })} placeholder="Sales Representative" /></div>
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Phone</label><input className="wd-input" value={newUser.phone} onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })} placeholder="+232 78 123 456" /></div>
                   </div>
@@ -518,6 +450,7 @@
         );
       };
 
+      // ─── OVERVIEW ──────────────────────────────────────────────────
       const OverviewSection = ({ products, sales, theme, liveNotifs, addToast }) => {
         const todaySales = sales.filter((s) => isToday(s.timestamp));
         const todayRevenue = todaySales.reduce((a, s) => a + s.total, 0);
@@ -528,8 +461,8 @@
         return (
           <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem" }}>
-              <KpiCard title="Today's Revenue" value={fmt(todayRevenue)} sub={`${todaySales.length} transactions`} icon="sales" color="#0A3D91" trend={0} />
-              <KpiCard title="Total Revenue" value={fmt(totalRevenue)} sub="all time" icon="trend" color="#1255C4" trend={0} />
+              <KpiCard title="Today's Revenue" value={fmt(todayRevenue)} sub={`${todaySales.length} transactions`} icon="sales" color="#10B981" trend={0} />
+              <KpiCard title="Total Revenue" value={fmt(totalRevenue)} sub="all time" icon="trend" color="#0A3D91" trend={0} />
               <KpiCard title="Low Stock Alerts" value={lowStock} sub="items near minimum" icon="alert" color="#F59E0B" />
               <KpiCard title="Out of Stock" value={outStock} sub="items need restocking" icon="x" color="#EF4444" />
             </div>
@@ -557,9 +490,9 @@
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "280px", overflowY: "auto" }}>
                     {liveNotifs.slice(0, 8).map((n, i) => (
                       <div key={i} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start", padding: "0.75rem", background: "var(--bg)", borderRadius: "10px", border: "1px solid var(--border)" }}>
-                        <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(18,85,196,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>⚡</div>
+                        <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(16,185,129,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>⚡</div>
                         <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text)" }}><span style={{ color: "#60A5FA" }}>{n.sellerName}</span> logged a sale</div>
+                          <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text)" }}><span style={{ color: "#34D399" }}>{n.sellerName}</span> logged a sale</div>
                           <div style={{ fontSize: "0.75rem", color: "var(--text2)" }}>{n.items?.[0]?.name} × {n.items?.[0]?.qty}</div>
                           <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.25rem", flexWrap: "wrap", gap: "0.25rem" }}><span style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{fmtShort(n.timestamp)}</span><span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#10B981" }}>{fmt(n.total)}</span></div>
                         </div>
@@ -591,6 +524,7 @@
         );
       };
 
+      // ─── PRODUCT MODAL ─────────────────────────────────────────────
       const ProductModal = ({ product, onSave, onClose }) => {
         const isEdit = !!product?.id;
         const [form, setForm] = useState({
@@ -639,6 +573,7 @@
         );
       };
 
+      // ─── INVENTORY ──────────────────────────────────────────────────
       const InventorySection = ({ products, onUpdate }) => {
         const [search, setSearch] = useState("");
         const [catFilter, setCatFilter] = useState("All");
@@ -699,6 +634,7 @@
         );
       };
 
+      // ─── SALES ──────────────────────────────────────────────────────
       const SalesSection = ({ sales }) => {
         const [search, setSearch] = useState("");
         const [view, setView] = useState(null);
@@ -838,6 +774,7 @@
         );
       };
 
+      // ─── ANALYTICS ──────────────────────────────────────────────────
       const AnalyticsSection = ({ products, sales, theme }) => {
         const totalRevenue = sales.reduce((a, s) => a + s.total, 0);
         const avgOrder = sales.length ? totalRevenue / sales.length : 0;
@@ -869,6 +806,7 @@
         );
       };
 
+      // ─── LOGS ──────────────────────────────────────────────────────
       const LogsSection = ({ logs }) => (
         <div className="animate-in">
           <div className="wd-card" style={{ borderRadius: "16px", overflow: "hidden" }}>
@@ -886,6 +824,7 @@
         </div>
       );
 
+      // ─── SETTINGS ──────────────────────────────────────────────────
       const SettingsSection = ({ theme, onThemeChange, session }) => (
         <div className="settings-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", maxWidth: "900px" }}>
           <div className="wd-card" style={{ borderRadius: "16px", padding: "1.5rem" }}>
@@ -911,6 +850,7 @@
         </div>
       );
 
+      // ─── SIDEBAR ───────────────────────────────────────────────────
       const Sidebar = ({ section, onSection, session, onLogout }) => {
         const navItems = [
           { id: "overview", icon: "dashboard", label: "Overview" },
@@ -931,9 +871,9 @@
               </a>
             </div>
             <div style={{ padding: "0.875rem 1rem", borderBottom: "1px solid var(--border)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", padding: "0.625rem", background: "rgba(10,61,145,0.12)", borderRadius: "10px", border: "1px solid rgba(10,61,145,0.2)" }}>
-                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "white", fontSize: "0.8rem", flexShrink: 0 }}>{session.avatar}</div>
-                <div className="seller-name" style={{ minWidth: 0 }}><div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session.userName.split(" ")[0]}</div><div style={{ fontSize: "0.65rem", color: "#60A5FA", fontWeight: 600 }}>SELLER</div></div>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", padding: "0.625rem", background: "rgba(16,185,129,0.12)", borderRadius: "10px", border: "1px solid rgba(16,185,129,0.2)" }}>
+                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #059669, #10B981)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "white", fontSize: "0.8rem", flexShrink: 0 }}>{session.avatar}</div>
+                <div className="seller-name" style={{ minWidth: 0 }}><div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session.userName.split(" ")[0]}</div><div style={{ fontSize: "0.65rem", color: "#34D399", fontWeight: 600 }}>SELLER</div></div>
               </div>
             </div>
             <nav style={{ flex: 1, padding: "0.75rem 0.75rem", display: "flex", flexDirection: "column", gap: "0.25rem", overflowY: "auto" }}>
@@ -946,13 +886,14 @@
         );
       };
 
+      // ─── DASHBOARD ──────────────────────────────────────────────────
       const Dashboard = ({ session, onLogout, theme, onThemeChange, addToast, dismissToast, toasts }) => {
-        const [section, setSection] = useState("overview");
+        const [section, setSection] = useState("pos");
         const [users, setUsers] = useState(() => { const stored = getUsers(); return stored || DEFAULT_USERS; });
         const [products, setProducts] = useState(() => { const stored = getStoredData(); return stored?.products || INITIAL_PRODUCTS; });
         const [sales, setSales] = useState(() => { const stored = getStoredData(); return stored?.sales || INITIAL_SALES; });
         const [liveNotifs, setLiveNotifs] = useState([]);
-        const [logs, setLogs] = useState([{ type: "auth", action: "Manager logged in", detail: `${session.userName} signed in to Seller POS`, timestamp: new Date().toISOString() }]);
+        const [logs, setLogs] = useState([{ type: "auth", action: "Seller logged in", detail: `${session.userName} signed in to Seller POS`, timestamp: new Date().toISOString() }]);
         const [notifications, setNotifications] = useState([{ icon: "📌", title: "Welcome back!", message: "All systems ready. No sales recorded yet.", timestamp: new Date().toISOString(), read: false }]);
         const [notifPanelOpen, setNotifPanelOpen] = useState(false);
 
@@ -1001,16 +942,90 @@
               <Sidebar section={section} onSection={setSection} session={session} onLogout={onLogout} />
               <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
                 <div style={{ padding: "0.875rem 1.5rem", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--bg2)", flexShrink: 0, flexWrap: "wrap", gap: "0.5rem" }}>
-                  <div><h1 className="font-heading" style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text)" }}>{section === "overview" ? "Dashboard Overview" : section === "inventory" ? "Inventory Management" : section === "sales" ? "Sales History" : section === "analytics" ? "Analytics & Reports" : section === "employees" ? "Employee Management" : section === "logs" ? "Activity Logs" : "Settings"}</h1><p style={{ fontSize: "0.75rem", color: "var(--text3)", marginTop: "0.125rem" }}>White Dove Engineering Firm · Seller POS</p></div>
+                  <div><h1 className="font-heading" style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text)" }}>{section === "pos" ? "Point of Sale" : section === "overview" ? "Dashboard Overview" : section === "inventory" ? "Inventory Management" : section === "sales" ? "Sales History" : section === "analytics" ? "Analytics & Reports" : section === "employees" ? "Employee Management" : section === "logs" ? "Activity Logs" : "Settings"}</h1><p style={{ fontSize: "0.75rem", color: "var(--text3)", marginTop: "0.125rem" }}>White Dove Engineering Firm · Seller POS</p></div>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", flexWrap: "wrap" }}>
                     <div style={{ display: "flex", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "10px", overflow: "hidden" }}>
-                      {[{ val: "dark", icon: "moon" }, { val: "light", icon: "sun" }, { val: "system", icon: "monitor" }].map((t) => (<button key={t.val} onClick={() => onThemeChange(t.val)} style={{ padding: "0.5rem", background: theme === t.val ? "rgba(10,61,145,0.2)" : "transparent", border: "none", color: theme === t.val ? "#60A5FA" : "var(--text3)", cursor: "pointer" }}><Icon name={t.icon} size={15} /></button>))}
+                      {[{ val: "dark", icon: "moon" }, { val: "light", icon: "sun" }, { val: "system", icon: "monitor" }].map((t) => (<button key={t.val} onClick={() => onThemeChange(t.val)} style={{ padding: "0.5rem", background: theme === t.val ? "rgba(16,185,129,0.2)" : "transparent", border: "none", color: theme === t.val ? "#34D399" : "var(--text3)", cursor: "pointer" }}><Icon name={t.icon} size={15} /></button>))}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.75rem", fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)", padding: "0.375rem 0.75rem", borderRadius: "100px" }}><div className="pulse-dot" style={{ width: "6px", height: "6px" }} />Live</div>
                     <button onClick={() => setNotifPanelOpen(true)} style={{ position: "relative", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "10px", padding: "0.5rem", cursor: "pointer", color: "var(--text2)" }}><Icon name="bell" size={17} />{unreadCount > 0 && <span style={{ position: "absolute", top: "-4px", right: "-4px", minWidth: "16px", height: "16px", background: "#EF4444", color: "white", borderRadius: "50%", fontSize: "0.6rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px" }}>{unreadCount > 9 ? "9+" : unreadCount}</span>}</button>
                   </div>
                 </div>
                 <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
+                  {section === "pos" && (
+                    <div className="pos-grid" style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: "1.5rem" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        <input className="wd-input" placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                        <div className="product-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: "0.75rem", maxHeight: "500px", overflowY: "auto", padding: "0.2rem" }}>
+                          {products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase())).map((p) => {
+                            const stockStatus = p.stock === 0 ? "out" : p.stock <= 5 ? "low" : "in";
+                            return (
+                              <div key={p.id} className="wd-card" style={{ padding: "0.9rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                  <span style={{ fontSize: "1.6rem" }}>{p.emoji}</span>
+                                  <span className={`badge-${stockStatus === "in" ? "in-stock" : stockStatus === "low" ? "low-stock" : "out-stock"}`} style={{ fontSize: "0.55rem", fontWeight: 700, padding: "0.1rem 0.5rem", borderRadius: "100px" }}>
+                                    {p.stock === 0 ? "Out" : p.stock <= 5 ? "Low" : "In Stock"}
+                                  </span>
+                                </div>
+                                <div style={{ fontWeight: 600, fontSize: "0.8rem", color: "var(--text)", lineHeight: 1.2 }}>{p.name}</div>
+                                <div style={{ fontSize: "0.6rem", color: "var(--text3)" }}>{p.sku}</div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                  <div className="font-heading" style={{ fontWeight: 700, color: "#10B981", fontSize: "0.85rem" }}>{fmt(p.price)}</div>
+                                  <div style={{ fontSize: "0.6rem", color: "var(--text3)" }}>📦 {p.stock}</div>
+                                </div>
+                                <button onClick={() => addToCart(p)} disabled={p.stock === 0} style={{ width: "100%", padding: "0.3rem", borderRadius: "8px", border: "none", background: p.stock === 0 ? "var(--bg)" : "linear-gradient(135deg, #059669, #10B981)", color: p.stock === 0 ? "var(--text3)" : "white", fontWeight: 600, cursor: p.stock === 0 ? "not-allowed" : "pointer", fontSize: "0.7rem" }}>
+                                  {p.stock === 0 ? "Out of Stock" : "Add"}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="wd-card cart-side" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem", height: "100%", minHeight: "380px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                          <div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "1rem" }}>🛒 Order</div>
+                          <span style={{ fontSize: "0.65rem", color: "var(--text3)", background: "var(--bg)", padding: "0.1rem 0.5rem", borderRadius: "6px" }}>{cart.length} items</span>
+                        </div>
+                        <input className="wd-input" id="customerName" placeholder="Customer Name *" />
+                        <input className="wd-input" id="customerPhone" placeholder="Phone (WhatsApp)" />
+                        <select className="wd-input" id="paymentMethod">
+                          {["Cash", "Orange Money", "Afrimoney", "Visa", "MasterCard", "Bank Transfer", "Mobile Money"].map((m) => <option key={m}>{m}</option>)}
+                        </select>
+                        <div style={{ flex: 1, overflowY: "auto", maxHeight: "180px" }}>
+                          {cart.length === 0 ? <div style={{ textAlign: "center", padding: "1.5rem 0", color: "var(--text3)" }}>🛒 Empty</div> : cart.map((item) => (
+                            <div key={item.id} style={{ display: "flex", alignItems: "center", gap: "0.4rem", padding: "0.4rem", background: "var(--bg)", borderRadius: "8px", marginBottom: "0.3rem" }}>
+                              <span style={{ fontSize: "1.1rem" }}>{item.emoji}</span>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text)" }}>{item.name}</div>
+                                <div style={{ fontSize: "0.6rem", color: "var(--text3)" }}>{fmt(item.price)}</div>
+                              </div>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                                <button onClick={() => { if (item.qty > 1) setCart(cart.map(i => i.id === item.id ? { ...i, qty: i.qty - 1 } : i)); else setCart(cart.filter(i => i.id !== item.id)); }} style={{ width: "22px", height: "22px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", cursor: "pointer" }}>−</button>
+                                <span style={{ fontWeight: 700, minWidth: "16px", textAlign: "center", fontSize: "0.75rem" }}>{item.qty}</span>
+                                <button onClick={() => { if (item.qty < item.stock) setCart(cart.map(i => i.id === item.id ? { ...i, qty: i.qty + 1 } : i)); else addToast({ type: "error", title: "Stock limit", message: `Only ${item.stock} available` }); }} style={{ width: "22px", height: "22px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", cursor: "pointer" }}>+</button>
+                              </div>
+                              <div style={{ fontWeight: 700, color: "#10B981", fontSize: "0.7rem", minWidth: "50px", textAlign: "right" }}>{fmt(item.price * item.qty)}</div>
+                              <button onClick={() => setCart(cart.filter(i => i.id !== item.id))} style={{ background: "none", border: "none", color: "#EF4444", cursor: "pointer" }}><Icon name="x" size={14} /></button>
+                            </div>
+                          ))}
+                        </div>
+                        <div style={{ borderTop: "1px solid var(--border)", paddingTop: "0.75rem" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "1.1rem", fontWeight: 800 }}><span>Total</span><span style={{ color: "#10B981" }}>{fmt(cart.reduce((s, i) => s + i.price * i.qty, 0))}</span></div>
+                          <button onClick={() => {
+                            const customerName = document.getElementById("customerName").value.trim() || "Walk-in";
+                            const customerPhone = document.getElementById("customerPhone").value.trim() || "N/A";
+                            const payment = document.getElementById("paymentMethod").value;
+                            const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+                            if (cart.length === 0) { addToast({ type: "error", title: "Cart empty", message: "Add items before checkout" }); return; }
+                            handleCheckout({ customerName, customerPhone, payment, subtotal: total, total });
+                          }} disabled={cart.length === 0} style={{ width: "100%", marginTop: "0.5rem", padding: "0.7rem", borderRadius: "12px", border: "none", background: cart.length === 0 ? "var(--bg)" : "linear-gradient(135deg, #059669, #10B981)", color: cart.length === 0 ? "var(--text3)" : "white", fontWeight: 700, fontSize: "0.9rem", cursor: cart.length === 0 ? "not-allowed" : "pointer" }}>
+                            <Icon name="check" size={16} style={{ marginRight: "0.4rem" }} /> Complete Sale
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {section === "overview" && <OverviewSection products={products} sales={sales} theme={theme} liveNotifs={liveNotifs} addToast={addToast} />}
                   {section === "inventory" && <InventorySection products={products} onUpdate={handleInventoryUpdate} />}
                   {section === "sales" && <SalesSection sales={sales} />}
@@ -1026,6 +1041,7 @@
         );
       };
 
+      // ─── APP ──────────────────────────────────────────────────────
       const App = () => {
         const [session, setSession] = useState(() => getSession());
         const [theme, setTheme] = useState(() => localStorage.getItem("wd_theme") || "dark");
