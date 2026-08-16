@@ -13,6 +13,12 @@
   console.log('Supabase configured!');
 </script>
     <title>Manager Portal — White Dove Engineering Firm</title>
+  <style>
+    #loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #050D1A; color: white; font-family: Inter, sans-serif; flex-direction: column; gap: 1rem; }
+    .loader { width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #0A3D91; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+  <div id="loading"><div class="loader"></div><div>Loading White Dove...</div></div>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap"
@@ -21,14 +27,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script
-      src="https://unpkg.com/react@18/umd/react.production.min.js"
+      src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"
       crossorigin
     ></script>
     <script
-      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+      src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"
       crossorigin
     ></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
       tailwind.config = {
@@ -1069,7 +1074,7 @@
         };
         return (
           <svg
-            xmlns="http://www.w3.org/2000/svg"
+            xmlns="https://www.w3.org/2000/svg"
             width={size}
             height={size}
             viewBox="0 0 24 24"
@@ -1088,7 +1093,7 @@
       // ─── LOGO ──────────────────────────────────────────────────────
       const Logo = ({ size = 36, className = "" }) => (
         <svg
-          xmlns="http://www.w3.org/2000/svg"
+          xmlns="https://www.w3.org/2000/svg"
           width={size}
           height={size}
           viewBox="0 0 120 120"
