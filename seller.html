@@ -469,6 +469,16 @@
     </style>
   </head>
   <body>
+  <script>
+    // Force clear old data
+    (function() {
+      if (!sessionStorage.getItem("data_cleared")) {
+        localStorage.clear();
+        sessionStorage.setItem("data_cleared", "true");
+        console.log("✅ Old data cleared");
+      }
+    })();
+  </script>
     <div id="root"></div>
 
     <script type="text/babel">

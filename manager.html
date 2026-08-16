@@ -602,6 +602,16 @@
     </style>
   </head>
   <body>
+  <script>
+    // Force clear old data
+    (function() {
+      if (!sessionStorage.getItem("data_cleared")) {
+        localStorage.clear();
+        sessionStorage.setItem("data_cleared", "true");
+        console.log("✅ Old data cleared");
+      }
+    })();
+  </script>
     <div id="root"></div>
 
     <script type="text/babel">
@@ -861,74 +871,7 @@
         },
       ];
 
-      const INITIAL_SALES = [
-        {
-          id: "s1",
-          receiptNo: "WD-001",
-          sellerId: "u3",
-          sellerName: "Mohamed Bangura",
-          items: [
-            {
-              productId: "p1",
-              name: "400W Solar Panel",
-              qty: 2,
-              unitPrice: 1850,
-              total: 3700,
-            },
-          ],
-          subtotal: 3700,
-          discount: 0,
-          total: 3700,
-          payment: "Orange Money",
-          customer: "Kallon Construction Ltd",
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
-          customerPhone: "+232 78 123 456",
-        },
-        {
-          id: "s2",
-          receiptNo: "WD-002",
-          sellerId: "u4",
-          sellerName: "Sorie Kamara",
-          items: [
-            {
-              productId: "p6",
-              name: "2.5mm Copper Cable",
-              qty: 5,
-              unitPrice: 680,
-              total: 3400,
-            },
-          ],
-          subtotal: 3400,
-          discount: 0,
-          total: 3400,
-          payment: "Cash",
-          customer: "Alpha Electrical",
-          timestamp: new Date(Date.now() - 14400000).toISOString(),
-          customerPhone: "+232 76 234 567",
-        },
-        {
-          id: "s3",
-          receiptNo: "WD-003",
-          sellerId: "u3",
-          sellerName: "Mohamed Bangura",
-          items: [
-            {
-              productId: "p4",
-              name: "Hikvision 5MP CCTV",
-              qty: 4,
-              unitPrice: 450,
-              total: 1800,
-            },
-          ],
-          subtotal: 1800,
-          discount: 50,
-          total: 1750,
-          payment: "Afrimoney",
-          customer: "Freetown Mall Security",
-          timestamp: new Date(Date.now() - 21600000).toISOString(),
-          customerPhone: "+232 77 345 678",
-        },
-      ];
+      const INITIAL_SALES = [];
 
       // ─── ICONS ──────────────────────────────────────────────────────
       const Icon = ({ name, size = 20, className = "" }) => {
