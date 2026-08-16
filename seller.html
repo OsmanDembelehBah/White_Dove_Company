@@ -8,8 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Use the same React version as manager.html -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <!-- Use a different Babel source that's more reliable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
@@ -87,32 +89,45 @@
       ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
       @media (max-width: 768px) { .notif-panel { width: 100%; right: -100%; } .modal-box { max-width: 95%; max-height: 95vh; } .wd-table { font-size: 0.75rem; } .wd-table thead th, .wd-table tbody td { padding: 0.5rem 0.6rem; } .stats-grid { grid-template-columns: 1fr 1fr !important; } .chart-grid { grid-template-columns: 1fr !important; } .settings-grid { grid-template-columns: 1fr !important; } }
       @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr !important; } .sidebar { width: 56px !important; } .sidebar .nav-item { padding: 0.4rem 0; } }
+      /* Simple loading text */
+      #app-loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #050D1A; color: white; font-family: Inter, sans-serif; font-size: 1.2rem; flex-direction: column; gap: 1rem; }
+      .spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: #10B981; border-radius: 50%; animation: spin 0.8s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="app-loading"><div class="spinner"></div><div>Loading Seller POS...</div></div>
+    <div id="root" style="display:none;"></div>
 
     <script type="text/babel">
+      (function() {
+        // Hide loading, show root
+        document.getElementById('app-loading').style.display = 'none';
+        document.getElementById('root').style.display = 'block';
+      })();
+
       const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
+      // ─── CONSTANTS ───────────────────────────────────────────────
       const BROADCAST_KEY = "wd_realtime_sale";
       const AUTH_KEY = "wd_seller_session";
       const DATA_KEY = "wd_data_v3";
       const USERS_KEY = "wd_users";
 
+      // ─── DATA LAYER ────────────────────────────────────────────────
       const getStoredData = () => { try { const raw = localStorage.getItem(DATA_KEY); if (raw) return JSON.parse(raw); } catch {} return null; };
       const saveData = (data) => { try { localStorage.setItem(DATA_KEY, JSON.stringify(data)); } catch {} };
       const getUsers = () => { try { const raw = localStorage.getItem(USERS_KEY); if (raw) return JSON.parse(raw); } catch {} return null; };
       const saveUsers = (users) => { try { localStorage.setItem(USERS_KEY, JSON.stringify(users)); } catch {} };
       const getSession = () => { try { const raw = sessionStorage.getItem(AUTH_KEY) || localStorage.getItem(AUTH_KEY + "_remember"); if (!raw) return null; const session = JSON.parse(raw); if (Date.now() > session.expiresAt) { sessionStorage.removeItem(AUTH_KEY); localStorage.removeItem(AUTH_KEY + "_remember"); return null; } return session; } catch { return null; } };
 
-      // SELLER USERS - Only sellers can log in here
+      // ─── SELLER USERS ──────────────────────────────────────────────
       const DEFAULT_USERS = [
         { id: "u3", name: "Mohamed Bangura", email: "mohamed@whitedove.com", password: "seller123", role: "seller", title: "Sales Representative", phone: "+232 78 400 785", avatar: "MB", created: new Date().toISOString() },
         { id: "u4", name: "Sorie Kamara", email: "sorie@whitedove.com", password: "seller123", role: "seller", title: "Sales Representative", phone: "+232 76 123 456", avatar: "SK", created: new Date().toISOString() }
       ];
 
-      // 71 PRODUCTS (shortened for brevity - same as manager.html)
+      // ─── 71 PRODUCTS ──────────────────────────────────────────────
       const INITIAL_PRODUCTS = [
         { id: "p1", name: "1.5 mm² Cable", sku: "CBL-1.5", category: "Cables", price: 1600, stock: 2, minStock: 1, emoji: "🔌" },
         { id: "p2", name: "25 mm² Cable roll", sku: "CBL-25", category: "Cables", price: 2500, stock: 2, minStock: 1, emoji: "🔌" },
@@ -189,7 +204,7 @@
 
       const INITIAL_SALES = [];
 
-      // ─── ICONS (abbreviated for space) ───
+      // ─── ICONS ──────────────────────────────────────────────────────
       const Icon = ({ name, size = 20, className = "" }) => {
         const icons = {
           dashboard: (<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>),
@@ -217,6 +232,7 @@
           eye: (<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>),
           trash: (<><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></>),
           edit: (<><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></>),
+          userPlus: (<><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></>)
         };
         return (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>{icons[name]}</svg>);
       };
@@ -250,6 +266,7 @@
       const today = () => new Date().toISOString().split("T")[0];
       const isToday = (iso) => iso && iso.startsWith(today());
 
+      // ─── TOAST ──────────────────────────────────────────────────────
       const ToastContainer = ({ toasts, onDismiss }) => (
         <div className="toast-container">
           {toasts.map((t) => (
@@ -416,7 +433,7 @@
                       <tr key={u.id}>
                         <td><div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}><div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "white", fontSize: "0.75rem", flexShrink: 0 }}>{u.avatar || u.name.slice(0, 2).toUpperCase()}</div><div><div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text)" }}>{u.name}</div><div style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{u.title}</div></div></div></td>
                         <td style={{ fontSize: "0.8rem", color: "var(--text2)" }}>{u.email}</td>
-                        <td><span style={{ fontSize: "0.7rem", fontWeight: 700, padding: "0.2rem 0.625rem", borderRadius: "100px", background: u.role === "seller" ? "rgba(16,185,129,0.12)" : "rgba(16,185,129,0.12)", color: "#34D399" }}>{u.role}</span></td>
+                        <td><span style={{ fontSize: "0.7rem", fontWeight: 700, padding: "0.2rem 0.625rem", borderRadius: "100px", background: "rgba(16,185,129,0.12)", color: "#34D399" }}>{u.role}</span></td>
                         <td style={{ fontSize: "0.8rem", color: "var(--text2)" }}>{u.phone || "—"}</td>
                         <td style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{u.created ? fmtDate(u.created) : "—"}</td>
                         <td style={{ textAlign: "right" }}><div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.375rem" }}>{u.id !== currentUser.userId && <button onClick={() => handleDeleteUser(u.id)} style={{ padding: "0.375rem", borderRadius: "8px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)", color: "#EF4444", cursor: "pointer" }}><Icon name="trash" size={15} /></button>}{u.id === currentUser.userId && <span style={{ fontSize: "0.65rem", color: "var(--text3)" }}>You</span>}</div></td>
@@ -434,7 +451,7 @@
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Full Name *</label><input className="wd-input" value={newUser.name} onChange={(e) => setNewUser({ ...newUser, name: e.target.value })} placeholder="John Doe" /></div>
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Email *</label><input type="email" className="wd-input" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} placeholder="john@whitedove.com" /></div>
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Password *</label><input type="password" className="wd-input" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} placeholder="••••••••" /></div>
-                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Role</label><select className="wd-input" value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}>{["seller"].map((r) => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}</select></div>
+                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Role</label><select className="wd-input" value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}><option value="seller">Seller</option></select></div>
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Title</label><input className="wd-input" value={newUser.title} onChange={(e) => setNewUser({ ...newUser, title: e.target.value })} placeholder="Sales Representative" /></div>
                     <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Phone</label><input className="wd-input" value={newUser.phone} onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })} placeholder="+232 78 123 456" /></div>
                   </div>
@@ -885,7 +902,6 @@
 
       // ─── DASHBOARD ──────────────────────────────────────────────────
       const Dashboard = ({ session, onLogout, theme, onThemeChange, addToast, dismissToast, toasts }) => {
-        // Default section is "pos" for sellers
         const [section, setSection] = useState("pos");
         const [users, setUsers] = useState(() => { const stored = getUsers(); return stored || DEFAULT_USERS; });
         const [products, setProducts] = useState(() => { const stored = getStoredData(); return stored?.products || INITIAL_PRODUCTS; });
@@ -898,8 +914,7 @@
         const [notifications, setNotifications] = useState([{ icon: "📌", title: "Welcome back!", message: "All systems ready. No sales recorded yet.", timestamp: new Date().toISOString(), read: false }]);
         const [notifPanelOpen, setNotifPanelOpen] = useState(false);
 
-        const userName = sessionStorage.getItem("userName") || "Seller";
-        const sellerName = sessionStorage.getItem("sellerName") || userName;
+        const sellerName = sessionStorage.getItem("sellerName") || session.userName;
 
         useEffect(() => { saveUsers(users); }, [users]);
         useEffect(() => { saveData({ products, sales }); }, [products, sales]);
