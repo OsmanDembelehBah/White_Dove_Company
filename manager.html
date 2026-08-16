@@ -1,3 +1,4 @@
+cat > manager.html << 'EOF'
 <!doctype html>
 <html lang="en" data-theme="dark">
   <head>
@@ -6,12 +7,6 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes"
     />
-    <script>
-  // Set up Supabase connection
-  localStorage.setItem('supabase_url', 'https://your-project-id.supabase.co');
-  localStorage.setItem('supabase_anon_key', 'your-anon-key');
-  console.log('Supabase configured!');
-</script>
     <title>Manager Portal — White Dove Engineering Firm</title>
   <style>
     #loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #050D1A; color: white; font-family: Inter, sans-serif; flex-direction: column; gap: 1rem; }
@@ -719,161 +714,89 @@
         },
       ];
 
+      // ================================================================
+      // 71 PRODUCTS FROM SALES DAY BOOK (27th July)
+      // All products with their exact quantities and prices
+      // ================================================================
       const INITIAL_PRODUCTS = [
-        {
-          id: "p1",
-          name: "400W Monocrystalline Solar Panel",
-          sku: "SOL-400W",
-          category: "Solar Energy",
-          price: 1850,
-          stock: 24,
-          minStock: 5,
-          description: "Tier-1 high efficiency photovoltaic module",
-          emoji: "☀️",
-        },
-        {
-          id: "p2",
-          name: "5kVA Hybrid Solar Inverter 48V",
-          sku: "INV-5KVA",
-          category: "Solar Energy",
-          price: 5400,
-          stock: 8,
-          minStock: 3,
-          description: "Pure sine wave inverter with MPPT controller",
-          emoji: "⚡",
-        },
-        {
-          id: "p3",
-          name: "200Ah 12V Deep Cycle Gel Battery",
-          sku: "BAT-200AH",
-          category: "Solar Energy",
-          price: 2900,
-          stock: 15,
-          minStock: 4,
-          description: "Maintenance-free gel solar storage battery",
-          emoji: "🔋",
-        },
-        {
-          id: "p4",
-          name: "Hikvision 5MP Outdoor CCTV Camera",
-          sku: "CCTV-5MP",
-          category: "CCTV & Security",
-          price: 450,
-          stock: 30,
-          minStock: 8,
-          description: "Night vision IP camera with PoE support",
-          emoji: "📹",
-        },
-        {
-          id: "p5",
-          name: "8-Channel 4K NVR Security Recorder",
-          sku: "NVR-08CH",
-          category: "CCTV & Security",
-          price: 1250,
-          stock: 6,
-          minStock: 2,
-          description: "Network Video Recorder with 2TB HDD",
-          emoji: "💾",
-        },
-        {
-          id: "p6",
-          name: "2.5mm Single Core Copper Cable (100m)",
-          sku: "CAB-2.5MM",
-          category: "Wiring & Cables",
-          price: 680,
-          stock: 45,
-          minStock: 10,
-          description: "Pure copper flame retardant building wire",
-          emoji: "🔌",
-        },
-        {
-          id: "p7",
-          name: "4.0mm Twin & Earth Copper Wire (100m)",
-          sku: "CAB-4.0MM",
-          category: "Wiring & Cables",
-          price: 1150,
-          stock: 18,
-          minStock: 5,
-          description: "Heavy duty power distribution cable",
-          emoji: "🔌",
-        },
-        {
-          id: "p8",
-          name: "Schneider 63A Double Pole MCB",
-          sku: "BRE-63ADP",
-          category: "Breakers & Distribution",
-          price: 160,
-          stock: 50,
-          minStock: 10,
-          description: "Miniature Circuit Breaker for main distribution",
-          emoji: "🔧",
-        },
-        {
-          id: "p9",
-          name: "12-Way Flush Mount Consumer Unit",
-          sku: "DB-12WAY",
-          category: "Breakers & Distribution",
-          price: 420,
-          stock: 3,
-          minStock: 5,
-          description: "Metal enclosure distribution board",
-          emoji: "🔧",
-        },
-        {
-          id: "p10",
-          name: "Inverter Split AC 12,000 BTU R410a",
-          sku: "AC-12KBTU",
-          category: "Air Conditioning",
-          price: 4800,
-          stock: 4,
-          minStock: 5,
-          description: "Energy-saving split air conditioner",
-          emoji: "❄️",
-        },
-        {
-          id: "p11",
-          name: "Inverter Split AC 18,000 BTU R410a",
-          sku: "AC-18KBTU",
-          category: "Air Conditioning",
-          price: 6500,
-          stock: 2,
-          minStock: 3,
-          description: "High capacity cooling unit",
-          emoji: "❄️",
-        },
-        {
-          id: "p12",
-          name: "18W LED Ceiling Panel Light 6000K",
-          sku: "LGT-18WLED",
-          category: "Lighting",
-          price: 75,
-          stock: 120,
-          minStock: 25,
-          description: "Super bright cool white recessed panel",
-          emoji: "💡",
-        },
-        {
-          id: "p13",
-          name: "50W Solar Street Light Motion Sensor",
-          sku: "LGT-50WSOL",
-          category: "Lighting",
-          price: 580,
-          stock: 22,
-          minStock: 6,
-          description: "All-in-one solar outdoor street light",
-          emoji: "🌟",
-        },
-        {
-          id: "p14",
-          name: "Digital Voltage Regulator 5000VA",
-          sku: "AVR-5000",
-          category: "Power Accessories",
-          price: 1450,
-          stock: 1,
-          minStock: 3,
-          description: "Heavy duty servo stabilizer",
-          emoji: "⚙️",
-        },
+        // 1-10: Cables & Consumer Units
+        { id: "p1", name: "1.5 mm² Cable", sku: "CBL-1.5", category: "Cables", price: 1600, stock: 2, minStock: 1, emoji: "🔌" },
+        { id: "p2", name: "25 mm² Cable roll", sku: "CBL-25", category: "Cables", price: 2500, stock: 2, minStock: 1, emoji: "🔌" },
+        { id: "p3", name: "5 meter Snake light", sku: "LGT-SNK5", category: "Lighting", price: 150, stock: 20, minStock: 5, emoji: "💡" },
+        { id: "p4", name: "4 way Consumer unit", sku: "DB-4WAY", category: "Distribution", price: 550, stock: 3, minStock: 1, emoji: "🔧" },
+        { id: "p5", name: "6 way Consumer unit", sku: "DB-6WAY", category: "Distribution", price: 650, stock: 3, minStock: 1, emoji: "🔧" },
+        { id: "p6", name: "8 way Consumer unit", sku: "DB-8WAY", category: "Distribution", price: 750, stock: 3, minStock: 1, emoji: "🔧" },
+        { id: "p7", name: "3/3 Ivory box", sku: "BOX-33IV", category: "Boxes", price: 10, stock: 200, minStock: 20, emoji: "📦" },
+        { id: "p8", name: "3/6 Ivory box", sku: "BOX-36IV", category: "Boxes", price: 15, stock: 100, minStock: 10, emoji: "📦" },
+        { id: "p9", name: "3/3 Emkay box PVC", sku: "BOX-33PVC", category: "Boxes", price: 15, stock: 400, minStock: 40, emoji: "📦" },
+        { id: "p10", name: "3/6 Emkay box PVC", sku: "BOX-36PVC", category: "Boxes", price: 20, stock: 200, minStock: 20, emoji: "📦" },
+        // 11-20: Lighting & Spotlights
+        { id: "p11", name: "7 Watts Spotlight Blue", sku: "SPT-7B", category: "Lighting", price: 40, stock: 50, minStock: 5, emoji: "💡" },
+        { id: "p12", name: "7 Watts Spotlight W/H", sku: "SPT-7W", category: "Lighting", price: 40, stock: 50, minStock: 5, emoji: "💡" },
+        { id: "p13", name: "Batten lamp holder", sku: "LMP-BT", category: "Lighting", price: 15, stock: 200, minStock: 20, emoji: "💡" },
+        { id: "p14", name: "Angle lamp holder", sku: "LMP-ANG", category: "Lighting", price: 15, stock: 100, minStock: 10, emoji: "💡" },
+        { id: "p15", name: "Ceiling Rose lamp holder", sku: "LMP-CR", category: "Lighting", price: 30, stock: 60, minStock: 6, emoji: "💡" },
+        { id: "p16", name: "4 Way Extension", sku: "EXT-4W", category: "Extension", price: 170, stock: 2, minStock: 1, emoji: "🔌" },
+        { id: "p17", name: "5 Way Extension", sku: "EXT-5W", category: "Extension", price: 200, stock: 2, minStock: 1, emoji: "🔌" },
+        { id: "p18", name: "4 Way with USB", sku: "EXT-4USB", category: "Extension", price: 230, stock: 2, minStock: 1, emoji: "🔌" },
+        { id: "p19", name: "5 meter Neon snake light", sku: "LGT-NEON5", category: "Lighting", price: 230, stock: 10, minStock: 3, emoji: "💡" },
+        { id: "p20", name: "16 mm x 2 core", sku: "CBL-16-2C", category: "Cables", price: 120, stock: 100, minStock: 20, emoji: "🔌" },
+        // 21-30: Cables & Fans
+        { id: "p21", name: "25 mm x 2 core", sku: "CBL-25-2C", category: "Cables", price: 20, stock: 500, minStock: 50, emoji: "🔌" },
+        { id: "p22", name: "Long blade fan", sku: "FAN-LB", category: "Fans", price: 600, stock: 3, minStock: 1, emoji: "🌀" },
+        { id: "p23", name: "Short blade fan", sku: "FAN-SB", category: "Fans", price: 550, stock: 4, minStock: 1, emoji: "🌀" },
+        { id: "p24", name: "5 Watt bulbs", sku: "BULB-5W", category: "Lighting", price: 13, stock: 100, minStock: 10, emoji: "💡" },
+        { id: "p25", name: "7 Watts bulbs", sku: "BULB-7W", category: "Lighting", price: 15, stock: 100, minStock: 10, emoji: "💡" },
+        { id: "p26", name: "9 Watts bulbs", sku: "BULB-9W", category: "Lighting", price: 17, stock: 100, minStock: 10, emoji: "💡" },
+        { id: "p27", name: "18 Watts bulbs", sku: "BULB-18W", category: "Lighting", price: 30, stock: 100, minStock: 10, emoji: "💡" },
+        { id: "p28", name: "Double socket B.G", sku: "SOC-DB", category: "Sockets", price: 50, stock: 50, minStock: 5, emoji: "🔌" },
+        { id: "p29", name: "Single Socket B.G", sku: "SOC-SB", category: "Sockets", price: 25, stock: 100, minStock: 10, emoji: "🔌" },
+        { id: "p30", name: "3 gang Switch Original", sku: "SW-3G", category: "Switches", price: 40, stock: 60, minStock: 6, emoji: "🔘" },
+        // 31-40: Switches & Sockets
+        { id: "p31", name: "2 gang Switch Original", sku: "SW-2G", category: "Switches", price: 35, stock: 60, minStock: 6, emoji: "🔘" },
+        { id: "p32", name: "1 gang Switch Original", sku: "SW-1G", category: "Switches", price: 30, stock: 60, minStock: 6, emoji: "🔘" },
+        { id: "p33", name: "Double Socket", sku: "SOC-D", category: "Sockets", price: 70, stock: 35, minStock: 5, emoji: "🔌" },
+        { id: "p34", name: "Single Socket", sku: "SOC-S", category: "Sockets", price: 35, stock: 60, minStock: 6, emoji: "🔌" },
+        { id: "p35", name: "A/C Switch Original", sku: "SW-AC", category: "Switches", price: 35, stock: 24, minStock: 4, emoji: "🔘" },
+        { id: "p36", name: "Earth rod (Big)", sku: "ERD-BIG", category: "Earthing", price: 130, stock: 20, minStock: 4, emoji: "⛓️" },
+        { id: "p37", name: "Double Socket Gold", sku: "SOC-DG", category: "Sockets", price: 120, stock: 7, minStock: 1, emoji: "✨" },
+        { id: "p38", name: "Single Socket Gold", sku: "SOC-SG", category: "Sockets", price: 60, stock: 12, minStock: 2, emoji: "✨" },
+        { id: "p39", name: "1 gang Switch Gold", sku: "SW-1GG", category: "Switches", price: 40, stock: 12, minStock: 2, emoji: "✨" },
+        { id: "p40", name: "2 gang Switch Gold", sku: "SW-2GG", category: "Switches", price: 50, stock: 12, minStock: 2, emoji: "✨" },
+        // 41-50: Gold & Black Switches, Breakers
+        { id: "p41", name: "3 gang Switch Gold", sku: "SW-3GG", category: "Switches", price: 60, stock: 12, minStock: 2, emoji: "✨" },
+        { id: "p42", name: "Double Socket Black", sku: "SOC-DB", category: "Sockets", price: 120, stock: 7, minStock: 1, emoji: "⚫" },
+        { id: "p43", name: "Single Socket Black", sku: "SOC-SB", category: "Sockets", price: 60, stock: 12, minStock: 2, emoji: "⚫" },
+        { id: "p44", name: "1 gang Switch Black", sku: "SW-1GB", category: "Switches", price: 35, stock: 12, minStock: 2, emoji: "⚫" },
+        { id: "p45", name: "2 gang Switch Black", sku: "SW-2GB", category: "Switches", price: 45, stock: 12, minStock: 2, emoji: "⚫" },
+        { id: "p46", name: "3 gang Switch Black", sku: "SW-3GB", category: "Switches", price: 60, stock: 12, minStock: 2, emoji: "⚫" },
+        { id: "p47", name: "Rechargeable bulbs", sku: "BULB-RCH", category: "Lighting", price: 80, stock: 20, minStock: 4, emoji: "💡" },
+        { id: "p48", name: "Isolating tape", sku: "TAPE-ISO", category: "Accessories", price: 10, stock: 200, minStock: 20, emoji: "📏" },
+        { id: "p49", name: "32A Knife changeover 2P", sku: "KNF-32A", category: "Breakers", price: 50, stock: 10, minStock: 2, emoji: "⚡" },
+        { id: "p50", name: "100A Knife changeover 2P", sku: "KNF-100A", category: "Breakers", price: 100, stock: 5, minStock: 1, emoji: "⚡" },
+        // 51-60: Breakers & Switches
+        { id: "p51", name: "63A Knife changeover 2P", sku: "KNF-63A", category: "Breakers", price: 70, stock: 5, minStock: 1, emoji: "⚡" },
+        { id: "p52", name: "100A 3P Knife changeover", sku: "KNF-100A3P", category: "Breakers", price: 150, stock: 5, minStock: 1, emoji: "⚡" },
+        { id: "p53", name: "Single Circuit breaker 10A", sku: "MCB-10A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
+        { id: "p54", name: "Single Circuit breaker 16A", sku: "MCB-16A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
+        { id: "p55", name: "Single Circuit breaker 20A", sku: "MCB-20A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
+        { id: "p56", name: "Single Circuit breaker 32A", sku: "MCB-32A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
+        { id: "p57", name: "Single Circuit breaker 63A", sku: "MCB-63A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
+        { id: "p58", name: "63A Breaker", sku: "MCB-63AH", category: "Breakers", price: 80, stock: 6, minStock: 1, emoji: "⚡" },
+        { id: "p59", name: "1 gang switch B.G", sku: "SW-1GBG", category: "Switches", price: 15, stock: 50, minStock: 5, emoji: "🔘" },
+        { id: "p60", name: "2 gang switch B.G", sku: "SW-2GBG", category: "Switches", price: 20, stock: 50, minStock: 5, emoji: "🔘" },
+        // 61-71: USB Sockets, Panels, Trunking & Accessories
+        { id: "p61", name: "Double USB socket", sku: "USB-D", category: "Sockets", price: 200, stock: 13, minStock: 2, emoji: "🔌" },
+        { id: "p62", name: "48W (30W) Panel white LED", sku: "PANEL-48W", category: "Lighting", price: 180, stock: 10, minStock: 2, emoji: "💡" },
+        { id: "p63", name: "36W (18W) Panel white LED", sku: "PANEL-36W", category: "Lighting", price: 100, stock: 10, minStock: 2, emoji: "💡" },
+        { id: "p64", name: "24W (12W) Panel white LED", sku: "PANEL-24W", category: "Lighting", price: 80, stock: 10, minStock: 2, emoji: "💡" },
+        { id: "p65", name: "18W (6W) Panel white LED", sku: "PANEL-18W", category: "Lighting", price: 60, stock: 10, minStock: 2, emoji: "💡" },
+        { id: "p66", name: "18W Remote light", sku: "REM-18W", category: "Lighting", price: 150, stock: 10, minStock: 2, emoji: "💡" },
+        { id: "p67", name: "12W Remote light", sku: "REM-12W", category: "Lighting", price: 120, stock: 10, minStock: 2, emoji: "💡" },
+        { id: "p68", name: "6W Remote light", sku: "REM-6W", category: "Lighting", price: 100, stock: 10, minStock: 2, emoji: "💡" },
+        { id: "p69", name: "3/4 Trunking", sku: "TRNK-34", category: "Accessories", price: 40, stock: 25, minStock: 5, emoji: "📏" },
+        { id: "p70", name: "10 mm Cable clips", sku: "CLIP-10", category: "Accessories", price: 25, stock: 5, minStock: 1, emoji: "📎" },
+        { id: "p71", name: "12 mm Cable clips", sku: "CLIP-12", category: "Accessories", price: 30, stock: 5, minStock: 1, emoji: "📎" },
       ];
 
       const INITIAL_SALES = [];
@@ -1074,7 +997,7 @@
         };
         return (
           <svg
-            xmlns="https://www.w3.org/2000/svg"
+            xmlns="http://www.w3.org/2000/svg"
             width={size}
             height={size}
             viewBox="0 0 24 24"
@@ -1093,7 +1016,7 @@
       // ─── LOGO ──────────────────────────────────────────────────────
       const Logo = ({ size = 36, className = "" }) => (
         <svg
-          xmlns="https://www.w3.org/2000/svg"
+          xmlns="http://www.w3.org/2000/svg"
           width={size}
           height={size}
           viewBox="0 0 120 120"
@@ -5173,3 +5096,4 @@
     </script>
   </body>
 </html>
+EOF
