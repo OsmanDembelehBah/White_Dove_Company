@@ -1,0 +1,8 @@
+{
+  "name": "white-dove",
+  "version": "1.0.0",
+  "description": "White Dove Engineering Firm - Enterprise Portal",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
