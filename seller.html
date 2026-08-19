@@ -2,13 +2,18 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-    <title>Seller POS — White Dove Engineering Firm</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes"
+    />
+    <title>White Dove Engineering — Professional POS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- Use only React and ReactDOM from CDN - NO BABEL needed -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -18,405 +23,2320 @@
         theme: {
           extend: {
             colors: {
-              brand: { 50: "#EFF6FF", 100: "#DBEAFE", 200: "#BFDBFE", 300: "#93C5FD", 400: "#60A5FA", 500: "#3B82F6", 600: "#2563EB", 700: "#1D4ED8", 800: "#1E40AF", 900: "#0A3D91", 950: "#050D1A" },
-              surface: { dark: "#050D1A", card: "#0D1B30", border: "#1A3050", hover: "#162840" },
-              success: "#10B981", warning: "#F59E0B", danger: "#EF4444"
+              brand: {
+                50: "#EFF6FF",
+                100: "#DBEAFE",
+                200: "#BFDBFE",
+                300: "#93C5FD",
+                400: "#60A5FA",
+                500: "#3B82F6",
+                600: "#2563EB",
+                700: "#1D4ED8",
+                800: "#1E40AF",
+                900: "#0A3D91",
+                950: "#050D1A",
+              },
+              success: "#10B981",
+              warning: "#F59E0B",
+              danger: "#EF4444",
+              info: "#3B82F6",
             },
-            fontFamily: { sans: ["Inter", "system-ui", "sans-serif"], heading: ["Outfit", "sans-serif"] },
-            boxShadow: { glow: "0 0 40px rgba(10,61,145,0.3)", "glow-sm": "0 0 20px rgba(10,61,145,0.2)" }
-          }
-        }
+            fontFamily: {
+              sans: ["Inter", "system-ui", "sans-serif"],
+              heading: ["Outfit", "sans-serif"],
+            },
+          },
+        },
       };
     </script>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); transition: background 0.25s, color 0.25s; }
-      .font-heading { font-family: "Outfit", sans-serif; }
-      :root[data-theme="light"] { --bg: #f1f5f9; --bg2: #ffffff; --card: #ffffff; --border: #e2e8f0; --text: #0f172a; --text2: #475569; --text3: #94a3b8; --blue-bg: #eff6ff; --sidebar-bg: #ffffff; --notif-bg: #f1f5f9; }
-      :root[data-theme="dark"] { --bg: #050d1a; --bg2: #0d1b30; --card: #0d1b30; --border: #1a3050; --text: #f1f5f9; --text2: #94a3b8; --text3: #475569; --blue-bg: rgba(10,61,145,0.15); --sidebar-bg: #070f1d; --notif-bg: #0d1b30; }
-      .sidebar { background: var(--sidebar-bg); border-right: 1px solid var(--border); transition: width 0.2s; width: 240px; flex-shrink: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: sticky; top: 0; }
-      @media (max-width: 768px) { .sidebar { width: 64px !important; } .sidebar .nav-text, .sidebar .brand-text, .sidebar .seller-name { display: none; } .sidebar .brand-icon { margin: 0 auto; } .sidebar .nav-item { justify-content: center; padding: 0.6rem 0; } }
-      .wd-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; transition: background 0.25s, border 0.25s; }
-      .wd-input { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 0.625rem 0.875rem; font-size: 0.875rem; width: 100%; outline: none; transition: border-color 0.2s, box-shadow 0.2s; font-family: "Inter", sans-serif; }
-      .wd-input:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.15); }
-      .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 10px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s; color: var(--text2); background: transparent; border: none; width: 100%; text-align: left; }
-      .nav-item:hover { background: var(--bg2); color: var(--text); transform: translateX(4px); }
-      .nav-item.active { background: rgba(16,185,129,0.12); color: #34d399; font-weight: 600; }
-      .badge-in-stock { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
-      .badge-low-stock { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-      .badge-out-stock { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
-      .wd-table thead th { background: var(--bg); color: var(--text3); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
-      .wd-table tbody td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
-      .wd-table tbody tr:hover { background: var(--bg); }
-      .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; animation: fadeIn 0.2s ease-out; }
-      .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 560px; box-shadow: 0 40px 120px rgba(0,0,0,0.6); animation: fadeIn 0.3s ease-out; max-height: 90vh; overflow-y: auto; margin: auto; position: relative; }
-      .modal-header { position: sticky; top: 0; background: var(--card); z-index: 10; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); border-top-left-radius: 20px; border-top-right-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
-      .modal-footer { position: sticky; bottom: 0; background: var(--card); z-index: 10; padding: 1rem 1.5rem; border-top: 1px solid var(--border); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; }
-      .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-      .kpi-card { transition: transform 0.2s, box-shadow 0.2s; cursor: default; }
-      .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
-      .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; position: relative; }
-      .pulse-dot::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; background: rgba(16,185,129,0.3); animation: pulse 2s infinite; }
-      @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.5); opacity: 0; } }
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-      .animate-in { animation: fadeIn 0.3s ease-out both; }
-      .notif-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: var(--card); border-left: 1px solid var(--border); z-index: 100; transition: right 0.3s cubic-bezier(0.4,0,0.2,1); box-shadow: -20px 0 60px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden; }
-      .notif-panel.open { right: 0; }
-      .notif-panel-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-      .notif-panel-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
-      .notif-item { padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; background: var(--bg); border: 1px solid var(--border); transition: all 0.2s; cursor: pointer; }
-      .notif-item:hover { border-color: rgba(16,185,129,0.3); }
-      .notif-item.unread { border-left: 3px solid #10b981; background: var(--blue-bg); }
-      .notif-item .notif-time { font-size: 0.65rem; color: var(--text3); margin-top: 0.25rem; }
-      .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-      .overlay.show { opacity: 1; pointer-events: all; }
-      .whatsapp-btn { background: #25d366; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; font-weight: 600; font-size: 0.875rem; }
-      .whatsapp-btn:hover { background: #1da851; transform: scale(1.02); }
-      .receipt-print { background: white; color: #0f172a; padding: 2rem; border-radius: 12px; max-width: 400px; margin: 0 auto; }
-      .receipt-print .company-name { font-size: 1.4rem; font-weight: 900; color: #0a3d91; font-family: "Outfit", sans-serif; text-align: center; }
-      .receipt-print .company-sub { font-size: 0.7rem; color: #64748b; text-align: center; }
-      .receipt-print .divider { border-top: 2px dashed #e2e8f0; margin: 1rem 0; }
-      .receipt-print .receipt-item { display: flex; justify-content: space-between; padding: 0.25rem 0; font-size: 0.8rem; border-bottom: 1px solid #f1f5f9; }
-      .receipt-print .receipt-total { display: flex; justify-content: space-between; padding: 0.75rem 0; border-top: 2px solid #0a3d91; font-size: 1rem; font-weight: 800; color: #0a3d91; }
-      .receipt-print .receipt-footer { text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0; font-size: 0.7rem; color: #94a3b8; }
-      .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; max-width: 380px; }
-      .toast { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: slideIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); display: flex; gap: 0.75rem; align-items: flex-start; }
-      @keyframes slideIn { from { opacity: 0; transform: translateX(40px) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
-      ::-webkit-scrollbar { width: 5px; height: 5px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-      @media (max-width: 768px) { .notif-panel { width: 100%; right: -100%; } .modal-box { max-width: 95%; max-height: 95vh; } .wd-table { font-size: 0.75rem; } .wd-table thead th, .wd-table tbody td { padding: 0.5rem 0.6rem; } .stats-grid { grid-template-columns: 1fr 1fr !important; } .chart-grid { grid-template-columns: 1fr !important; } .settings-grid { grid-template-columns: 1fr !important; } }
-      @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr !important; } .sidebar { width: 56px !important; } .sidebar .nav-item { padding: 0.4rem 0; } }
+      :root[data-theme="light"] {
+        --bg: #f1f5f9;
+        --bg2: #ffffff;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --text: #0f172a;
+        --text2: #475569;
+        --text3: #94a3b8;
+        --sidebar-bg: #ffffff;
+      }
+      :root[data-theme="dark"] {
+        --bg: #050d1a;
+        --bg2: #0d1b30;
+        --card: #0d1b30;
+        --border: #1a3050;
+        --text: #f1f5f9;
+        --text2: #94a3b8;
+        --text3: #475569;
+        --sidebar-bg: #070f1d;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+
+      .sidebar {
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--border);
+        width: 240px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 64px !important;
+        }
+        .sidebar .nav-text,
+        .sidebar .brand-text,
+        .sidebar .seller-name {
+          display: none;
+        }
+        .sidebar .nav-item {
+          justify-content: center;
+          padding: 0.6rem 0;
+        }
+      }
+
+      .wd-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+      }
+      .wd-card:hover {
+        border-color: rgba(16, 185, 129, 0.2);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .wd-input {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 0.625rem 0.875rem;
+        font-size: 0.875rem;
+        width: 100%;
+        outline: none;
+        transition: all 0.2s;
+      }
+      .wd-input:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.15s;
+        color: var(--text2);
+        background: transparent;
+        border: none;
+        width: 100%;
+      }
+      .nav-item:hover {
+        background: var(--bg2);
+        color: var(--text);
+        transform: translateX(4px);
+      }
+      .nav-item.active {
+        background: rgba(16, 185, 129, 0.12);
+        color: #34d399;
+        font-weight: 600;
+      }
+
+      /* Animated Backgrounds for KPI Cards */
+      .kpi-card-blue {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+      }
+      .kpi-card-green {
+        background: linear-gradient(135deg, #064e3b, #10b981);
+        color: white;
+      }
+      .kpi-card-orange {
+        background: linear-gradient(135deg, #78350f, #f59e0b);
+        color: white;
+      }
+      .kpi-card-purple {
+        background: linear-gradient(135deg, #4c1d95, #8b5cf6);
+        color: white;
+      }
+      .kpi-card-red {
+        background: linear-gradient(135deg, #7f1d1d, #ef4444);
+        color: white;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(40px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
+        }
+      }
+
+      .toast-container {
+        position: fixed;
+        top: 1.5rem;
+        right: 1.5rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-width: 380px;
+      }
+      .toast {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 8px;
+      }
+
+      @media (max-width: 768px) {
+        .modal-box {
+          max-width: 95%;
+          max-height: 95vh;
+        }
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
 
     <script>
-      // SIMPLE WORKING VERSION - No JSX, pure React
-      const { useState, useEffect } = React;
+      // ─── REACT SETUP ─────────────────────────────────────────────
+      const { useState, useEffect, useRef } = React;
 
-      // ─── DATA ──────────────────────────────────────────────────────
+      // ─── DATA ────────────────────────────────────────────────────
       const SELLER_USERS = [
-        { id: "u3", name: "Mohamed Bangura", email: "mohamed@whitedove.com", password: "seller123", role: "seller", avatar: "MB" },
-        { id: "u4", name: "Sorie Kamara", email: "sorie@whitedove.com", password: "seller123", role: "seller", avatar: "SK" }
+        {
+          id: "s1",
+          name: "White Dove Solutions",
+          email: "Solutionswhitedoveelectrical@gmail.com",
+          password: "Whitedove2026",
+          role: "seller",
+          avatar: "WD",
+        },
       ];
 
       const PRODUCTS = [
         { id: "p1", name: "1.5 mm² Cable", price: 1600, stock: 2, emoji: "🔌" },
-        { id: "p2", name: "25 mm² Cable roll", price: 2500, stock: 2, emoji: "🔌" },
-        { id: "p3", name: "5 meter Snake light", price: 150, stock: 20, emoji: "💡" },
-        { id: "p4", name: "4 way Consumer unit", price: 550, stock: 3, emoji: "🔧" },
-        { id: "p5", name: "6 way Consumer unit", price: 650, stock: 3, emoji: "🔧" },
-        { id: "p6", name: "8 way Consumer unit", price: 750, stock: 3, emoji: "🔧" },
+        {
+          id: "p2",
+          name: "25 mm² Cable roll",
+          price: 2500,
+          stock: 2,
+          emoji: "🔌",
+        },
+        {
+          id: "p3",
+          name: "5 meter Snake light",
+          price: 150,
+          stock: 20,
+          emoji: "💡",
+        },
+        {
+          id: "p4",
+          name: "4 way Consumer unit",
+          price: 550,
+          stock: 3,
+          emoji: "🔧",
+        },
+        {
+          id: "p5",
+          name: "6 way Consumer unit",
+          price: 650,
+          stock: 3,
+          emoji: "🔧",
+        },
+        {
+          id: "p6",
+          name: "8 way Consumer unit",
+          price: 750,
+          stock: 3,
+          emoji: "🔧",
+        },
         { id: "p7", name: "3/3 Ivory box", price: 10, stock: 200, emoji: "📦" },
         { id: "p8", name: "3/6 Ivory box", price: 15, stock: 100, emoji: "📦" },
-        { id: "p9", name: "3/3 Emkay box PVC", price: 15, stock: 400, emoji: "📦" },
-        { id: "p10", name: "3/6 Emkay box PVC", price: 20, stock: 200, emoji: "📦" },
-        { id: "p11", name: "7 Watts Spotlight Blue", price: 40, stock: 50, emoji: "💡" },
-        { id: "p12", name: "7 Watts Spotlight W/H", price: 40, stock: 50, emoji: "💡" },
-        { id: "p13", name: "Batten lamp holder", price: 15, stock: 200, emoji: "💡" },
-        { id: "p14", name: "Angle lamp holder", price: 15, stock: 100, emoji: "💡" },
-        { id: "p15", name: "Ceiling Rose lamp holder", price: 30, stock: 60, emoji: "💡" },
-        { id: "p16", name: "4 Way Extension", price: 170, stock: 2, emoji: "🔌" },
-        { id: "p17", name: "5 Way Extension", price: 200, stock: 2, emoji: "🔌" },
-        { id: "p18", name: "4 Way with USB", price: 230, stock: 2, emoji: "🔌" },
-        { id: "p19", name: "5 meter Neon snake light", price: 230, stock: 10, emoji: "💡" },
-        { id: "p20", name: "16 mm x 2 core", price: 120, stock: 100, emoji: "🔌" },
-        { id: "p21", name: "25 mm x 2 core", price: 20, stock: 500, emoji: "🔌" },
-        { id: "p22", name: "Long blade fan", price: 600, stock: 3, emoji: "🌀" },
-        { id: "p23", name: "Short blade fan", price: 550, stock: 4, emoji: "🌀" },
+        {
+          id: "p9",
+          name: "3/3 Emkay box PVC",
+          price: 15,
+          stock: 400,
+          emoji: "📦",
+        },
+        {
+          id: "p10",
+          name: "3/6 Emkay box PVC",
+          price: 20,
+          stock: 200,
+          emoji: "📦",
+        },
+        {
+          id: "p11",
+          name: "7 Watts Spotlight Blue",
+          price: 40,
+          stock: 50,
+          emoji: "💡",
+        },
+        {
+          id: "p12",
+          name: "7 Watts Spotlight W/H",
+          price: 40,
+          stock: 50,
+          emoji: "💡",
+        },
+        {
+          id: "p13",
+          name: "Batten lamp holder",
+          price: 15,
+          stock: 200,
+          emoji: "💡",
+        },
+        {
+          id: "p14",
+          name: "Angle lamp holder",
+          price: 15,
+          stock: 100,
+          emoji: "💡",
+        },
+        {
+          id: "p15",
+          name: "Ceiling Rose lamp holder",
+          price: 30,
+          stock: 60,
+          emoji: "💡",
+        },
+        {
+          id: "p16",
+          name: "4 Way Extension",
+          price: 170,
+          stock: 2,
+          emoji: "🔌",
+        },
+        {
+          id: "p17",
+          name: "5 Way Extension",
+          price: 200,
+          stock: 2,
+          emoji: "🔌",
+        },
+        {
+          id: "p18",
+          name: "4 Way with USB",
+          price: 230,
+          stock: 2,
+          emoji: "🔌",
+        },
+        {
+          id: "p19",
+          name: "5 meter Neon snake light",
+          price: 230,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p20",
+          name: "16 mm x 2 core",
+          price: 120,
+          stock: 100,
+          emoji: "🔌",
+        },
+        {
+          id: "p21",
+          name: "25 mm x 2 core",
+          price: 20,
+          stock: 500,
+          emoji: "🔌",
+        },
+        {
+          id: "p22",
+          name: "Long blade fan",
+          price: 600,
+          stock: 3,
+          emoji: "🌀",
+        },
+        {
+          id: "p23",
+          name: "Short blade fan",
+          price: 550,
+          stock: 4,
+          emoji: "🌀",
+        },
         { id: "p24", name: "5 Watt bulbs", price: 13, stock: 100, emoji: "💡" },
-        { id: "p25", name: "7 Watts bulbs", price: 15, stock: 100, emoji: "💡" },
-        { id: "p26", name: "9 Watts bulbs", price: 17, stock: 100, emoji: "💡" },
-        { id: "p27", name: "18 Watts bulbs", price: 30, stock: 100, emoji: "💡" },
-        { id: "p28", name: "Double socket B.G", price: 50, stock: 50, emoji: "🔌" },
-        { id: "p29", name: "Single Socket B.G", price: 25, stock: 100, emoji: "🔌" },
-        { id: "p30", name: "3 gang Switch Original", price: 40, stock: 60, emoji: "🔘" },
-        { id: "p31", name: "2 gang Switch Original", price: 35, stock: 60, emoji: "🔘" },
-        { id: "p32", name: "1 gang Switch Original", price: 30, stock: 60, emoji: "🔘" },
+        {
+          id: "p25",
+          name: "7 Watts bulbs",
+          price: 15,
+          stock: 100,
+          emoji: "💡",
+        },
+        {
+          id: "p26",
+          name: "9 Watts bulbs",
+          price: 17,
+          stock: 100,
+          emoji: "💡",
+        },
+        {
+          id: "p27",
+          name: "18 Watts bulbs",
+          price: 30,
+          stock: 100,
+          emoji: "💡",
+        },
+        {
+          id: "p28",
+          name: "Double socket B.G",
+          price: 50,
+          stock: 50,
+          emoji: "🔌",
+        },
+        {
+          id: "p29",
+          name: "Single Socket B.G",
+          price: 25,
+          stock: 100,
+          emoji: "🔌",
+        },
+        {
+          id: "p30",
+          name: "3 gang Switch Original",
+          price: 40,
+          stock: 60,
+          emoji: "🔘",
+        },
+        {
+          id: "p31",
+          name: "2 gang Switch Original",
+          price: 35,
+          stock: 60,
+          emoji: "🔘",
+        },
+        {
+          id: "p32",
+          name: "1 gang Switch Original",
+          price: 30,
+          stock: 60,
+          emoji: "🔘",
+        },
         { id: "p33", name: "Double Socket", price: 70, stock: 35, emoji: "🔌" },
         { id: "p34", name: "Single Socket", price: 35, stock: 60, emoji: "🔌" },
-        { id: "p35", name: "A/C Switch Original", price: 35, stock: 24, emoji: "🔘" },
-        { id: "p36", name: "Earth rod (Big)", price: 130, stock: 20, emoji: "⛓️" },
-        { id: "p37", name: "Double Socket Gold", price: 120, stock: 7, emoji: "✨" },
-        { id: "p38", name: "Single Socket Gold", price: 60, stock: 12, emoji: "✨" },
-        { id: "p39", name: "1 gang Switch Gold", price: 40, stock: 12, emoji: "✨" },
-        { id: "p40", name: "2 gang Switch Gold", price: 50, stock: 12, emoji: "✨" },
-        { id: "p41", name: "3 gang Switch Gold", price: 60, stock: 12, emoji: "✨" },
-        { id: "p42", name: "Double Socket Black", price: 120, stock: 7, emoji: "⚫" },
-        { id: "p43", name: "Single Socket Black", price: 60, stock: 12, emoji: "⚫" },
-        { id: "p44", name: "1 gang Switch Black", price: 35, stock: 12, emoji: "⚫" },
-        { id: "p45", name: "2 gang Switch Black", price: 45, stock: 12, emoji: "⚫" },
-        { id: "p46", name: "3 gang Switch Black", price: 60, stock: 12, emoji: "⚫" },
-        { id: "p47", name: "Rechargeable bulbs", price: 80, stock: 20, emoji: "💡" },
-        { id: "p48", name: "Isolating tape", price: 10, stock: 200, emoji: "📏" },
-        { id: "p49", name: "32A Knife changeover 2P", price: 50, stock: 10, emoji: "⚡" },
-        { id: "p50", name: "100A Knife changeover 2P", price: 100, stock: 5, emoji: "⚡" },
-        { id: "p51", name: "63A Knife changeover 2P", price: 70, stock: 5, emoji: "⚡" },
-        { id: "p52", name: "100A 3P Knife changeover", price: 150, stock: 5, emoji: "⚡" },
-        { id: "p53", name: "Single Circuit breaker 10A", price: 30, stock: 12, emoji: "⚡" },
-        { id: "p54", name: "Single Circuit breaker 16A", price: 30, stock: 12, emoji: "⚡" },
-        { id: "p55", name: "Single Circuit breaker 20A", price: 30, stock: 12, emoji: "⚡" },
-        { id: "p56", name: "Single Circuit breaker 32A", price: 30, stock: 12, emoji: "⚡" },
-        { id: "p57", name: "Single Circuit breaker 63A", price: 30, stock: 12, emoji: "⚡" },
+        {
+          id: "p35",
+          name: "A/C Switch Original",
+          price: 35,
+          stock: 24,
+          emoji: "🔘",
+        },
+        {
+          id: "p36",
+          name: "Earth rod (Big)",
+          price: 130,
+          stock: 20,
+          emoji: "⛓️",
+        },
+        {
+          id: "p37",
+          name: "Double Socket Gold",
+          price: 120,
+          stock: 7,
+          emoji: "✨",
+        },
+        {
+          id: "p38",
+          name: "Single Socket Gold",
+          price: 60,
+          stock: 12,
+          emoji: "✨",
+        },
+        {
+          id: "p39",
+          name: "1 gang Switch Gold",
+          price: 40,
+          stock: 12,
+          emoji: "✨",
+        },
+        {
+          id: "p40",
+          name: "2 gang Switch Gold",
+          price: 50,
+          stock: 12,
+          emoji: "✨",
+        },
+        {
+          id: "p41",
+          name: "3 gang Switch Gold",
+          price: 60,
+          stock: 12,
+          emoji: "✨",
+        },
+        {
+          id: "p42",
+          name: "Double Socket Black",
+          price: 120,
+          stock: 7,
+          emoji: "⚫",
+        },
+        {
+          id: "p43",
+          name: "Single Socket Black",
+          price: 60,
+          stock: 12,
+          emoji: "⚫",
+        },
+        {
+          id: "p44",
+          name: "1 gang Switch Black",
+          price: 35,
+          stock: 12,
+          emoji: "⚫",
+        },
+        {
+          id: "p45",
+          name: "2 gang Switch Black",
+          price: 45,
+          stock: 12,
+          emoji: "⚫",
+        },
+        {
+          id: "p46",
+          name: "3 gang Switch Black",
+          price: 60,
+          stock: 12,
+          emoji: "⚫",
+        },
+        {
+          id: "p47",
+          name: "Rechargeable bulbs",
+          price: 80,
+          stock: 20,
+          emoji: "💡",
+        },
+        {
+          id: "p48",
+          name: "Isolating tape",
+          price: 10,
+          stock: 200,
+          emoji: "📏",
+        },
+        {
+          id: "p49",
+          name: "32A Knife changeover 2P",
+          price: 50,
+          stock: 10,
+          emoji: "⚡",
+        },
+        {
+          id: "p50",
+          name: "100A Knife changeover 2P",
+          price: 100,
+          stock: 5,
+          emoji: "⚡",
+        },
+        {
+          id: "p51",
+          name: "63A Knife changeover 2P",
+          price: 70,
+          stock: 5,
+          emoji: "⚡",
+        },
+        {
+          id: "p52",
+          name: "100A 3P Knife changeover",
+          price: 150,
+          stock: 5,
+          emoji: "⚡",
+        },
+        {
+          id: "p53",
+          name: "Single Circuit breaker 10A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        {
+          id: "p54",
+          name: "Single Circuit breaker 16A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        {
+          id: "p55",
+          name: "Single Circuit breaker 20A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        {
+          id: "p56",
+          name: "Single Circuit breaker 32A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        {
+          id: "p57",
+          name: "Single Circuit breaker 63A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
         { id: "p58", name: "63A Breaker", price: 80, stock: 6, emoji: "⚡" },
-        { id: "p59", name: "1 gang switch B.G", price: 15, stock: 50, emoji: "🔘" },
-        { id: "p60", name: "2 gang switch B.G", price: 20, stock: 50, emoji: "🔘" },
-        { id: "p61", name: "Double USB socket", price: 200, stock: 13, emoji: "🔌" },
-        { id: "p62", name: "48W Panel white LED", price: 180, stock: 10, emoji: "💡" },
-        { id: "p63", name: "36W Panel white LED", price: 100, stock: 10, emoji: "💡" },
-        { id: "p64", name: "24W Panel white LED", price: 80, stock: 10, emoji: "💡" },
-        { id: "p65", name: "18W Panel white LED", price: 60, stock: 10, emoji: "💡" },
-        { id: "p66", name: "18W Remote light", price: 150, stock: 10, emoji: "💡" },
-        { id: "p67", name: "12W Remote light", price: 120, stock: 10, emoji: "💡" },
-        { id: "p68", name: "6W Remote light", price: 100, stock: 10, emoji: "💡" },
+        {
+          id: "p59",
+          name: "1 gang switch B.G",
+          price: 15,
+          stock: 50,
+          emoji: "🔘",
+        },
+        {
+          id: "p60",
+          name: "2 gang switch B.G",
+          price: 20,
+          stock: 50,
+          emoji: "🔘",
+        },
+        {
+          id: "p61",
+          name: "Double USB socket",
+          price: 200,
+          stock: 13,
+          emoji: "🔌",
+        },
+        {
+          id: "p62",
+          name: "48W Panel white LED",
+          price: 180,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p63",
+          name: "36W Panel white LED",
+          price: 100,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p64",
+          name: "24W Panel white LED",
+          price: 80,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p65",
+          name: "18W Panel white LED",
+          price: 60,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p66",
+          name: "18W Remote light",
+          price: 150,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p67",
+          name: "12W Remote light",
+          price: 120,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p68",
+          name: "6W Remote light",
+          price: 100,
+          stock: 10,
+          emoji: "💡",
+        },
         { id: "p69", name: "3/4 Trunking", price: 40, stock: 25, emoji: "📏" },
-        { id: "p70", name: "10 mm Cable clips", price: 25, stock: 5, emoji: "📎" },
-        { id: "p71", name: "12 mm Cable clips", price: 30, stock: 5, emoji: "📎" }
+        {
+          id: "p70",
+          name: "10 mm Cable clips",
+          price: 25,
+          stock: 5,
+          emoji: "📎",
+        },
+        {
+          id: "p71",
+          name: "12 mm Cable clips",
+          price: 30,
+          stock: 5,
+          emoji: "📎",
+        },
       ];
 
       const INITIAL_SALES = [];
+      const fmt = (n) =>
+        `SLE ${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-      const fmt = (n) => `SLE ${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      // ─── TOAST SYSTEM ─────────────────────────────────────────────
+      function ToastContainer({ toasts, removeToast }) {
+        return React.createElement(
+          "div",
+          { className: "toast-container" },
+          toasts.map((t) =>
+            React.createElement(
+              "div",
+              {
+                key: t.id,
+                className: "toast",
+                style: {
+                  borderLeft: `4px solid ${t.type === "success" ? "#10B981" : "#F59E0B"}`,
+                },
+              },
+              React.createElement(
+                "span",
+                { style: { fontSize: "1.2rem" } },
+                t.type === "success" ? "✅" : "⚠️",
+              ),
+              React.createElement(
+                "div",
+                { style: { flex: 1 } },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      fontWeight: 600,
+                      fontSize: "0.85rem",
+                      color: "var(--text)",
+                    },
+                  },
+                  t.title,
+                ),
+                React.createElement(
+                  "div",
+                  { style: { fontSize: "0.75rem", color: "var(--text2)" } },
+                  t.message,
+                ),
+              ),
+              React.createElement(
+                "button",
+                {
+                  onClick: () => removeToast(t.id),
+                  style: {
+                    background: "none",
+                    border: "none",
+                    color: "var(--text3)",
+                    cursor: "pointer",
+                    fontSize: "1rem",
+                  },
+                },
+                "✕",
+              ),
+            ),
+          ),
+        );
+      }
 
-      // ─── LOGIN COMPONENT ──────────────────────────────────────────
+      // ─── LOGIN PAGE ──────────────────────────────────────────────
       function LoginPage({ onLogin }) {
         const [email, setEmail] = useState("");
         const [password, setPassword] = useState("");
         const [error, setError] = useState("");
         const [loading, setLoading] = useState(false);
-
         const handleSubmit = (e) => {
           e.preventDefault();
           setLoading(true);
           setError("");
           setTimeout(() => {
-            const user = SELLER_USERS.find(u => u.email === email && u.password === password);
+            const user = SELLER_USERS.find(
+              (u) => u.email === email && u.password === password,
+            );
             if (user) {
-              const session = { userId: user.id, userName: user.name, avatar: user.avatar, role: "seller", expiresAt: Date.now() + 8 * 60 * 60 * 1000 };
-              sessionStorage.setItem("wd_seller_session", JSON.stringify(session));
+              const session = {
+                userId: user.id,
+                userName: user.name,
+                avatar: user.avatar,
+                role: "seller",
+                expiresAt: Date.now() + 8 * 60 * 60 * 1000,
+              };
+              sessionStorage.setItem(
+                "wd_seller_session",
+                JSON.stringify(session),
+              );
               onLogin(session);
             } else {
-              setError("Invalid email or password. Please try again.");
+              setError("Invalid email or password.");
             }
             setLoading(false);
-          }, 500);
+          }, 600);
         };
-
-        return React.createElement("div", { style: { minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem" } },
-          React.createElement("div", { style: { width: "100%", maxWidth: "420px" } },
-            React.createElement("div", { className: "wd-card", style: { borderRadius: "20px", padding: "2rem", boxShadow: "0 40px 120px rgba(0,0,0,0.4)" } },
-              React.createElement("div", { style: { textAlign: "center", marginBottom: "2rem" } },
-                React.createElement("div", { style: { fontSize: "2rem", fontWeight: 800, color: "#34D399" } }, "🛒"),
-                React.createElement("div", { className: "font-heading", style: { fontSize: "1.4rem", fontWeight: 800, color: "var(--text)" } }, "Seller POS"),
-                React.createElement("div", { style: { fontSize: "0.8rem", color: "var(--text2)" } }, "White Dove Engineering Firm")
+        return React.createElement(
+          "div",
+          {
+            style: {
+              minHeight: "100vh",
+              background: "var(--bg)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "1.5rem",
+            },
+          },
+          React.createElement(
+            "div",
+            { style: { width: "100%", maxWidth: "420px" } },
+            React.createElement(
+              "div",
+              {
+                className: "wd-card",
+                style: {
+                  borderRadius: "20px",
+                  padding: "2rem",
+                  boxShadow: "0 40px 120px rgba(0,0,0,0.4)",
+                },
+              },
+              React.createElement(
+                "div",
+                { style: { textAlign: "center", marginBottom: "2rem" } },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      fontSize: "3rem",
+                      display: "block",
+                      marginBottom: "0.5rem",
+                    },
+                  },
+                  "🕊️",
+                ),
+                React.createElement(
+                  "div",
+                  {
+                    className: "font-heading",
+                    style: {
+                      fontSize: "1.8rem",
+                      fontWeight: 800,
+                      color: "#0A3D91",
+                    },
+                  },
+                  "WHITE DOVE",
+                ),
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      fontSize: "0.7rem",
+                      fontWeight: 600,
+                      color: "#60A5FA",
+                      letterSpacing: "0.15em",
+                      textTransform: "uppercase",
+                    },
+                  },
+                  "SELLER POS",
+                ),
               ),
-              React.createElement("form", { onSubmit: handleSubmit, style: { display: "flex", flexDirection: "column", gap: "1rem" } },
-                React.createElement("input", { type: "email", className: "wd-input", value: email, onChange: (e) => setEmail(e.target.value), placeholder: "Email", required: true }),
-                React.createElement("input", { type: "password", className: "wd-input", value: password, onChange: (e) => setPassword(e.target.value), placeholder: "Password", required: true }),
-                error && React.createElement("div", { style: { color: "#EF4444", fontSize: "0.8rem" } }, error),
-                React.createElement("button", { type: "submit", disabled: loading, style: { background: loading ? "#1A3050" : "linear-gradient(135deg, #059669, #10B981)", color: "white", border: "none", borderRadius: "12px", padding: "0.875rem", fontSize: "0.9rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", transition: "all 0.2s", boxShadow: "0 4px 16px rgba(16,185,129,0.4)" } }, loading ? "Signing in..." : "Sign In")
+              React.createElement(
+                "form",
+                {
+                  onSubmit: handleSubmit,
+                  style: {
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "1rem",
+                  },
+                },
+                React.createElement("input", {
+                  type: "email",
+                  className: "wd-input",
+                  value: email,
+                  onChange: (e) => setEmail(e.target.value),
+                  placeholder: "Email Address",
+                  required: true,
+                }),
+                React.createElement("input", {
+                  type: "password",
+                  className: "wd-input",
+                  value: password,
+                  onChange: (e) => setPassword(e.target.value),
+                  placeholder: "Password",
+                  required: true,
+                }),
+                error &&
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        color: "#EF4444",
+                        fontSize: "0.8rem",
+                        textAlign: "center",
+                      },
+                    },
+                    error,
+                  ),
+                React.createElement(
+                  "button",
+                  {
+                    type: "submit",
+                    disabled: loading,
+                    style: {
+                      background: loading
+                        ? "#1A3050"
+                        : "linear-gradient(135deg, #0A3D91, #1255C4)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "12px",
+                      padding: "0.875rem",
+                      fontSize: "0.95rem",
+                      fontWeight: 700,
+                      cursor: loading ? "not-allowed" : "pointer",
+                    },
+                  },
+                  loading ? "Authenticating..." : "Sign In",
+                ),
               ),
-              React.createElement("div", { style: { marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--border)", textAlign: "center", fontSize: "0.7rem", color: "var(--text3)" } },
-                React.createElement("span", null, "Demo: mohamed@whitedove.com / seller123")
-              )
-            )
-          )
+            ),
+          ),
         );
       }
 
-      // ─── POS DASHBOARD ─────────────────────────────────────────────
-      function POSDashboard({ session, onLogout }) {
+      // ─── DASHBOARD CHARTS ────────────────────────────────────────
+      function DashboardCharts({ sales }) {
+        const doughnutRef = useRef(null);
+        const lineRef = useRef(null);
+        const doughnutInstance = useRef(null);
+        const lineInstance = useRef(null);
+
+        useEffect(() => {
+          if (!doughnutRef.current || !lineRef.current) return;
+          if (doughnutInstance.current) doughnutInstance.current.destroy();
+          if (lineInstance.current) lineInstance.current.destroy();
+
+          // Data Calculation
+          const catMap = {};
+          sales.forEach((s) =>
+            s.items.forEach((i) => {
+              catMap[i.name] = (catMap[i.name] || 0) + i.qty;
+            }),
+          );
+          const labels = Object.keys(catMap).slice(0, 5);
+          const data = Object.values(catMap).slice(0, 5);
+          if (labels.length === 0) {
+            labels.push("No Sales");
+            data.push(1);
+          }
+
+          const isDark =
+            document.documentElement.getAttribute("data-theme") === "dark";
+          const textColor = isDark ? "#94a3b8" : "#475569";
+
+          // Doughnut Chart
+          doughnutInstance.current = new Chart(doughnutRef.current, {
+            type: "doughnut",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  data: data,
+                  backgroundColor: [
+                    "#3B82F6",
+                    "#10B981",
+                    "#F59E0B",
+                    "#EF4444",
+                    "#8B5CF6",
+                  ],
+                  borderWidth: 0,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { color: textColor, boxWidth: 12, padding: 12 },
+                },
+              },
+              cutout: "65%",
+            },
+          });
+
+          // Line Chart (Weekly)
+          const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+          const weeklyData = days.map(() => 0);
+          sales.forEach((s) => {
+            const dayIndex = new Date(s.timestamp).getDay();
+            if (dayIndex > 0 && dayIndex <= 7)
+              weeklyData[dayIndex === 7 ? 6 : dayIndex - 1] += s.total;
+          });
+
+          lineInstance.current = new Chart(lineRef.current, {
+            type: "line",
+            data: {
+              labels: days,
+              datasets: [
+                {
+                  label: "Revenue",
+                  data: weeklyData,
+                  borderColor: "#3B82F6",
+                  backgroundColor: "rgba(59, 130, 246, 0.1)",
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: isDark
+                      ? "rgba(255,255,255,0.05)"
+                      : "rgba(0,0,0,0.05)",
+                  },
+                  ticks: { color: textColor },
+                },
+                x: { grid: { display: false }, ticks: { color: textColor } },
+              },
+            },
+          });
+          return () => {
+            if (doughnutInstance.current) doughnutInstance.current.destroy();
+            if (lineInstance.current) lineInstance.current.destroy();
+          };
+        }, [sales]);
+
+        return React.createElement(
+          "div",
+          {
+            style: {
+              display: "grid",
+              gridTemplateColumns: "1fr 2fr",
+              gap: "1.5rem",
+            },
+          },
+          React.createElement(
+            "div",
+            { className: "wd-card", style: { padding: "1.5rem" } },
+            React.createElement(
+              "h3",
+              { style: { fontWeight: 700, marginBottom: "1rem" } },
+              "Top Selling Items",
+            ),
+            React.createElement(
+              "div",
+              {
+                style: { height: "200px", width: "100%", position: "relative" },
+              },
+              React.createElement("canvas", { ref: doughnutRef }),
+            ),
+          ),
+          React.createElement(
+            "div",
+            { className: "wd-card", style: { padding: "1.5rem" } },
+            React.createElement(
+              "h3",
+              { style: { fontWeight: 700, marginBottom: "1rem" } },
+              "Weekly Revenue Trends",
+            ),
+            React.createElement(
+              "div",
+              { style: { height: "200px", width: "100%" } },
+              React.createElement("canvas", { ref: lineRef }),
+            ),
+          ),
+        );
+      }
+
+      // ─── RECEIPT MODAL ────────────────────────────────────────────
+      function ReceiptModal({ sale, onClose, onPrint, onWhatsApp }) {
+        if (!sale) return null;
+        return React.createElement(
+          "div",
+          {
+            style: {
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(4px)",
+              zIndex: 10000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "1.5rem",
+            },
+          },
+          React.createElement(
+            "div",
+            {
+              className: "wd-card",
+              style: {
+                maxWidth: "450px",
+                width: "100%",
+                padding: "2rem",
+                maxHeight: "90vh",
+                overflowY: "auto",
+              },
+            },
+            React.createElement(
+              "div",
+              {
+                style: {
+                  textAlign: "center",
+                  borderBottom: "2px dashed var(--border)",
+                  paddingBottom: "1rem",
+                  marginBottom: "1rem",
+                },
+              },
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    fontSize: "1.5rem",
+                    fontWeight: 900,
+                    color: "#0A3D91",
+                  },
+                },
+                "WHITE DOVE",
+              ),
+              React.createElement(
+                "div",
+                { style: { fontSize: "0.7rem", color: "var(--text2)" } },
+                "Engineering Firm",
+              ),
+              React.createElement(
+                "div",
+                { style: { fontSize: "0.65rem", marginTop: "0.5rem" } },
+                `Receipt: ${sale.receiptNo}`,
+              ),
+            ),
+            React.createElement(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "0.8rem",
+                  color: "var(--text2)",
+                  marginBottom: "0.5rem",
+                },
+              },
+              React.createElement("span", null, `Customer: ${sale.customer}`),
+              React.createElement(
+                "span",
+                null,
+                new Date(sale.timestamp).toLocaleDateString(),
+              ),
+            ),
+            React.createElement(
+              "div",
+              {
+                style: {
+                  borderTop: "1px solid var(--border)",
+                  borderBottom: "1px solid var(--border)",
+                  padding: "0.5rem 0",
+                  margin: "0.5rem 0",
+                  maxHeight: "150px",
+                  overflowY: "auto",
+                },
+              },
+              sale.items.map((item, i) =>
+                React.createElement(
+                  "div",
+                  {
+                    key: i,
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontSize: "0.8rem",
+                      padding: "0.2rem 0",
+                    },
+                  },
+                  React.createElement(
+                    "span",
+                    null,
+                    `${item.qty}x ${item.name}`,
+                  ),
+                  React.createElement(
+                    "span",
+                    { style: { fontWeight: 600 } },
+                    fmt(item.total),
+                  ),
+                ),
+              ),
+            ),
+            React.createElement(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "1.2rem",
+                  fontWeight: 800,
+                  color: "#0A3D91",
+                  marginBottom: "1.5rem",
+                },
+              },
+              React.createElement("span", null, "TOTAL"),
+              React.createElement("span", null, fmt(sale.total)),
+            ),
+            React.createElement(
+              "div",
+              { style: { display: "flex", gap: "0.5rem" } },
+              React.createElement(
+                "button",
+                {
+                  onClick: onClose,
+                  style: {
+                    flex: 1,
+                    padding: "0.5rem",
+                    borderRadius: "8px",
+                    border: "1px solid var(--border)",
+                    background: "transparent",
+                    color: "var(--text)",
+                    cursor: "pointer",
+                  },
+                },
+                "Close",
+              ),
+              React.createElement(
+                "button",
+                {
+                  onClick: () => {
+                    onPrint(sale);
+                    onClose();
+                  },
+                  style: {
+                    flex: 1,
+                    padding: "0.5rem",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#0A3D91",
+                    color: "white",
+                    cursor: "pointer",
+                  },
+                },
+                "PDF",
+              ),
+              React.createElement(
+                "button",
+                {
+                  onClick: () => {
+                    onWhatsApp(sale);
+                    onClose();
+                  },
+                  style: {
+                    flex: 1,
+                    padding: "0.5rem",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#25D366",
+                    color: "white",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  },
+                },
+                "WhatsApp",
+              ),
+            ),
+          ),
+        );
+      }
+
+      // ─── MAIN POS DASHBOARD ──────────────────────────────────────
+      function POSDashboard({ session, onLogout, theme, onThemeChange }) {
         const [cart, setCart] = useState([]);
         const [searchTerm, setSearchTerm] = useState("");
         const [sales, setSales] = useState(INITIAL_SALES);
         const [products, setProducts] = useState(PRODUCTS);
-        const [receiptSale, setReceiptSale] = useState(null);
         const [section, setSection] = useState("pos");
+        const [customerName, setCustomerName] = useState("");
+        const [customerPhone, setCustomerPhone] = useState("");
+        const [paymentMethod, setPaymentMethod] = useState("Cash");
+        const [toasts, setToasts] = useState([]);
+        const [receiptSale, setReceiptSale] = useState(null);
 
-        const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        const addToast = (title, message, type = "success") => {
+          const id = Date.now();
+          setToasts([...toasts, { id, title, message, type }]);
+          setTimeout(
+            () => setToasts((prev) => prev.filter((t) => t.id !== id)),
+            4000,
+          );
+        };
+        const filteredProducts = products.filter((p) =>
+          p.name.toLowerCase().includes(searchTerm.toLowerCase()),
+        );
 
         const addToCart = (product) => {
-          const existing = cart.find(i => i.id === product.id);
+          const existing = cart.find((i) => i.id === product.id);
           if (existing) {
-            if (existing.qty >= product.stock) return;
-            setCart(cart.map(i => i.id === product.id ? { ...i, qty: i.qty + 1 } : i));
+            if (existing.qty >= product.stock) {
+              addToast("Stock Limit!", "Cannot add more", "warning");
+              return;
+            }
+            setCart(
+              cart.map((i) =>
+                i.id === product.id ? { ...i, qty: i.qty + 1 } : i,
+              ),
+            );
           } else {
             setCart([...cart, { ...product, qty: 1 }]);
           }
+          addToast("Added", `${product.emoji} ${product.name}`);
         };
 
         const handleCheckout = () => {
-          if (cart.length === 0) return;
-          const saleItems = cart.map(item => ({ productId: item.id, name: item.name, qty: item.qty, unitPrice: item.price, total: item.price * item.qty }));
+          if (cart.length === 0 || !customerName.trim()) {
+            addToast("Error", "Fill in customer name and cart", "warning");
+            return;
+          }
+          const saleItems = cart.map((item) => ({
+            productId: item.id,
+            name: item.name,
+            qty: item.qty,
+            unitPrice: item.price,
+            total: item.price * item.qty,
+          }));
           const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
           const newSale = {
             id: `s${Date.now()}`,
             receiptNo: `WD-${String(sales.length + 1).padStart(3, "0")}`,
             sellerName: session.userName,
             items: saleItems,
-            total: total,
-            customer: "Walk-in Customer",
-            timestamp: new Date().toISOString()
+            total,
+            payment: paymentMethod,
+            customer: customerName.trim(),
+            customerPhone: customerPhone.trim() || "N/A",
+            timestamp: new Date().toISOString(),
           };
           setSales([newSale, ...sales]);
-          const updatedProducts = products.map(p => {
-            const sold = cart.find(i => i.id === p.id);
-            return sold ? { ...p, stock: Math.max(0, p.stock - sold.qty) } : p;
-          });
-          setProducts(updatedProducts);
+          setProducts(
+            products.map((p) => {
+              const sold = cart.find((i) => i.id === p.id);
+              return sold
+                ? { ...p, stock: Math.max(0, p.stock - sold.qty) }
+                : p;
+            }),
+          );
           setCart([]);
+          setCustomerName("");
+          setCustomerPhone("");
           setReceiptSale(newSale);
+          addToast("Sale Complete!", `Receipt ${newSale.receiptNo} generated.`);
         };
 
+        const generateReceiptPDF = (sale) => {
+          const { jsPDF } = window.jspdf;
+          const doc = new jsPDF({ unit: "mm", format: "a4" });
+          const pw = 210;
+          let y = 20;
+          doc.setFontSize(18);
+          doc.setTextColor("#0A3D91");
+          doc.setFont("helvetica", "bold");
+          doc.text("WHITE DOVE", pw / 2, y, { align: "center" });
+          y += 6;
+          doc.setFontSize(9);
+          doc.setTextColor("#475569");
+          doc.setFont("helvetica", "normal");
+          doc.text("ENGINEERING FIRM", pw / 2, y, { align: "center" });
+          y += 5;
+          doc.text("Building Your Vision, Powering Your Future.", pw / 2, y, {
+            align: "center",
+          });
+          y += 6;
+          doc.line(20, y, pw - 20, y);
+          y += 6;
+          doc.setFontSize(9);
+          doc.setTextColor("#0F172A");
+          doc.setFont("helvetica", "bold");
+          doc.text(`Receipt: ${sale.receiptNo}`, 20, y);
+          doc.text(
+            `Date: ${new Date(sale.timestamp).toLocaleDateString()}`,
+            110,
+            y,
+          );
+          y += 5;
+          doc.text(`Customer: ${sale.customer}`, 20, y);
+          y += 5;
+          doc.line(20, y, pw - 20, y);
+          y += 5;
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor("#64748B");
+          doc.text("Item", 20, y);
+          doc.text("Qty", 130, y);
+          doc.text("Total", 180, y);
+          y += 4;
+          doc.line(20, y, pw - 20, y);
+          y += 5;
+          doc.setFont("helvetica", "normal");
+          doc.setTextColor("#0F172A");
+          sale.items.forEach((item) => {
+            doc.text(
+              item.name.length > 20
+                ? item.name.substring(0, 18) + "…"
+                : item.name,
+              20,
+              y,
+            );
+            doc.text(item.qty.toString(), 130, y);
+            doc.text(fmt(item.total), 180, y, { align: "right" });
+            y += 5;
+          });
+          y += 4;
+          doc.line(20, y, pw - 20, y);
+          y += 6;
+          doc.setFont("helvetica", "bold");
+          doc.setTextColor("#0A3D91");
+          doc.setFontSize(13);
+          doc.text("TOTAL", 20, y);
+          doc.text(fmt(sale.total), pw - 20, y, { align: "right" });
+          doc.save(`receipt_${sale.receiptNo}.pdf`);
+        };
+
+        const sendWhatsAppReceipt = (sale) => {
+          const phone = sale.customerPhone || "+23278123456";
+          const cleanPhone = phone.replace(/\s/g, "").replace(/^\+/, "");
+          const items = sale.items
+            .map((i) => `${i.name} × ${i.qty} = ${fmt(i.total)}`)
+            .join("\n");
+          const msg = `🧾 *WHITE DOVE ENGINEERING FIRM*\n\nReceipt: ${sale.receiptNo}\nDate: ${new Date(sale.timestamp).toLocaleDateString()}\nCustomer: ${sale.customer}\n\n*Items:*\n${items}\n\n*Total: ${fmt(sale.total)}*\n\nPayment: ${sale.payment}`;
+          window.open(
+            `https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`,
+            "_blank",
+          );
+        };
+
+        // STATISTICS DATA
+        const totalRevenue = sales.reduce((a, s) => a + s.total, 0);
+        const totalItemsSold = sales.reduce(
+          (a, s) => a + s.items.reduce((b, i) => b + i.qty, 0),
+          0,
+        );
+        const avgOrderValue =
+          sales.length > 0 ? totalRevenue / sales.length : 0;
+
         const navItems = [
-          { id: "pos", label: "POS" },
-          { id: "dashboard", label: "Dashboard" }
+          { id: "pos", label: "🛒 POS" },
+          { id: "dashboard", label: "📊 Dashboard" },
+          { id: "history", label: "📄 History" },
         ];
 
-        return React.createElement("div", { style: { display: "flex", height: "100vh", overflow: "hidden", background: "var(--bg)" } },
-          // Sidebar
-          React.createElement("div", { className: "sidebar", style: { width: "220px", flexShrink: 0, display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" } },
-            React.createElement("div", { style: { padding: "1.25rem 1rem", borderBottom: "1px solid var(--border)" } },
-              React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "0.6rem" } },
-                React.createElement("span", { style: { fontSize: "1.5rem" } }, "🕊️"),
-                React.createElement("div", { className: "brand-text" },
-                  React.createElement("div", { className: "font-heading", style: { fontSize: "0.8rem", fontWeight: 800, color: "var(--text)" } }, "WHITE DOVE"),
-                  React.createElement("div", { style: { fontSize: "0.55rem", color: "var(--text3)" } }, "Seller POS")
-                )
-              )
+        return React.createElement(
+          "div",
+          {
+            style: {
+              display: "flex",
+              height: "100vh",
+              overflow: "hidden",
+              background: "var(--bg)",
+            },
+          },
+          // SIDEBAR
+          React.createElement(
+            "div",
+            { className: "sidebar" },
+            React.createElement(
+              "div",
+              {
+                style: {
+                  padding: "1.25rem 1rem",
+                  borderBottom: "1px solid var(--border)",
+                },
+              },
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.6rem",
+                  },
+                },
+                React.createElement(
+                  "span",
+                  { style: { fontSize: "1.8rem" } },
+                  "🕊️",
+                ),
+                React.createElement(
+                  "div",
+                  { className: "brand-text" },
+                  React.createElement(
+                    "div",
+                    {
+                      className: "font-heading",
+                      style: {
+                        fontSize: "0.75rem",
+                        fontWeight: 800,
+                        color: "#0A3D91",
+                      },
+                    },
+                    "WHITE DOVE",
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        fontSize: "0.5rem",
+                        color: "var(--text3)",
+                        fontWeight: 600,
+                      },
+                    },
+                    "SELLER POS",
+                  ),
+                ),
+              ),
             ),
-            React.createElement("div", { style: { padding: "0.75rem 1rem", borderBottom: "1px solid var(--border)" } },
-              React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "0.6rem", padding: "0.4rem 0.5rem", background: "rgba(16,185,129,0.08)", borderRadius: "10px" } },
-                React.createElement("div", { style: { width: "28px", height: "28px", borderRadius: "8px", background: "linear-gradient(135deg, #059669, #10B981)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "white", fontSize: "0.7rem" } }, session.userName.charAt(0).toUpperCase()),
-                React.createElement("div", { className: "seller-name" },
-                  React.createElement("div", { style: { fontSize: "0.7rem", fontWeight: 700, color: "var(--text)" } }, session.userName),
-                  React.createElement("div", { style: { fontSize: "0.55rem", color: "#34D399", fontWeight: 600 } }, "SELLER")
-                )
-              )
+            React.createElement(
+              "nav",
+              {
+                style: {
+                  flex: 1,
+                  padding: "0.75rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.25rem",
+                  overflowY: "auto",
+                },
+              },
+              navItems.map((item) =>
+                React.createElement(
+                  "div",
+                  {
+                    key: item.id,
+                    className: `nav-item ${section === item.id ? "active" : ""}`,
+                    onClick: () => setSection(item.id),
+                  },
+                  React.createElement("span", null, item.label),
+                ),
+              ),
             ),
-            React.createElement("nav", { style: { flex: 1, padding: "0.75rem", display: "flex", flexDirection: "column", gap: "0.25rem", overflowY: "auto" } },
-              navItems.map(item =>
-                React.createElement("div", { key: item.id, className: `nav-item ${section === item.id ? "active" : ""}`, onClick: () => setSection(item.id), style: { cursor: "pointer", padding: "0.625rem 0.75rem", borderRadius: "10px", fontSize: "0.875rem", fontWeight: 500, color: section === item.id ? "#34D399" : "var(--text2)", background: section === item.id ? "rgba(16,185,129,0.12)" : "transparent" } },
-                  React.createElement("span", null, item.label)
-                )
-              )
-            ),
-            React.createElement("div", { style: { padding: "0.75rem", borderTop: "1px solid var(--border)" } },
-              React.createElement("button", { onClick: onLogout, className: "nav-item", style: { color: "#EF4444", justifyContent: "flex-start", background: "none", border: "none", cursor: "pointer", width: "100%", padding: "0.625rem 0.75rem", borderRadius: "10px", fontSize: "0.875rem", fontWeight: 500, display: "flex", alignItems: "center", gap: "0.75rem" } },
+            React.createElement(
+              "div",
+              {
+                style: {
+                  padding: "0.75rem",
+                  borderTop: "1px solid var(--border)",
+                },
+              },
+              React.createElement(
+                "button",
+                {
+                  onClick: onLogout,
+                  className: "nav-item",
+                  style: { color: "#EF4444" },
+                },
                 React.createElement("span", null, "🚪"),
-                React.createElement("span", { className: "nav-text" }, "Sign Out")
-              )
-            )
-          ),
-          // Main Content
-          React.createElement("div", { style: { flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" } },
-            React.createElement("div", { style: { padding: "0.7rem 1.5rem", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--bg2)", flexWrap: "wrap", gap: "0.5rem" } },
-              React.createElement("h1", { className: "font-heading", style: { fontSize: "1.1rem", fontWeight: 800, color: "var(--text)" } }, section === "pos" ? "Point of Sale" : "My Dashboard"),
-              React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "0.5rem" } },
-                React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.65rem", fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.08)", padding: "0.2rem 0.7rem", borderRadius: "100px" } },
-                  React.createElement("div", { className: "pulse-dot", style: { width: "6px", height: "6px" } }),
-                  "Live"
-                )
-              )
+                React.createElement(
+                  "span",
+                  { className: "nav-text" },
+                  "Sign Out",
+                ),
+              ),
             ),
-            React.createElement("div", { style: { flex: 1, overflowY: "auto", padding: "1.5rem" } },
-              section === "pos" ? React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 340px", gap: "1.5rem" } },
-                // Products
-                React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "1rem" } },
-                  React.createElement("input", { className: "wd-input", placeholder: "Search products...", value: searchTerm, onChange: (e) => setSearchTerm(e.target.value) }),
-                  React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "0.75rem", maxHeight: "500px", overflowY: "auto", padding: "0.2rem" } },
-                    filteredProducts.map(p => {
-                      const inStock = p.stock > 0;
-                      return React.createElement("div", { key: p.id, className: "wd-card", style: { padding: "0.8rem", display: "flex", flexDirection: "column", gap: "0.3rem" } },
-                        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
-                          React.createElement("span", { style: { fontSize: "1.5rem" } }, p.emoji),
-                          React.createElement("span", { className: inStock ? "badge-in-stock" : "badge-out-stock", style: { fontSize: "0.55rem", fontWeight: 700, padding: "0.1rem 0.5rem", borderRadius: "100px" } }, inStock ? "In Stock" : "Out")
-                        ),
-                        React.createElement("div", { style: { fontWeight: 600, fontSize: "0.75rem", color: "var(--text)" } }, p.name),
-                        React.createElement("div", { style: { fontWeight: 700, color: "#10B981", fontSize: "0.8rem" } }, fmt(p.price)),
-                        React.createElement("div", { style: { fontSize: "0.6rem", color: "var(--text3)" } }, "📦 " + p.stock),
-                        React.createElement("button", { onClick: () => addToCart(p), disabled: !inStock, style: { width: "100%", padding: "0.3rem", borderRadius: "8px", border: "none", background: inStock ? "linear-gradient(135deg, #059669, #10B981)" : "var(--bg)", color: inStock ? "white" : "var(--text3)", fontWeight: 600, cursor: inStock ? "pointer" : "not-allowed", fontSize: "0.7rem" } }, inStock ? "Add" : "Out of Stock")
-                      );
-                    })
-                  )
+          ),
+          // MAIN CONTENT
+          React.createElement(
+            "div",
+            {
+              style: {
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+              },
+            },
+            React.createElement(
+              "div",
+              {
+                style: {
+                  padding: "1rem 2rem",
+                  borderBottom: "1px solid var(--border)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  background: "var(--bg2)",
+                },
+              },
+              React.createElement(
+                "div",
+                null,
+                React.createElement(
+                  "div",
+                  {
+                    className: "font-heading",
+                    style: {
+                      fontSize: "1.2rem",
+                      fontWeight: 800,
+                      color: "var(--text)",
+                    },
+                  },
+                  section === "pos"
+                    ? "Point of Sale"
+                    : section === "dashboard"
+                      ? "Dashboard"
+                      : "History",
                 ),
-                // Cart
-                React.createElement("div", { className: "wd-card cart-side", style: { padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem", height: "100%", minHeight: "380px" } },
-                  React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
-                    React.createElement("div", { className: "font-heading", style: { fontWeight: 700, color: "var(--text)", fontSize: "1rem" } }, "🛒 Order"),
-                    React.createElement("span", { style: { fontSize: "0.65rem", color: "var(--text3)", background: "var(--bg)", padding: "0.1rem 0.5rem", borderRadius: "6px" } }, cart.length + " items")
-                  ),
-                  React.createElement("div", { style: { flex: 1, overflowY: "auto", maxHeight: "200px" } },
-                    cart.length === 0 ? React.createElement("div", { style: { textAlign: "center", padding: "1.5rem 0", color: "var(--text3)" } }, "🛒 Empty") :
-                      cart.map(item => React.createElement("div", { key: item.id, style: { display: "flex", alignItems: "center", gap: "0.4rem", padding: "0.4rem", background: "var(--bg)", borderRadius: "8px", marginBottom: "0.3rem" } },
-                        React.createElement("span", null, item.emoji),
-                        React.createElement("div", { style: { flex: 1, minWidth: 0 } },
-                          React.createElement("div", { style: { fontSize: "0.7rem", fontWeight: 600, color: "var(--text)" } }, item.name),
-                          React.createElement("div", { style: { fontSize: "0.6rem", color: "var(--text3)" } }, fmt(item.price))
+              ),
+              React.createElement(
+                "div",
+                {
+                  style: { display: "flex", alignItems: "center", gap: "1rem" },
+                },
+                React.createElement(
+                  "span",
+                  { style: { fontSize: "0.9rem", color: "var(--text2)" } },
+                  new Date().toLocaleTimeString(),
+                ),
+                React.createElement(
+                  "button",
+                  {
+                    onClick: onThemeChange,
+                    style: {
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: "1.2rem",
+                    },
+                  },
+                  theme === "dark" ? "☀️" : "🌙",
+                ),
+              ),
+            ),
+            React.createElement(
+              "div",
+              { style: { flex: 1, overflowY: "auto", padding: "1.5rem 2rem" } },
+              // POS VIEW
+              section === "pos" &&
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "grid",
+                      gridTemplateColumns: "1fr 340px",
+                      gap: "1.5rem",
+                    },
+                  },
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1rem",
+                      },
+                    },
+                    React.createElement("input", {
+                      className: "wd-input",
+                      placeholder: "🔍 Search products...",
+                      value: searchTerm,
+                      onChange: (e) => setSearchTerm(e.target.value),
+                    }),
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          display: "grid",
+                          gridTemplateColumns:
+                            "repeat(auto-fill, minmax(150px, 1fr))",
+                          gap: "0.75rem",
+                          maxHeight: "550px",
+                          overflowY: "auto",
+                          padding: "0.2rem",
+                        },
+                      },
+                      filteredProducts.map((p) =>
+                        React.createElement(
+                          "div",
+                          {
+                            key: p.id,
+                            className: "wd-card",
+                            style: {
+                              padding: "0.8rem",
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "0.3rem",
+                            },
+                          },
+                          React.createElement(
+                            "div",
+                            { style: { fontSize: "1.5rem" } },
+                            p.emoji,
+                          ),
+                          React.createElement(
+                            "div",
+                            { style: { fontWeight: 600, fontSize: "0.75rem" } },
+                            p.name,
+                          ),
+                          React.createElement(
+                            "div",
+                            {
+                              style: {
+                                fontWeight: 700,
+                                color: "#10B981",
+                                fontSize: "0.8rem",
+                              },
+                            },
+                            fmt(p.price),
+                          ),
+                          React.createElement(
+                            "button",
+                            {
+                              onClick: () => addToCart(p),
+                              disabled: p.stock <= 0,
+                              style: {
+                                marginTop: "0.3rem",
+                                width: "100%",
+                                padding: "0.3rem",
+                                borderRadius: "8px",
+                                border: "none",
+                                background:
+                                  p.stock > 0 ? "#0A3D91" : "var(--bg)",
+                                color: p.stock > 0 ? "white" : "var(--text3)",
+                                cursor: p.stock > 0 ? "pointer" : "not-allowed",
+                                fontWeight: 600,
+                                fontSize: "0.7rem",
+                              },
+                            },
+                            p.stock > 0 ? "Add to Cart" : "Out of Stock",
+                          ),
                         ),
-                        React.createElement("div", { style: { display: "flex", alignItems: "center", gap: "0.2rem" } },
-                          React.createElement("button", { onClick: () => { if (item.qty > 1) setCart(cart.map(i => i.id === item.id ? { ...i, qty: i.qty - 1 } : i)); else setCart(cart.filter(i => i.id !== item.id)); }, style: { width: "22px", height: "22px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", cursor: "pointer" } }, "−"),
-                          React.createElement("span", { style: { fontWeight: 700, minWidth: "16px", textAlign: "center", fontSize: "0.75rem" } }, item.qty),
-                          React.createElement("button", { onClick: () => { if (item.qty < item.stock) setCart(cart.map(i => i.id === item.id ? { ...i, qty: i.qty + 1 } : i)); }, style: { width: "22px", height: "22px", borderRadius: "6px", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text)", cursor: "pointer" } }, "+")
-                        ),
-                        React.createElement("div", { style: { fontWeight: 700, color: "#10B981", fontSize: "0.7rem", minWidth: "50px", textAlign: "right" } }, fmt(item.price * item.qty)),
-                        React.createElement("button", { onClick: () => setCart(cart.filter(i => i.id !== item.id)), style: { background: "none", border: "none", color: "#EF4444", cursor: "pointer" } }, "✕")
-                      ))
-                  ),
-                  React.createElement("div", { style: { borderTop: "1px solid var(--border)", paddingTop: "0.75rem" } },
-                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", fontSize: "1.1rem", fontWeight: 800 } },
-                      React.createElement("span", null, "Total"),
-                      React.createElement("span", { style: { color: "#10B981" } }, fmt(cart.reduce((s, i) => s + i.price * i.qty, 0)))
+                      ),
                     ),
-                    React.createElement("button", { onClick: handleCheckout, disabled: cart.length === 0, style: { width: "100%", marginTop: "0.5rem", padding: "0.7rem", borderRadius: "12px", border: "none", background: cart.length === 0 ? "var(--bg)" : "linear-gradient(135deg, #059669, #10B981)", color: cart.length === 0 ? "var(--text3)" : "white", fontWeight: 700, fontSize: "0.9rem", cursor: cart.length === 0 ? "not-allowed" : "pointer" } },
-                      React.createElement("span", null, "✅ Complete Sale")
-                    )
-                  )
-                )
-              ) : React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: "1.5rem" } },
-                React.createElement("div", { className: "wd-card", style: { padding: "1.5rem 2rem", background: "linear-gradient(135deg, rgba(16,185,129,0.05), rgba(10,61,145,0.05))" } },
-                  React.createElement("div", { className: "font-heading", style: { fontSize: "1.4rem", fontWeight: 800, color: "var(--text)" } }, "👋 Welcome " + session.userName),
-                  React.createElement("div", { style: { color: "var(--text2)" } }, "Seller · White Dove Engineering")
-                ),
-                React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "1rem" } },
-                  React.createElement("div", { className: "wd-card kpi-card", style: { padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" } },
-                    React.createElement("span", { style: { fontSize: "0.7rem", fontWeight: 600, color: "var(--text2)" } }, "Total Sales"),
-                    React.createElement("span", { className: "font-heading", style: { fontSize: "1.5rem", fontWeight: 800, color: "#10B981" } }, sales.length)
                   ),
-                  React.createElement("div", { className: "wd-card kpi-card", style: { padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.5rem" } },
-                    React.createElement("span", { style: { fontSize: "0.7rem", fontWeight: 600, color: "var(--text2)" } }, "Revenue"),
-                    React.createElement("span", { className: "font-heading", style: { fontSize: "1.5rem", fontWeight: 800, color: "#0A3D91" } }, fmt(sales.reduce((a, s) => a + s.total, 0)))
-                  )
-                ),
-                React.createElement("div", { className: "wd-card", style: { overflow: "hidden" } },
-                  React.createElement("div", { style: { padding: "0.8rem 1.5rem", borderBottom: "1px solid var(--border)" } },
-                    React.createElement("div", { className: "font-heading", style: { fontWeight: 700, color: "var(--text)", fontSize: "0.9rem" } }, "📋 Recent Sales")
-                  ),
-                  React.createElement("div", { style: { maxHeight: "300px", overflowY: "auto" } },
-                    sales.length === 0 ? React.createElement("div", { style: { textAlign: "center", padding: "2rem", color: "var(--text3)" } }, "No sales yet") :
-                      React.createElement("table", { style: { width: "100%", borderCollapse: "collapse" }, className: "wd-table" },
-                        React.createElement("thead", null,
-                          React.createElement("tr", null,
-                            React.createElement("th", { style: { textAlign: "left", padding: "0.5rem 1rem", fontSize: "0.6rem", color: "var(--text3)", borderBottom: "1px solid var(--border)" } }, "Receipt"),
-                            React.createElement("th", { style: { textAlign: "right", padding: "0.5rem 1rem", fontSize: "0.6rem", color: "var(--text3)", borderBottom: "1px solid var(--border)" } }, "Total"),
-                            React.createElement("th", { style: { textAlign: "left", padding: "0.5rem 1rem", fontSize: "0.6rem", color: "var(--text3)", borderBottom: "1px solid var(--border)" } }, "Time")
+                  React.createElement(
+                    "div",
+                    {
+                      className: "wd-card",
+                      style: {
+                        padding: "1.25rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.75rem",
+                        height: "fit-content",
+                      },
+                    },
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          display: "flex",
+                          justifyContent: "space-between",
+                        },
+                      },
+                      React.createElement(
+                        "span",
+                        {
+                          className: "font-heading",
+                          style: { fontWeight: 700 },
+                        },
+                        "🛒 Order",
+                      ),
+                      React.createElement(
+                        "span",
+                        {
+                          style: { fontSize: "0.8rem", color: "var(--text3)" },
+                        },
+                        cart.length + " items",
+                      ),
+                    ),
+                    React.createElement("input", {
+                      className: "wd-input",
+                      placeholder: "Customer Name *",
+                      value: customerName,
+                      onChange: (e) => setCustomerName(e.target.value),
+                    }),
+                    React.createElement("input", {
+                      className: "wd-input",
+                      placeholder: "Phone (WhatsApp)",
+                      value: customerPhone,
+                      onChange: (e) => setCustomerPhone(e.target.value),
+                    }),
+                    React.createElement(
+                      "select",
+                      {
+                        className: "wd-input",
+                        value: paymentMethod,
+                        onChange: (e) => setPaymentMethod(e.target.value),
+                      },
+                      [
+                        "Cash",
+                        "Orange Money",
+                        "Afrimoney",
+                        "Bank Transfer",
+                      ].map((m) =>
+                        React.createElement("option", { key: m, value: m }, m),
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          flex: 1,
+                          maxHeight: "200px",
+                          overflowY: "auto",
+                          borderTop: "1px solid var(--border)",
+                          borderBottom: "1px solid var(--border)",
+                          padding: "0.5rem 0",
+                        },
+                      },
+                      cart.length === 0
+                        ? React.createElement(
+                            "div",
+                            {
+                              style: {
+                                textAlign: "center",
+                                padding: "1rem",
+                                color: "var(--text3)",
+                              },
+                            },
+                            "Cart empty",
                           )
+                        : cart.map((item) =>
+                            React.createElement(
+                              "div",
+                              {
+                                key: item.id,
+                                style: {
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  padding: "0.3rem 0",
+                                  borderBottom: "1px solid var(--border)",
+                                },
+                              },
+                              React.createElement(
+                                "div",
+                                null,
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontWeight: 600,
+                                      fontSize: "0.8rem",
+                                    },
+                                  },
+                                  item.name,
+                                ),
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontSize: "0.7rem",
+                                      color: "var(--text3)",
+                                    },
+                                  },
+                                  fmt(item.price),
+                                ),
+                              ),
+                              React.createElement(
+                                "div",
+                                {
+                                  style: {
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.3rem",
+                                  },
+                                },
+                                React.createElement(
+                                  "button",
+                                  {
+                                    onClick: () =>
+                                      setCart(
+                                        cart
+                                          .map((i) =>
+                                            i.id === item.id
+                                              ? {
+                                                  ...i,
+                                                  qty: Math.max(1, i.qty - 1),
+                                                }
+                                              : i,
+                                          )
+                                          .filter((i) => i.qty > 0),
+                                      ),
+                                    style: {
+                                      width: "20px",
+                                      height: "20px",
+                                      borderRadius: "4px",
+                                      border: "1px solid var(--border)",
+                                      background: "transparent",
+                                      cursor: "pointer",
+                                    },
+                                  },
+                                  "-",
+                                ),
+                                React.createElement(
+                                  "span",
+                                  {
+                                    style: {
+                                      minWidth: "20px",
+                                      textAlign: "center",
+                                    },
+                                  },
+                                  item.qty,
+                                ),
+                                React.createElement(
+                                  "button",
+                                  {
+                                    onClick: () =>
+                                      setCart(
+                                        cart.map((i) =>
+                                          i.id === item.id
+                                            ? { ...i, qty: i.qty + 1 }
+                                            : i,
+                                        ),
+                                      ),
+                                    style: {
+                                      width: "20px",
+                                      height: "20px",
+                                      borderRadius: "4px",
+                                      border: "1px solid var(--border)",
+                                      background: "transparent",
+                                      cursor: "pointer",
+                                    },
+                                  },
+                                  "+",
+                                ),
+                              ),
+                              React.createElement(
+                                "span",
+                                {
+                                  style: { fontWeight: 700, color: "#10B981" },
+                                },
+                                fmt(item.price * item.qty),
+                              ),
+                            ),
+                          ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          display: "flex",
+                          justifyContent: "space-between",
+                          fontSize: "1.1rem",
+                          fontWeight: 800,
+                        },
+                      },
+                      React.createElement("span", null, "Total"),
+                      React.createElement(
+                        "span",
+                        { style: { color: "#10B981" } },
+                        fmt(cart.reduce((s, i) => s + i.price * i.qty, 0)),
+                      ),
+                    ),
+                    React.createElement(
+                      "button",
+                      {
+                        onClick: handleCheckout,
+                        disabled: cart.length === 0,
+                        style: {
+                          width: "100%",
+                          padding: "0.7rem",
+                          borderRadius: "12px",
+                          border: "none",
+                          background: cart.length > 0 ? "#0A3D91" : "var(--bg)",
+                          color: cart.length > 0 ? "white" : "var(--text3)",
+                          fontWeight: 700,
+                          cursor: cart.length > 0 ? "pointer" : "not-allowed",
+                        },
+                      },
+                      "✅ Complete Sale",
+                    ),
+                  ),
+                ),
+              // DASHBOARD VIEW
+              section === "dashboard" &&
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1.5rem",
+                    },
+                  },
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fit, minmax(220px, 1fr))",
+                        gap: "1rem",
+                      },
+                    },
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-blue",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Total Revenue",
                         ),
-                        React.createElement("tbody", null,
-                          sales.slice(0, 10).map(s => React.createElement("tr", { key: s.id },
-                            React.createElement("td", { style: { padding: "0.4rem 1rem", fontSize: "0.75rem", color: "#60A5FA", fontFamily: "monospace" } }, s.receiptNo),
-                            React.createElement("td", { style: { padding: "0.4rem 1rem", fontSize: "0.8rem", fontWeight: 700, color: "#10B981", textAlign: "right" } }, fmt(s.total)),
-                            React.createElement("td", { style: { padding: "0.4rem 1rem", fontSize: "0.65rem", color: "var(--text3)" } }, new Date(s.timestamp).toLocaleTimeString())
-                          ))
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "1.2rem" } },
+                          "💰",
+                        ),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800 },
+                        },
+                        fmt(totalRevenue),
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-green",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Total Sales",
+                        ),
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "1.2rem" } },
+                          "📦",
+                        ),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800 },
+                        },
+                        sales.length,
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-orange",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Items Sold",
+                        ),
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "1.2rem" } },
+                          "🔢",
+                        ),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800 },
+                        },
+                        totalItemsSold,
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-purple",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Avg. Order",
+                        ),
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "1.2rem" } },
+                          "📊",
+                        ),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800 },
+                        },
+                        fmt(avgOrderValue),
+                      ),
+                    ),
+                  ),
+                  React.createElement(DashboardCharts, { sales: sales }),
+                ),
+              // HISTORY VIEW
+              section === "history" &&
+                React.createElement(
+                  "div",
+                  { className: "wd-card", style: { overflow: "hidden" } },
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        padding: "1rem 1.5rem",
+                        borderBottom: "1px solid var(--border)",
+                      },
+                    },
+                    React.createElement(
+                      "span",
+                      { className: "font-heading", style: { fontWeight: 700 } },
+                      "📄 Transaction History",
+                    ),
+                  ),
+                  React.createElement(
+                    "div",
+                    { style: { maxHeight: "500px", overflowY: "auto" } },
+                    sales.length === 0
+                      ? React.createElement(
+                          "div",
+                          {
+                            style: {
+                              textAlign: "center",
+                              padding: "2rem",
+                              color: "var(--text3)",
+                            },
+                          },
+                          "No transactions yet.",
                         )
-                      )
-                  )
-                )
-              )
-            )
-          )
+                      : React.createElement(
+                          "table",
+                          {
+                            style: {
+                              width: "100%",
+                              borderCollapse: "collapse",
+                            },
+                          },
+                          React.createElement(
+                            "thead",
+                            null,
+                            React.createElement(
+                              "tr",
+                              null,
+                              [
+                                "Receipt",
+                                "Customer",
+                                "Items",
+                                "Total",
+                                "Date",
+                                "Actions",
+                              ].map((h) =>
+                                React.createElement(
+                                  "th",
+                                  {
+                                    key: h,
+                                    style: {
+                                      textAlign: "left",
+                                      padding: "0.75rem 1rem",
+                                      borderBottom: "1px solid var(--border)",
+                                      color: "var(--text3)",
+                                      fontSize: "0.75rem",
+                                      fontWeight: 600,
+                                    },
+                                  },
+                                  h,
+                                ),
+                              ),
+                            ),
+                          ),
+                          React.createElement(
+                            "tbody",
+                            null,
+                            sales.map((s) =>
+                              React.createElement(
+                                "tr",
+                                {
+                                  key: s.id,
+                                  style: {
+                                    borderBottom: "1px solid var(--border)",
+                                  },
+                                },
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.75rem 1rem",
+                                      fontWeight: 600,
+                                      color: "#60A5FA",
+                                    },
+                                  },
+                                  s.receiptNo,
+                                ),
+                                React.createElement(
+                                  "td",
+                                  { style: { padding: "0.75rem 1rem" } },
+                                  s.customer,
+                                ),
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.75rem 1rem",
+                                      fontSize: "0.8rem",
+                                    },
+                                  },
+                                  s.items.reduce((a, i) => a + i.qty, 0) +
+                                    " items",
+                                ),
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.75rem 1rem",
+                                      fontWeight: 700,
+                                      color: "#10B981",
+                                    },
+                                  },
+                                  fmt(s.total),
+                                ),
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.75rem 1rem",
+                                      fontSize: "0.8rem",
+                                      color: "var(--text3)",
+                                    },
+                                  },
+                                  new Date(s.timestamp).toLocaleDateString(),
+                                ),
+                                React.createElement(
+                                  "td",
+                                  { style: { padding: "0.75rem 1rem" } },
+                                  React.createElement(
+                                    "div",
+                                    {
+                                      style: { display: "flex", gap: "0.3rem" },
+                                    },
+                                    React.createElement(
+                                      "button",
+                                      {
+                                        onClick: () => generateReceiptPDF(s),
+                                        style: {
+                                          padding: "0.2rem 0.5rem",
+                                          borderRadius: "4px",
+                                          background: "#0A3D91",
+                                          color: "white",
+                                          border: "none",
+                                          cursor: "pointer",
+                                        },
+                                      },
+                                      "PDF",
+                                    ),
+                                    React.createElement(
+                                      "button",
+                                      {
+                                        onClick: () => sendWhatsAppReceipt(s),
+                                        style: {
+                                          padding: "0.2rem 0.5rem",
+                                          borderRadius: "4px",
+                                          background: "#25D366",
+                                          color: "white",
+                                          border: "none",
+                                          cursor: "pointer",
+                                        },
+                                      },
+                                      "WA",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                  ),
+                ),
+            ),
+          ),
+          React.createElement(ToastContainer, {
+            toasts: toasts,
+            removeToast: (id) => setToasts(toasts.filter((t) => t.id !== id)),
+          }),
+          React.createElement(ReceiptModal, {
+            sale: receiptSale,
+            onClose: () => setReceiptSale(null),
+            onPrint: generateReceiptPDF,
+            onWhatsApp: sendWhatsAppReceipt,
+          }),
         );
       }
 
@@ -432,18 +2352,29 @@
           } catch {}
           return null;
         });
-
-        if (!session) {
+        const [theme, setTheme] = useState(
+          () => localStorage.getItem("wd_theme") || "dark",
+        );
+        useEffect(() => {
+          document.documentElement.setAttribute("data-theme", theme);
+          localStorage.setItem("wd_theme", theme);
+        }, [theme]);
+        if (!session)
           return React.createElement(LoginPage, { onLogin: setSession });
-        }
-
-        return React.createElement(POSDashboard, { session: session, onLogout: () => {
-          sessionStorage.removeItem("wd_seller_session");
-          setSession(null);
-        }});
+        return React.createElement(POSDashboard, {
+          session: session,
+          onLogout: () => {
+            sessionStorage.removeItem("wd_seller_session");
+            setSession(null);
+          },
+          theme: theme,
+          onThemeChange: () => setTheme(theme === "dark" ? "light" : "dark"),
+        });
       }
 
-      ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+      ReactDOM.createRoot(document.getElementById("root")).render(
+        React.createElement(App),
+      );
     </script>
   </body>
 </html>
