@@ -2,15 +2,20 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-    <title>Manager Portal — White Dove Engineering Firm</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes"
+    />
+    <title>Manager Portal — White Dove Engineering</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
       tailwind.config = {
@@ -18,374 +23,1167 @@
         theme: {
           extend: {
             colors: {
-              brand: { 50: "#EFF6FF", 100: "#DBEAFE", 200: "#BFDBFE", 300: "#93C5FD", 400: "#60A5FA", 500: "#3B82F6", 600: "#2563EB", 700: "#1D4ED8", 800: "#1E40AF", 900: "#0A3D91", 950: "#050D1A" },
-              surface: { dark: "#050D1A", card: "#0D1B30", border: "#1A3050", hover: "#162840" },
-              success: "#10B981", warning: "#F59E0B", danger: "#EF4444"
+              brand: {
+                50: "#EFF6FF",
+                100: "#DBEAFE",
+                200: "#BFDBFE",
+                300: "#93C5FD",
+                400: "#60A5FA",
+                500: "#3B82F6",
+                600: "#2563EB",
+                700: "#1D4ED8",
+                800: "#1E40AF",
+                900: "#0A3D91",
+                950: "#050D1A",
+              },
+              success: "#10B981",
+              warning: "#F59E0B",
+              danger: "#EF4444",
+              info: "#3B82F6",
             },
-            fontFamily: { sans: ["Inter", "system-ui", "sans-serif"], heading: ["Outfit", "sans-serif"] },
-            boxShadow: { glow: "0 0 40px rgba(10,61,145,0.3)", "glow-sm": "0 0 20px rgba(10,61,145,0.2)" }
-          }
-        }
+            fontFamily: {
+              sans: ["Inter", "system-ui", "sans-serif"],
+              heading: ["Outfit", "sans-serif"],
+            },
+          },
+        },
       };
     </script>
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font-family: "Inter", sans-serif; background: var(--bg); color: var(--text); transition: background 0.25s, color 0.25s; }
-      .font-heading { font-family: "Outfit", sans-serif; }
-      :root[data-theme="light"] { --bg: #f1f5f9; --bg2: #ffffff; --card: #ffffff; --border: #e2e8f0; --text: #0f172a; --text2: #475569; --text3: #94a3b8; --blue-bg: #eff6ff; --sidebar-bg: #ffffff; --notif-bg: #f1f5f9; }
-      :root[data-theme="dark"] { --bg: #050d1a; --bg2: #0d1b30; --card: #0d1b30; --border: #1a3050; --text: #f1f5f9; --text2: #94a3b8; --text3: #475569; --blue-bg: rgba(10,61,145,0.15); --sidebar-bg: #070f1d; --notif-bg: #0d1b30; }
-      .sidebar { background: var(--sidebar-bg); border-right: 1px solid var(--border); transition: width 0.2s; width: 240px; flex-shrink: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; position: sticky; top: 0; }
-      @media (max-width: 768px) { .sidebar { width: 64px !important; } .sidebar .nav-text, .sidebar .brand-text, .sidebar .seller-name { display: none; } .sidebar .brand-icon { margin: 0 auto; } .sidebar .nav-item { justify-content: center; padding: 0.6rem 0; } }
-      .wd-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; transition: background 0.25s, border 0.25s; }
-      .wd-input { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 10px; padding: 0.625rem 0.875rem; font-size: 0.875rem; width: 100%; outline: none; transition: border-color 0.2s, box-shadow 0.2s; font-family: "Inter", sans-serif; }
-      .wd-input:focus { border-color: #0a3d91; box-shadow: 0 0 0 3px rgba(10,61,145,0.15); }
-      .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 10px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s; color: var(--text2); background: transparent; border: none; width: 100%; text-align: left; }
-      .nav-item:hover { background: var(--bg2); color: var(--text); transform: translateX(4px); }
-      .nav-item.active { background: rgba(10,61,145,0.15); color: #60a5fa; font-weight: 600; }
-      .badge-in-stock { background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
-      .badge-low-stock { background: rgba(245,158,11,0.1); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
-      .badge-out-stock { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
-      .wd-table thead th { background: var(--bg); color: var(--text3); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
-      .wd-table tbody td { padding: 0.875rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
-      .wd-table tbody tr:hover { background: var(--bg); }
-      .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; animation: fadeIn 0.2s ease-out; }
-      .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 560px; box-shadow: 0 40px 120px rgba(0,0,0,0.6); animation: fadeIn 0.3s ease-out; max-height: 90vh; overflow-y: auto; margin: auto; position: relative; }
-      .modal-header { position: sticky; top: 0; background: var(--card); z-index: 10; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); border-top-left-radius: 20px; border-top-right-radius: 20px; display: flex; justify-content: space-between; align-items: center; }
-      .modal-footer { position: sticky; bottom: 0; background: var(--card); z-index: 10; padding: 1rem 1.5rem; border-top: 1px solid var(--border); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; }
-      .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-      .kpi-card { transition: transform 0.2s, box-shadow 0.2s; cursor: default; }
-      .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
-      .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; position: relative; }
-      .pulse-dot::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; background: rgba(16,185,129,0.3); animation: pulse 2s infinite; }
-      @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.5); opacity: 0; } }
-      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-      .animate-in { animation: fadeIn 0.3s ease-out both; }
-      .notif-panel { position: fixed; top: 0; right: -420px; width: 400px; height: 100vh; background: var(--card); border-left: 1px solid var(--border); z-index: 100; transition: right 0.3s cubic-bezier(0.4,0,0.2,1); box-shadow: -20px 0 60px rgba(0,0,0,0.3); display: flex; flex-direction: column; overflow: hidden; }
-      .notif-panel.open { right: 0; }
-      .notif-panel-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-      .notif-panel-body { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
-      .notif-item { padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; background: var(--bg); border: 1px solid var(--border); transition: all 0.2s; cursor: pointer; }
-      .notif-item:hover { border-color: rgba(10,61,145,0.3); }
-      .notif-item.unread { border-left: 3px solid #0a3d91; background: var(--blue-bg); }
-      .notif-item .notif-time { font-size: 0.65rem; color: var(--text3); margin-top: 0.25rem; }
-      .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 99; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-      .overlay.show { opacity: 1; pointer-events: all; }
-      .whatsapp-btn { background: #25d366; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; font-weight: 600; font-size: 0.875rem; }
-      .whatsapp-btn:hover { background: #1da851; transform: scale(1.02); }
-      .receipt-print { background: white; color: #0f172a; padding: 2rem; border-radius: 12px; max-width: 400px; margin: 0 auto; }
-      .receipt-print .company-name { font-size: 1.4rem; font-weight: 900; color: #0a3d91; font-family: "Outfit", sans-serif; text-align: center; }
-      .receipt-print .company-sub { font-size: 0.7rem; color: #64748b; text-align: center; }
-      .receipt-print .divider { border-top: 2px dashed #e2e8f0; margin: 1rem 0; }
-      .receipt-print .receipt-item { display: flex; justify-content: space-between; padding: 0.25rem 0; font-size: 0.8rem; border-bottom: 1px solid #f1f5f9; }
-      .receipt-print .receipt-total { display: flex; justify-content: space-between; padding: 0.75rem 0; border-top: 2px solid #0a3d91; font-size: 1rem; font-weight: 800; color: #0a3d91; }
-      .receipt-print .receipt-footer { text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0; font-size: 0.7rem; color: #94a3b8; }
-      .toast-container { position: fixed; top: 1rem; right: 1rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; max-width: 380px; }
-      .toast { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: slideIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275); display: flex; gap: 0.75rem; align-items: flex-start; }
-      @keyframes slideIn { from { opacity: 0; transform: translateX(40px) scale(0.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
-      ::-webkit-scrollbar { width: 5px; height: 5px; }
-      ::-webkit-scrollbar-track { background: transparent; }
-      ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-      @media (max-width: 768px) { .notif-panel { width: 100%; right: -100%; } .modal-box { max-width: 95%; max-height: 95vh; } .wd-table { font-size: 0.75rem; } .wd-table thead th, .wd-table tbody td { padding: 0.5rem 0.6rem; } .stats-grid { grid-template-columns: 1fr 1fr !important; } .chart-grid { grid-template-columns: 1fr !important; } .settings-grid { grid-template-columns: 1fr !important; } }
-      @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr !important; } .sidebar { width: 56px !important; } .sidebar .nav-item { padding: 0.4rem 0; } }
+      :root[data-theme="light"] {
+        --bg: #f8fafc;
+        --bg2: #ffffff;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --text: #0f172a;
+        --text2: #475569;
+        --text3: #94a3b8;
+        --sidebar-bg: #ffffff;
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f172a;
+        --bg2: #1e293b;
+        --card: #1e293b;
+        --border: #334155;
+        --text: #f1f5f9;
+        --text2: #94a3b8;
+        --text3: #64748b;
+        --sidebar-bg: #0f172a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        transition: all 0.3s;
+      }
+
+      .wd-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      }
+      .wd-card:hover {
+        border-color: #3b82f6;
+      }
+      .wd-input {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        color: var(--text);
+        border-radius: 10px;
+        padding: 0.6rem 0.875rem;
+        font-size: 0.875rem;
+        width: 100%;
+        outline: none;
+        transition: all 0.2s;
+      }
+      .wd-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-in {
+        animation: slideIn 0.4s ease-out both;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 10px;
+      }
+
+      /* MOBILE RESPONSIVE */
+      @media (max-width: 1024px) {
+        .stats-grid {
+          grid-template-columns: 1fr 1fr !important;
+        }
+        .chart-grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed !important;
+          bottom: 0 !important;
+          top: auto !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100% !important;
+          height: 70px !important;
+          flex-direction: row !important;
+          background: var(--card);
+          border-top: 1px solid var(--border);
+          z-index: 50;
+          padding: 0 0.5rem !important;
+          overflow-x: auto !important;
+        }
+        .sidebar .brand-text {
+          display: none !important;
+        }
+        .sidebar .nav-text {
+          display: none !important;
+        }
+        .sidebar .nav-item {
+          padding: 0.4rem 0.6rem !important;
+          justify-content: center !important;
+          font-size: 0.7rem !important;
+          flex-shrink: 0;
+        }
+        .main-layout {
+          display: flex !important;
+          flex-direction: column !important;
+          padding-bottom: 80px !important;
+        }
+        .sidebar-top {
+          display: none !important;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr 1fr !important;
+        }
+        .chart-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .kpi-card {
+          padding: 1rem !important;
+        }
+        .right-panel {
+          padding: 1rem !important;
+        }
+      }
+      @media (max-width: 480px) {
+        .stats-grid {
+          grid-template-columns: 1fr !important;
+        }
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
 
-    <script type="text/babel">
+    <script>
+      // ─── REACT SETUP ─────────────────────────────────────────────
       const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
-      const BROADCAST_KEY = "wd_realtime_sale";
+      // ─── SHARED CONFIG (MUST MATCH SELLER) ──────────────────────
+      const BROADCAST_KEY = "wd_realtime_channel";
       const AUTH_KEY = "wd_manager_session";
-      const DATA_KEY = "wd_data_v3";
-      const USERS_KEY = "wd_users";
+      const STORAGE_KEY = "wd_shared_data";
 
-      const getStoredData = () => { try { const raw = localStorage.getItem(DATA_KEY); if (raw) return JSON.parse(raw); } catch {} return null; };
-      const saveData = (data) => { try { localStorage.setItem(DATA_KEY, JSON.stringify(data)); } catch {} };
-      const getUsers = () => { try { const raw = localStorage.getItem(USERS_KEY); if (raw) return JSON.parse(raw); } catch {} return null; };
-      const saveUsers = (users) => { try { localStorage.setItem(USERS_KEY, JSON.stringify(users)); } catch {} };
-      const getSession = () => { try { const raw = sessionStorage.getItem(AUTH_KEY) || localStorage.getItem(AUTH_KEY + "_remember"); if (!raw) return null; const session = JSON.parse(raw); if (Date.now() > session.expiresAt) { sessionStorage.removeItem(AUTH_KEY); localStorage.removeItem(AUTH_KEY + "_remember"); return null; } return session; } catch { return null; } };
-
-      const DEFAULT_USERS = [
-        { id: "u1", name: "Achmed Thoronka", email: "achmed@whitedove.com", password: "Manager@2024", role: "manager", title: "Chief Executive Officer", phone: "+232 79 419 105", avatar: "AT", created: new Date().toISOString() },
-        { id: "u2", name: "Mariama Sesay", email: "mariama@whitedove.com", password: "Manager@2024", role: "manager", title: "Operations Manager", phone: "+232 34 592 373", avatar: "MS", created: new Date().toISOString() },
-        { id: "u3", name: "Mohamed Bangura", email: "mohamed@whitedove.com", password: "seller123", role: "seller", title: "Sales Representative", phone: "+232 78 400 785", avatar: "MB", created: new Date().toISOString() },
-        { id: "u4", name: "Sorie Kamara", email: "sorie@whitedove.com", password: "seller123", role: "seller", title: "Sales Representative", phone: "+232 76 123 456", avatar: "SK", created: new Date().toISOString() }
+      const SELLER_USERS = [
+        {
+          id: "s1",
+          name: "White Dove Solutions",
+          email: "Solutionswhitedoveelectrical@gmail.com",
+          password: "Whitedove2026",
+          role: "manager",
+          avatar: "WD",
+        },
       ];
 
-      // 71 PRODUCTS
-      const INITIAL_PRODUCTS = [
-        { id: "p1", name: "1.5 mm² Cable", sku: "CBL-1.5", category: "Cables", price: 1600, stock: 2, minStock: 1, emoji: "🔌" },
-        { id: "p2", name: "25 mm² Cable roll", sku: "CBL-25", category: "Cables", price: 2500, stock: 2, minStock: 1, emoji: "🔌" },
-        { id: "p3", name: "5 meter Snake light", sku: "LGT-SNK5", category: "Lighting", price: 150, stock: 20, minStock: 5, emoji: "💡" },
-        { id: "p4", name: "4 way Consumer unit", sku: "DB-4WAY", category: "Distribution", price: 550, stock: 3, minStock: 1, emoji: "🔧" },
-        { id: "p5", name: "6 way Consumer unit", sku: "DB-6WAY", category: "Distribution", price: 650, stock: 3, minStock: 1, emoji: "🔧" },
-        { id: "p6", name: "8 way Consumer unit", sku: "DB-8WAY", category: "Distribution", price: 750, stock: 3, minStock: 1, emoji: "🔧" },
-        { id: "p7", name: "3/3 Ivory box", sku: "BOX-33IV", category: "Boxes", price: 10, stock: 200, minStock: 20, emoji: "📦" },
-        { id: "p8", name: "3/6 Ivory box", sku: "BOX-36IV", category: "Boxes", price: 15, stock: 100, minStock: 10, emoji: "📦" },
-        { id: "p9", name: "3/3 Emkay box PVC", sku: "BOX-33PVC", category: "Boxes", price: 15, stock: 400, minStock: 40, emoji: "📦" },
-        { id: "p10", name: "3/6 Emkay box PVC", sku: "BOX-36PVC", category: "Boxes", price: 20, stock: 200, minStock: 20, emoji: "📦" },
-        { id: "p11", name: "7 Watts Spotlight Blue", sku: "SPT-7B", category: "Lighting", price: 40, stock: 50, minStock: 5, emoji: "💡" },
-        { id: "p12", name: "7 Watts Spotlight W/H", sku: "SPT-7W", category: "Lighting", price: 40, stock: 50, minStock: 5, emoji: "💡" },
-        { id: "p13", name: "Batten lamp holder", sku: "LMP-BT", category: "Lighting", price: 15, stock: 200, minStock: 20, emoji: "💡" },
-        { id: "p14", name: "Angle lamp holder", sku: "LMP-ANG", category: "Lighting", price: 15, stock: 100, minStock: 10, emoji: "💡" },
-        { id: "p15", name: "Ceiling Rose lamp holder", sku: "LMP-CR", category: "Lighting", price: 30, stock: 60, minStock: 6, emoji: "💡" },
-        { id: "p16", name: "4 Way Extension", sku: "EXT-4W", category: "Extension", price: 170, stock: 2, minStock: 1, emoji: "🔌" },
-        { id: "p17", name: "5 Way Extension", sku: "EXT-5W", category: "Extension", price: 200, stock: 2, minStock: 1, emoji: "🔌" },
-        { id: "p18", name: "4 Way with USB", sku: "EXT-4USB", category: "Extension", price: 230, stock: 2, minStock: 1, emoji: "🔌" },
-        { id: "p19", name: "5 meter Neon snake light", sku: "LGT-NEON5", category: "Lighting", price: 230, stock: 10, minStock: 3, emoji: "💡" },
-        { id: "p20", name: "16 mm x 2 core", sku: "CBL-16-2C", category: "Cables", price: 120, stock: 100, minStock: 20, emoji: "🔌" },
-        { id: "p21", name: "25 mm x 2 core", sku: "CBL-25-2C", category: "Cables", price: 20, stock: 500, minStock: 50, emoji: "🔌" },
-        { id: "p22", name: "Long blade fan", sku: "FAN-LB", category: "Fans", price: 600, stock: 3, minStock: 1, emoji: "🌀" },
-        { id: "p23", name: "Short blade fan", sku: "FAN-SB", category: "Fans", price: 550, stock: 4, minStock: 1, emoji: "🌀" },
-        { id: "p24", name: "5 Watt bulbs", sku: "BULB-5W", category: "Lighting", price: 13, stock: 100, minStock: 10, emoji: "💡" },
-        { id: "p25", name: "7 Watts bulbs", sku: "BULB-7W", category: "Lighting", price: 15, stock: 100, minStock: 10, emoji: "💡" },
-        { id: "p26", name: "9 Watts bulbs", sku: "BULB-9W", category: "Lighting", price: 17, stock: 100, minStock: 10, emoji: "💡" },
-        { id: "p27", name: "18 Watts bulbs", sku: "BULB-18W", category: "Lighting", price: 30, stock: 100, minStock: 10, emoji: "💡" },
-        { id: "p28", name: "Double socket B.G", sku: "SOC-DB", category: "Sockets", price: 50, stock: 50, minStock: 5, emoji: "🔌" },
-        { id: "p29", name: "Single Socket B.G", sku: "SOC-SB", category: "Sockets", price: 25, stock: 100, minStock: 10, emoji: "🔌" },
-        { id: "p30", name: "3 gang Switch Original", sku: "SW-3G", category: "Switches", price: 40, stock: 60, minStock: 6, emoji: "🔘" },
-        { id: "p31", name: "2 gang Switch Original", sku: "SW-2G", category: "Switches", price: 35, stock: 60, minStock: 6, emoji: "🔘" },
-        { id: "p32", name: "1 gang Switch Original", sku: "SW-1G", category: "Switches", price: 30, stock: 60, minStock: 6, emoji: "🔘" },
-        { id: "p33", name: "Double Socket", sku: "SOC-D", category: "Sockets", price: 70, stock: 35, minStock: 5, emoji: "🔌" },
-        { id: "p34", name: "Single Socket", sku: "SOC-S", category: "Sockets", price: 35, stock: 60, minStock: 6, emoji: "🔌" },
-        { id: "p35", name: "A/C Switch Original", sku: "SW-AC", category: "Switches", price: 35, stock: 24, minStock: 4, emoji: "🔘" },
-        { id: "p36", name: "Earth rod (Big)", sku: "ERD-BIG", category: "Earthing", price: 130, stock: 20, minStock: 4, emoji: "⛓️" },
-        { id: "p37", name: "Double Socket Gold", sku: "SOC-DG", category: "Sockets", price: 120, stock: 7, minStock: 1, emoji: "✨" },
-        { id: "p38", name: "Single Socket Gold", sku: "SOC-SG", category: "Sockets", price: 60, stock: 12, minStock: 2, emoji: "✨" },
-        { id: "p39", name: "1 gang Switch Gold", sku: "SW-1GG", category: "Switches", price: 40, stock: 12, minStock: 2, emoji: "✨" },
-        { id: "p40", name: "2 gang Switch Gold", sku: "SW-2GG", category: "Switches", price: 50, stock: 12, minStock: 2, emoji: "✨" },
-        { id: "p41", name: "3 gang Switch Gold", sku: "SW-3GG", category: "Switches", price: 60, stock: 12, minStock: 2, emoji: "✨" },
-        { id: "p42", name: "Double Socket Black", sku: "SOC-DB", category: "Sockets", price: 120, stock: 7, minStock: 1, emoji: "⚫" },
-        { id: "p43", name: "Single Socket Black", sku: "SOC-SB", category: "Sockets", price: 60, stock: 12, minStock: 2, emoji: "⚫" },
-        { id: "p44", name: "1 gang Switch Black", sku: "SW-1GB", category: "Switches", price: 35, stock: 12, minStock: 2, emoji: "⚫" },
-        { id: "p45", name: "2 gang Switch Black", sku: "SW-2GB", category: "Switches", price: 45, stock: 12, minStock: 2, emoji: "⚫" },
-        { id: "p46", name: "3 gang Switch Black", sku: "SW-3GB", category: "Switches", price: 60, stock: 12, minStock: 2, emoji: "⚫" },
-        { id: "p47", name: "Rechargeable bulbs", sku: "BULB-RCH", category: "Lighting", price: 80, stock: 20, minStock: 4, emoji: "💡" },
-        { id: "p48", name: "Isolating tape", sku: "TAPE-ISO", category: "Accessories", price: 10, stock: 200, minStock: 20, emoji: "📏" },
-        { id: "p49", name: "32A Knife changeover 2P", sku: "KNF-32A", category: "Breakers", price: 50, stock: 10, minStock: 2, emoji: "⚡" },
-        { id: "p50", name: "100A Knife changeover 2P", sku: "KNF-100A", category: "Breakers", price: 100, stock: 5, minStock: 1, emoji: "⚡" },
-        { id: "p51", name: "63A Knife changeover 2P", sku: "KNF-63A", category: "Breakers", price: 70, stock: 5, minStock: 1, emoji: "⚡" },
-        { id: "p52", name: "100A 3P Knife changeover", sku: "KNF-100A3P", category: "Breakers", price: 150, stock: 5, minStock: 1, emoji: "⚡" },
-        { id: "p53", name: "Single Circuit breaker 10A", sku: "MCB-10A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
-        { id: "p54", name: "Single Circuit breaker 16A", sku: "MCB-16A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
-        { id: "p55", name: "Single Circuit breaker 20A", sku: "MCB-20A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
-        { id: "p56", name: "Single Circuit breaker 32A", sku: "MCB-32A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
-        { id: "p57", name: "Single Circuit breaker 63A", sku: "MCB-63A", category: "Breakers", price: 30, stock: 12, minStock: 2, emoji: "⚡" },
-        { id: "p58", name: "63A Breaker", sku: "MCB-63AH", category: "Breakers", price: 80, stock: 6, minStock: 1, emoji: "⚡" },
-        { id: "p59", name: "1 gang switch B.G", sku: "SW-1GBG", category: "Switches", price: 15, stock: 50, minStock: 5, emoji: "🔘" },
-        { id: "p60", name: "2 gang switch B.G", sku: "SW-2GBG", category: "Switches", price: 20, stock: 50, minStock: 5, emoji: "🔘" },
-        { id: "p61", name: "Double USB socket", sku: "USB-D", category: "Sockets", price: 200, stock: 13, minStock: 2, emoji: "🔌" },
-        { id: "p62", name: "48W (30W) Panel white LED", sku: "PANEL-48W", category: "Lighting", price: 180, stock: 10, minStock: 2, emoji: "💡" },
-        { id: "p63", name: "36W (18W) Panel white LED", sku: "PANEL-36W", category: "Lighting", price: 100, stock: 10, minStock: 2, emoji: "💡" },
-        { id: "p64", name: "24W (12W) Panel white LED", sku: "PANEL-24W", category: "Lighting", price: 80, stock: 10, minStock: 2, emoji: "💡" },
-        { id: "p65", name: "18W (6W) Panel white LED", sku: "PANEL-18W", category: "Lighting", price: 60, stock: 10, minStock: 2, emoji: "💡" },
-        { id: "p66", name: "18W Remote light", sku: "REM-18W", category: "Lighting", price: 150, stock: 10, minStock: 2, emoji: "💡" },
-        { id: "p67", name: "12W Remote light", sku: "REM-12W", category: "Lighting", price: 120, stock: 10, minStock: 2, emoji: "💡" },
-        { id: "p68", name: "6W Remote light", sku: "REM-6W", category: "Lighting", price: 100, stock: 10, minStock: 2, emoji: "💡" },
-        { id: "p69", name: "3/4 Trunking", sku: "TRNK-34", category: "Accessories", price: 40, stock: 25, minStock: 5, emoji: "📏" },
-        { id: "p70", name: "10 mm Cable clips", sku: "CLIP-10", category: "Accessories", price: 25, stock: 5, minStock: 1, emoji: "📎" },
-        { id: "p71", name: "12 mm Cable clips", sku: "CLIP-12", category: "Accessories", price: 30, stock: 5, minStock: 1, emoji: "📎" }
-      ];
-
-      const INITIAL_SALES = [];
-
-      const Icon = ({ name, size = 20, className = "" }) => {
-        const icons = {
-          dashboard: (<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>),
-          inventory: (<><path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></>),
-          sales: (<><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></>),
-          analytics: (<><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>),
-          users: (<><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></>),
-          logs: (<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></>),
-          settings: (<><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></>),
-          logout: (<><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>),
-          bell: (<><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></>),
-          sun: (<><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></>),
-          moon: <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>,
-          monitor: (<><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></>),
-          plus: (<><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>),
-          edit: (<><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></>),
-          trash: (<><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></>),
-          search: (<><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></>),
-          x: (<><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>),
-          check: <polyline points="20 6 9 17 4 12"/>,
-          alert: (<><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></>),
-          trend: (<><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>),
-          print: (<><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></>),
-          download: (<><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>),
-          eye: (<><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>),
-          package: (<><path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></>),
-          zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>,
-          refresh: (<><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></>),
-          whatsapp: (<><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></>),
-          userPlus: (<><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></>),
-          mail: (<><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7"/></>),
-          key: (<><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></>)
-        };
-        return (<svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className}>{icons[name]}</svg>);
+      // Load/Save Shared Data to LocalStorage so they sync on refresh
+      const getSharedData = () => {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          return raw ? JSON.parse(raw) : null;
+        } catch {
+          return null;
+        }
+      };
+      const saveSharedData = (data) => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch {}
       };
 
-      const Logo = ({ size = 36, className = "" }) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 120 120" fill="none" className={className}>
-          <circle cx="60" cy="60" r="56" stroke="rgba(74,144,226,0.4)" strokeWidth="2"/>
-          <path d="M55 38 C62 30 75 32 78 40 C82 50 72 58 62 60 L76 66 C64 75 52 68 48 58 C44 48 47 40 55 38Z" fill="#0A3D91" opacity="0.95"/>
-          <path d="M50 42 C38 34 24 40 26 52 C34 46 42 46 50 48Z" fill="#0A3D91" opacity="0.8"/>
-          <line x1="75" y1="33" x2="85" y2="22" stroke="#22C55E" strokeWidth="1.5"/>
-          <ellipse cx="82" cy="25" rx="3" ry="4.5" fill="#22C55E" transform="rotate(-30 82 25)"/>
-          <ellipse cx="87" cy="20" rx="2.5" ry="4" fill="#22C55E" transform="rotate(-45 87 20)"/>
-          <rect x="28" y="68" width="10" height="28" fill="#0A3D91" rx="1"/>
-          <rect x="40" y="62" width="10" height="34" fill="#0A3D91" rx="1"/>
-          <rect x="52" y="70" width="10" height="26" fill="#6B7280" rx="1"/>
-          <polygon points="62,62 72,72 52,72" fill="#0A3D91"/>
-          <circle cx="88" cy="80" r="12" fill="none" stroke="#0A3D91" strokeWidth="3"/>
-          <circle cx="88" cy="80" r="5" fill="#0A3D91"/>
-          <rect x="86" y="65" width="4" height="6" fill="#0A3D91" rx="1"/>
-          <rect x="86" y="89" width="4" height="6" fill="#0A3D91" rx="1"/>
-          <rect x="73" y="78" width="6" height="4" fill="#0A3D91" rx="1"/>
-          <rect x="97" y="78" width="6" height="4" fill="#0A3D91" rx="1"/>
-          <path d="M90 74 L86 80 L89 80 L86 87 L92 79 L89 79Z" fill="white" opacity="0.9"/>
-          <text x="60" y="108" fontFamily="'Outfit', sans-serif" fontSize="8" fontWeight="800" fill="#0A3D91" textAnchor="middle">WHITE DOVE</text>
-        </svg>
-      );
+      const INITIAL_PRODUCTS = [
+        { id: "p1", name: "1.5 mm² Cable", price: 1600, stock: 2, emoji: "🔌" },
+        {
+          id: "p2",
+          name: "25 mm² Cable roll",
+          price: 2500,
+          stock: 2,
+          emoji: "🔌",
+        },
+        {
+          id: "p3",
+          name: "5 meter Snake light",
+          price: 150,
+          stock: 20,
+          emoji: "💡",
+        },
+        {
+          id: "p4",
+          name: "4 way Consumer unit",
+          price: 550,
+          stock: 3,
+          emoji: "🔧",
+        },
+        {
+          id: "p5",
+          name: "6 way Consumer unit",
+          price: 650,
+          stock: 3,
+          emoji: "🔧",
+        },
+        {
+          id: "p6",
+          name: "8 way Consumer unit",
+          price: 750,
+          stock: 3,
+          emoji: "🔧",
+        },
+        { id: "p7", name: "3/3 Ivory box", price: 10, stock: 200, emoji: "📦" },
+        { id: "p8", name: "3/6 Ivory box", price: 15, stock: 100, emoji: "📦" },
+        {
+          id: "p9",
+          name: "3/3 Emkay box PVC",
+          price: 15,
+          stock: 400,
+          emoji: "📦",
+        },
+        {
+          id: "p10",
+          name: "3/6 Emkay box PVC",
+          price: 20,
+          stock: 200,
+          emoji: "📦",
+        },
+        {
+          id: "p11",
+          name: "7 Watts Spotlight Blue",
+          price: 40,
+          stock: 50,
+          emoji: "💡",
+        },
+        {
+          id: "p12",
+          name: "7 Watts Spotlight W/H",
+          price: 40,
+          stock: 50,
+          emoji: "💡",
+        },
+        {
+          id: "p13",
+          name: "Batten lamp holder",
+          price: 15,
+          stock: 200,
+          emoji: "💡",
+        },
+        {
+          id: "p14",
+          name: "Angle lamp holder",
+          price: 15,
+          stock: 100,
+          emoji: "💡",
+        },
+        {
+          id: "p15",
+          name: "Ceiling Rose lamp holder",
+          price: 30,
+          stock: 60,
+          emoji: "💡",
+        },
+        {
+          id: "p16",
+          name: "4 Way Extension",
+          price: 170,
+          stock: 2,
+          emoji: "🔌",
+        },
+        {
+          id: "p17",
+          name: "5 Way Extension",
+          price: 200,
+          stock: 2,
+          emoji: "🔌",
+        },
+        {
+          id: "p18",
+          name: "4 Way with USB",
+          price: 230,
+          stock: 2,
+          emoji: "🔌",
+        },
+        {
+          id: "p19",
+          name: "5 meter Neon snake light",
+          price: 230,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p20",
+          name: "16 mm x 2 core",
+          price: 120,
+          stock: 100,
+          emoji: "🔌",
+        },
+        {
+          id: "p21",
+          name: "25 mm x 2 core",
+          price: 20,
+          stock: 500,
+          emoji: "🔌",
+        },
+        {
+          id: "p22",
+          name: "Long blade fan",
+          price: 600,
+          stock: 3,
+          emoji: "🌀",
+        },
+        {
+          id: "p23",
+          name: "Short blade fan",
+          price: 550,
+          stock: 4,
+          emoji: "🌀",
+        },
+        { id: "p24", name: "5 Watt bulbs", price: 13, stock: 100, emoji: "💡" },
+        {
+          id: "p25",
+          name: "7 Watts bulbs",
+          price: 15,
+          stock: 100,
+          emoji: "💡",
+        },
+        {
+          id: "p26",
+          name: "9 Watts bulbs",
+          price: 17,
+          stock: 100,
+          emoji: "💡",
+        },
+        {
+          id: "p27",
+          name: "18 Watts bulbs",
+          price: 30,
+          stock: 100,
+          emoji: "💡",
+        },
+        {
+          id: "p28",
+          name: "Double socket B.G",
+          price: 50,
+          stock: 50,
+          emoji: "🔌",
+        },
+        {
+          id: "p29",
+          name: "Single Socket B.G",
+          price: 25,
+          stock: 100,
+          emoji: "🔌",
+        },
+        {
+          id: "p30",
+          name: "3 gang Switch Original",
+          price: 40,
+          stock: 60,
+          emoji: "🔘",
+        },
+        {
+          id: "p31",
+          name: "2 gang Switch Original",
+          price: 35,
+          stock: 60,
+          emoji: "🔘",
+        },
+        {
+          id: "p32",
+          name: "1 gang Switch Original",
+          price: 30,
+          stock: 60,
+          emoji: "🔘",
+        },
+        { id: "p33", name: "Double Socket", price: 70, stock: 35, emoji: "🔌" },
+        { id: "p34", name: "Single Socket", price: 35, stock: 60, emoji: "🔌" },
+        {
+          id: "p35",
+          name: "A/C Switch Original",
+          price: 35,
+          stock: 24,
+          emoji: "🔘",
+        },
+        {
+          id: "p36",
+          name: "Earth rod (Big)",
+          price: 130,
+          stock: 20,
+          emoji: "⛓️",
+        },
+        {
+          id: "p37",
+          name: "Double Socket Gold",
+          price: 120,
+          stock: 7,
+          emoji: "✨",
+        },
+        {
+          id: "p38",
+          name: "Single Socket Gold",
+          price: 60,
+          stock: 12,
+          emoji: "✨",
+        },
+        {
+          id: "p39",
+          name: "1 gang Switch Gold",
+          price: 40,
+          stock: 12,
+          emoji: "✨",
+        },
+        {
+          id: "p40",
+          name: "2 gang Switch Gold",
+          price: 50,
+          stock: 12,
+          emoji: "✨",
+        },
+        {
+          id: "p41",
+          name: "3 gang Switch Gold",
+          price: 60,
+          stock: 12,
+          emoji: "✨",
+        },
+        {
+          id: "p42",
+          name: "Double Socket Black",
+          price: 120,
+          stock: 7,
+          emoji: "⚫",
+        },
+        {
+          id: "p43",
+          name: "Single Socket Black",
+          price: 60,
+          stock: 12,
+          emoji: "⚫",
+        },
+        {
+          id: "p44",
+          name: "1 gang Switch Black",
+          price: 35,
+          stock: 12,
+          emoji: "⚫",
+        },
+        {
+          id: "p45",
+          name: "2 gang Switch Black",
+          price: 45,
+          stock: 12,
+          emoji: "⚫",
+        },
+        {
+          id: "p46",
+          name: "3 gang Switch Black",
+          price: 60,
+          stock: 12,
+          emoji: "⚫",
+        },
+        {
+          id: "p47",
+          name: "Rechargeable bulbs",
+          price: 80,
+          stock: 20,
+          emoji: "💡",
+        },
+        {
+          id: "p48",
+          name: "Isolating tape",
+          price: 10,
+          stock: 200,
+          emoji: "📏",
+        },
+        {
+          id: "p49",
+          name: "32A Knife changeover 2P",
+          price: 50,
+          stock: 10,
+          emoji: "⚡",
+        },
+        {
+          id: "p50",
+          name: "100A Knife changeover 2P",
+          price: 100,
+          stock: 5,
+          emoji: "⚡",
+        },
+        {
+          id: "p51",
+          name: "63A Knife changeover 2P",
+          price: 70,
+          stock: 5,
+          emoji: "⚡",
+        },
+        {
+          id: "p52",
+          name: "100A 3P Knife changeover",
+          price: 150,
+          stock: 5,
+          emoji: "⚡",
+        },
+        {
+          id: "p53",
+          name: "Single Circuit breaker 10A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        {
+          id: "p54",
+          name: "Single Circuit breaker 16A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        {
+          id: "p55",
+          name: "Single Circuit breaker 20A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        {
+          id: "p56",
+          name: "Single Circuit breaker 32A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        {
+          id: "p57",
+          name: "Single Circuit breaker 63A",
+          price: 30,
+          stock: 12,
+          emoji: "⚡",
+        },
+        { id: "p58", name: "63A Breaker", price: 80, stock: 6, emoji: "⚡" },
+        {
+          id: "p59",
+          name: "1 gang switch B.G",
+          price: 15,
+          stock: 50,
+          emoji: "🔘",
+        },
+        {
+          id: "p60",
+          name: "2 gang switch B.G",
+          price: 20,
+          stock: 50,
+          emoji: "🔘",
+        },
+        {
+          id: "p61",
+          name: "Double USB socket",
+          price: 200,
+          stock: 13,
+          emoji: "🔌",
+        },
+        {
+          id: "p62",
+          name: "48W Panel white LED",
+          price: 180,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p63",
+          name: "36W Panel white LED",
+          price: 100,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p64",
+          name: "24W Panel white LED",
+          price: 80,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p65",
+          name: "18W Panel white LED",
+          price: 60,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p66",
+          name: "18W Remote light",
+          price: 150,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p67",
+          name: "12W Remote light",
+          price: 120,
+          stock: 10,
+          emoji: "💡",
+        },
+        {
+          id: "p68",
+          name: "6W Remote light",
+          price: 100,
+          stock: 10,
+          emoji: "💡",
+        },
+        { id: "p69", name: "3/4 Trunking", price: 40, stock: 25, emoji: "📏" },
+        {
+          id: "p70",
+          name: "10 mm Cable clips",
+          price: 25,
+          stock: 5,
+          emoji: "📎",
+        },
+        {
+          id: "p71",
+          name: "12 mm Cable clips",
+          price: 30,
+          stock: 5,
+          emoji: "📎",
+        },
+      ];
+      const INITIAL_SALES = [];
+      const fmt = (n) =>
+        `SLE ${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const fmtDate = (iso) =>
+        new Date(iso).toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
 
-      const fmt = (n) => `SLE ${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      const fmtDate = (iso) => new Date(iso).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
-      const fmtShort = (iso) => new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-      const today = () => new Date().toISOString().split("T")[0];
-      const isToday = (iso) => iso && iso.startsWith(today());
-
-      const ToastContainer = ({ toasts, onDismiss }) => (
-        <div className="toast-container">
-          {toasts.map((t) => (
-            <div key={t.id} className="toast">
-              <div className={`mt-0.5 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm ${t.type === "sale" ? "bg-blue-500/20 text-blue-400" : t.type === "success" ? "bg-emerald-500/20 text-emerald-400" : t.type === "error" ? "bg-red-500/20 text-red-400" : "bg-amber-500/20 text-amber-400"}`}>
-                {t.type === "sale" ? "⚡" : t.type === "success" ? "✓" : t.type === "error" ? "✕" : "●"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-sm" style={{ color: "var(--text)" }}>{t.title}</div>
-                <div className="text-xs mt-0.5" style={{ color: "var(--text2)" }}>{t.message}</div>
-              </div>
-              <button onClick={() => onDismiss(t.id)} className="text-slate-400 hover:text-slate-200 flex-shrink-0 mt-0.5"><Icon name="x" size={14} /></button>
-            </div>
-          ))}
-        </div>
-      );
-
-      const LoginPage = ({ onLogin }) => {
-        const [email, setEmail] = useState("");
-        const [password, setPassword] = useState("");
-        const [remember, setRemember] = useState(false);
-        const [error, setError] = useState("");
-        const [loading, setLoading] = useState(false);
-        const [showPw, setShowPw] = useState(false);
-        const [showReset, setShowReset] = useState(false);
-        const [resetEmail, setResetEmail] = useState("");
-        const [resetMessage, setResetMessage] = useState("");
-
-        const handleLogin = async (e) => {
-          e.preventDefault();
-          setLoading(true);
-          setError("");
-          await new Promise((r) => setTimeout(r, 600));
-          const users = getUsers() || DEFAULT_USERS;
-          const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
-          if (user) {
-            const session = {
-              userId: user.id,
-              userName: user.name,
-              userTitle: user.title || "Manager",
-              avatar: user.avatar,
-              role: user.role || "manager",
-              expiresAt: Date.now() + (remember ? 30 * 24 * 60 * 60 * 1000 : 8 * 60 * 60 * 1000)
-            };
-            if (remember) { localStorage.setItem(AUTH_KEY + "_remember", JSON.stringify(session)); }
-            else { sessionStorage.setItem(AUTH_KEY, JSON.stringify(session)); }
-            onLogin(session);
-          } else {
-            setError("Invalid email or password. Please try again.");
-          }
-          setLoading(false);
+      // ─── ICON HELPER ─────────────────────────────────────────────
+      const Icon = ({ name, size = 20, className = "" }) => {
+        const icons = {
+          dashboard: (
+            <>
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+            </>
+          ),
+          inventory: (
+            <>
+              <path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </>
+          ),
+          sales: (
+            <>
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+            </>
+          ),
+          analytics: (
+            <>
+              <line x1="18" y1="20" x2="18" y2="10" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="6" y1="20" x2="6" y2="14" />
+            </>
+          ),
+          users: (
+            <>
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87" />
+              <path d="M16 3.13a4 4 0 010 7.75" />
+            </>
+          ),
+          logs: (
+            <>
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </>
+          ),
+          settings: (
+            <>
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06-.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </>
+          ),
+          logout: (
+            <>
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </>
+          ),
+          bell: (
+            <>
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 01-3.46 0" />
+            </>
+          ),
+          sun: (
+            <>
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </>
+          ),
+          moon: <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />,
+          monitor: (
+            <>
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="17" />
+            </>
+          ),
+          plus: (
+            <>
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </>
+          ),
+          edit: (
+            <>
+              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </>
+          ),
+          trash: (
+            <>
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
+              <path d="M10 11v6" />
+              <path d="M14 11v6" />
+              <path d="M9 6V4h6v2" />
+            </>
+          ),
+          search: (
+            <>
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </>
+          ),
+          x: (
+            <>
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </>
+          ),
+          check: <polyline points="20 6 9 17 4 12" />,
+          alert: (
+            <>
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </>
+          ),
+          trend: (
+            <>
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+              <polyline points="17 6 23 6 23 12" />
+            </>
+          ),
+          print: (
+            <>
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </>
+          ),
+          download: (
+            <>
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </>
+          ),
+          eye: (
+            <>
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </>
+          ),
+          package: (
+            <>
+              <path d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+              <line x1="12" y1="22.08" x2="12" y2="12" />
+            </>
+          ),
+          zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />,
+          refresh: (
+            <>
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+            </>
+          ),
+          whatsapp: (
+            <>
+              <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
+            </>
+          ),
+          userPlus: (
+            <>
+              <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <line x1="19" y1="8" x2="19" y2="14" />
+              <line x1="22" y1="11" x2="16" y2="11" />
+            </>
+          ),
+          mail: (
+            <>
+              <rect x="2" y="4" width="20" height="16" rx="2" />
+              <path d="M22 7l-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7" />
+            </>
+          ),
+          key: (
+            <>
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+            </>
+          ),
         };
-
         return (
-          <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1.5rem", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(10,61,145,0.25) 0%, transparent 65%)", pointerEvents: "none", zIndex: 0 }} />
-            <div className="animate-in" style={{ position: "relative", zIndex: 10, width: "100%", maxWidth: "420px" }}>
-              <a href="index.html" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", color: "var(--text3)", fontSize: "0.8rem", marginBottom: "2rem", textDecoration: "none" }}>← Back to Portal</a>
-              <div className="wd-card" style={{ borderRadius: "20px", padding: "clamp(1.5rem, 4vw, 2.5rem)", boxShadow: "0 40px 120px rgba(0,0,0,0.4)" }}>
-                <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-                  <Logo size={48} />
-                  <div style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#60A5FA", marginTop: "0.5rem" }}>EXECUTIVE ACCESS</div>
-                  <div className="font-heading" style={{ fontSize: "clamp(1.2rem, 3vw, 1.5rem)", fontWeight: 800, color: "var(--text)" }}>Manager Portal</div>
-                  <div style={{ fontSize: "0.8rem", color: "var(--text2)", marginTop: "0.25rem" }}>White Dove Engineering Firm</div>
-                </div>
-                <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <input type="email" className="wd-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-                  <div style={{ position: "relative" }}>
-                    <input type={showPw ? "text" : "password"} className="wd-input" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required style={{ paddingRight: "2.5rem" }} />
-                    <button type="button" onClick={() => setShowPw(!showPw)} style={{ position: "absolute", right: "0.75rem", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--text3)", cursor: "pointer" }}><Icon name="eye" size={16} /></button>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.5rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <input type="checkbox" id="remember" checked={remember} onChange={(e) => setRemember(e.target.checked)} style={{ accentColor: "#0A3D91" }} />
-                      <label htmlFor="remember" style={{ fontSize: "0.8rem", color: "var(--text2)" }}>Remember me</label>
-                    </div>
-                    <button type="button" onClick={() => setShowReset(true)} style={{ fontSize: "0.8rem", color: "#60A5FA", background: "none", border: "none", cursor: "pointer" }}>Forgot password?</button>
-                  </div>
-                  {error && <div style={{ color: "#EF4444", fontSize: "0.8rem" }}>{error}</div>}
-                  <button type="submit" disabled={loading} style={{ background: loading ? "#1A3050" : "linear-gradient(135deg, #0A3D91, #1255C4)", color: "white", border: "none", borderRadius: "12px", padding: "0.875rem", fontSize: "0.9rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", transition: "all 0.2s", boxShadow: "0 4px 16px rgba(10,61,145,0.4)" }}>{loading ? "Signing in..." : "Sign In"}</button>
-                </form>
-              </div>
-            </div>
-          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={size}
+            height={size}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={className}
+          >
+            {icons[name]}
+          </svg>
         );
       };
 
-      const KpiCard = ({ title, value, sub, icon, color, trend }) => (
-        <div className="wd-card kpi-card" style={{ borderRadius: "16px", padding: "clamp(1rem, 2vw, 1.25rem) clamp(1rem, 2vw, 1.5rem)", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--text2)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{title}</span>
-            <div style={{ width: "36px", height: "36px", borderRadius: "10px", background: `${color}20`, color, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Icon name={icon} size={18} /></div>
-          </div>
-          <div>
-            <div className="font-heading" style={{ fontSize: "clamp(1.2rem, 2.5vw, 1.6rem)", fontWeight: 800, color: "var(--text)", lineHeight: 1 }}>{value}</div>
-            {sub && <div style={{ fontSize: "0.7rem", color: "var(--text3)", marginTop: "0.25rem" }}>{sub}</div>}
-          </div>
-          {trend !== undefined && (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.7rem" }}>
-              <span style={{ color: trend >= 0 ? "#10B981" : "#EF4444", fontWeight: 600 }}>{trend >= 0 ? "↑" : "↓"} {Math.abs(trend)}%</span>
-              <span style={{ color: "var(--text3)" }}>vs yesterday</span>
-            </div>
-          )}
-        </div>
+      const Logo = ({ size = 36 }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 120 120"
+          fill="none"
+        >
+          <circle
+            cx="60"
+            cy="60"
+            r="56"
+            stroke="rgba(74,144,226,0.4)"
+            strokeWidth="2"
+          />
+          <path
+            d="M55 38 C62 30 75 32 78 40 C82 50 72 58 62 60 L76 66 C64 75 52 68 48 58 C44 48 47 40 55 38Z"
+            fill="#0A3D91"
+            opacity="0.95"
+          />
+          <path
+            d="M50 42 C38 34 24 40 26 52 C34 46 42 46 50 48Z"
+            fill="#0A3D91"
+            opacity="0.8"
+          />
+          <line
+            x1="75"
+            y1="33"
+            x2="85"
+            y2="22"
+            stroke="#22C55E"
+            strokeWidth="1.5"
+          />
+          <ellipse
+            cx="82"
+            cy="25"
+            rx="3"
+            ry="4.5"
+            fill="#22C55E"
+            transform="rotate(-30 82 25)"
+          />
+          <ellipse
+            cx="87"
+            cy="20"
+            rx="2.5"
+            ry="4"
+            fill="#22C55E"
+            transform="rotate(-45 87 20)"
+          />
+          <rect x="28" y="68" width="10" height="28" fill="#0A3D91" rx="1" />
+          <rect x="40" y="62" width="10" height="34" fill="#0A3D91" rx="1" />
+          <rect x="52" y="70" width="10" height="26" fill="#6B7280" rx="1" />
+          <polygon points="62,62 72,72 52,72" fill="#0A3D91" />
+          <circle
+            cx="88"
+            cy="80"
+            r="12"
+            fill="none"
+            stroke="#0A3D91"
+            strokeWidth="3"
+          />
+          <circle cx="88" cy="80" r="5" fill="#0A3D91" />
+          <rect x="86" y="65" width="4" height="6" fill="#0A3D91" rx="1" />
+          <rect x="86" y="89" width="4" height="6" fill="#0A3D91" rx="1" />
+          <rect x="73" y="78" width="6" height="4" fill="#0A3D91" rx="1" />
+          <rect x="97" y="78" width="6" height="4" fill="#0A3D91" rx="1" />
+          <path
+            d="M90 74 L86 80 L89 80 L86 87 L92 79 L89 79Z"
+            fill="white"
+            opacity="0.9"
+          />
+          <text
+            x="60"
+            y="108"
+            fontFamily="'Outfit', sans-serif"
+            fontSize="8"
+            fontWeight="800"
+            fill="#0A3D91"
+            textAnchor="middle"
+          >
+            WHITE DOVE
+          </text>
+        </svg>
       );
 
-      const RevenueChart = ({ theme }) => {
+      // ─── LOGIN PAGE ──────────────────────────────────────────────
+      function LoginPage({ onLogin }) {
+        const [email, setEmail] = useState(
+          "Solutionswhitedoveelectrical@gmail.com",
+        );
+        const [password, setPassword] = useState("Whitedove2026");
+        const [error, setError] = useState("");
+        const [loading, setLoading] = useState(false);
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          setLoading(true);
+          setError("");
+          setTimeout(() => {
+            const user = SELLER_USERS.find(
+              (u) => u.email === email && u.password === password,
+            );
+            if (user) {
+              const session = {
+                userId: user.id,
+                userName: user.name,
+                avatar: user.avatar,
+                role: "manager",
+                expiresAt: Date.now() + 8 * 60 * 60 * 1000,
+              };
+              sessionStorage.setItem(AUTH_KEY, JSON.stringify(session));
+              onLogin(session);
+            } else {
+              setError("Invalid email or password.");
+            }
+            setLoading(false);
+          }, 600);
+        };
+        return React.createElement(
+          "div",
+          {
+            style: {
+              minHeight: "100vh",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "var(--bg)",
+              padding: "1.5rem",
+            },
+          },
+          React.createElement(
+            "div",
+            {
+              className: "wd-card animate-in",
+              style: { maxWidth: "400px", width: "100%", padding: "2rem" },
+            },
+            React.createElement(
+              "div",
+              { style: { textAlign: "center", marginBottom: "2rem" } },
+              React.createElement("div", { style: { fontSize: "3rem" } }, "🕊️"),
+              React.createElement(
+                "h1",
+                {
+                  className: "font-heading",
+                  style: {
+                    fontSize: "1.5rem",
+                    fontWeight: 700,
+                    marginTop: "0.5rem",
+                  },
+                },
+                "Manager Portal",
+              ),
+            ),
+            React.createElement(
+              "form",
+              {
+                onSubmit: handleSubmit,
+                style: {
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem",
+                },
+              },
+              React.createElement("input", {
+                type: "email",
+                className: "wd-input",
+                value: email,
+                onChange: (e) => setEmail(e.target.value),
+                placeholder: "Email Address",
+                required: true,
+              }),
+              React.createElement("input", {
+                type: "password",
+                className: "wd-input",
+                value: password,
+                onChange: (e) => setPassword(e.target.value),
+                placeholder: "Password",
+                required: true,
+              }),
+              error &&
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      color: "#EF4444",
+                      fontSize: "0.8rem",
+                      textAlign: "center",
+                    },
+                  },
+                  error,
+                ),
+              React.createElement(
+                "button",
+                {
+                  type: "submit",
+                  disabled: loading,
+                  style: {
+                    padding: "0.875rem",
+                    background: loading ? "#cbd5e1" : "#0A3D91",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "12px",
+                    fontWeight: 600,
+                    fontSize: "1rem",
+                    cursor: loading ? "not-allowed" : "pointer",
+                  },
+                },
+                loading ? "Logging in..." : "Sign In",
+              ),
+            ),
+          ),
+        );
+      }
+
+      // ─── DASHBOARD COMPONENTS ────────────────────────────────────
+      function RevenueChart({ data, theme }) {
         const canvasRef = useRef(null);
         const chartRef = useRef(null);
         useEffect(() => {
           if (!canvasRef.current) return;
           if (chartRef.current) chartRef.current.destroy();
           const isDark = theme !== "light";
-          const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-          const data = [0, 0, 0, 0, 0, 0, 0];
           chartRef.current = new Chart(canvasRef.current, {
             type: "line",
-            data: { labels, datasets: [{ label: "Revenue (SLE)", data, borderColor: "#1255C4", backgroundColor: "rgba(18,85,196,0.08)", borderWidth: 2.5, pointBackgroundColor: "#1255C4", pointRadius: 4, tension: 0.4, fill: true }] },
+            data: {
+              labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+              datasets: [
+                {
+                  label: "Revenue",
+                  data: data,
+                  borderColor: "#3B82F6",
+                  backgroundColor: "rgba(59, 130, 246, 0.05)",
+                  fill: true,
+                  tension: 0.4,
+                  pointBackgroundColor: "#3B82F6",
+                  borderWidth: 3,
+                },
+              ],
+            },
             options: {
               responsive: true,
               maintainAspectRatio: false,
-              plugins: { legend: { display: false }, tooltip: { backgroundColor: isDark ? "#0D1B30" : "#fff", titleColor: isDark ? "#F1F5F9" : "#0F172A", bodyColor: isDark ? "#94A3B8" : "#475569", borderColor: isDark ? "#1A3050" : "#E2E8F0", borderWidth: 1, cornerRadius: 10, padding: 12 } },
-              scales: { x: { grid: { color: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)" }, ticks: { color: isDark ? "#475569" : "#94A3B8", font: { size: 12 } } }, y: { grid: { color: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)" }, ticks: { color: isDark ? "#475569" : "#94A3B8", font: { size: 12 }, callback: (v) => `${(v / 1000).toFixed(0)}k` } } }
-            }
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: isDark
+                      ? "rgba(255,255,255,0.04)"
+                      : "rgba(0,0,0,0.04)",
+                  },
+                  ticks: { color: isDark ? "#94a3b8" : "#64748b" },
+                },
+                x: {
+                  grid: { display: false },
+                  ticks: { color: isDark ? "#94a3b8" : "#64748b" },
+                },
+              },
+            },
           });
-          return () => { if (chartRef.current) chartRef.current.destroy(); };
-        }, [theme]);
-        return <div style={{ height: "220px", width: "100%" }}><canvas ref={canvasRef} /></div>;
-      };
+          return () => {
+            if (chartRef.current) chartRef.current.destroy();
+          };
+        }, [data, theme]);
+        return React.createElement(
+          "div",
+          { style: { height: "180px", width: "100%" } },
+          React.createElement("canvas", { ref: canvasRef }),
+        );
+      }
 
-      const CategoryChart = ({ products, theme }) => {
+      function CategoryChart({ products, theme }) {
         const canvasRef = useRef(null);
         const chartRef = useRef(null);
         useEffect(() => {
@@ -393,680 +1191,935 @@
           if (chartRef.current) chartRef.current.destroy();
           const isDark = theme !== "light";
           const cats = {};
-          products.forEach((p) => { cats[p.category] = (cats[p.category] || 0) + p.stock; });
+          products.forEach((p) => {
+            cats[p.category] = (cats[p.category] || 0) + p.stock;
+          });
           const labels = Object.keys(cats);
           const data = Object.values(cats);
-          const colors = ["#0A3D91", "#1255C4", "#4A90E2", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"];
+          const colors = [
+            "#0A3D91",
+            "#3B82F6",
+            "#10B981",
+            "#F59E0B",
+            "#EF4444",
+            "#8B5CF6",
+          ];
           chartRef.current = new Chart(canvasRef.current, {
             type: "doughnut",
-            data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 0, hoverOffset: 6 }] },
+            data: {
+              labels,
+              datasets: [
+                {
+                  data,
+                  backgroundColor: colors,
+                  borderWidth: 4,
+                  borderColor: "var(--card)",
+                },
+              ],
+            },
             options: {
               responsive: true,
               maintainAspectRatio: false,
               cutout: "65%",
               plugins: {
-                legend: { position: "right", labels: { color: isDark ? "#94A3B8" : "#475569", boxWidth: 10, padding: 12, font: { size: 11 } } },
-                tooltip: { backgroundColor: isDark ? "#0D1B30" : "#fff", titleColor: isDark ? "#F1F5F9" : "#0F172A", bodyColor: isDark ? "#94A3B8" : "#475569", borderColor: isDark ? "#1A3050" : "#E2E8F0", borderWidth: 1, cornerRadius: 10, padding: 12 }
-              }
-            }
+                legend: {
+                  position: "bottom",
+                  labels: {
+                    color: isDark ? "#94a3b8" : "#64748b",
+                    boxWidth: 12,
+                    padding: 12,
+                  },
+                },
+              },
+            },
           });
-          return () => { if (chartRef.current) chartRef.current.destroy(); };
+          return () => {
+            if (chartRef.current) chartRef.current.destroy();
+          };
         }, [products, theme]);
-        return <div style={{ height: "200px", width: "100%" }}><canvas ref={canvasRef} /></div>;
-      };
-
-      const NotificationPanel = ({ isOpen, onClose, notifications, onMarkRead, onMarkAllRead }) => {
-        return (
-          <>
-            <div className={`overlay ${isOpen ? "show" : ""}`} onClick={onClose} />
-            <div className={`notif-panel ${isOpen ? "open" : ""}`}>
-              <div className="notif-panel-header">
-                <div><div className="font-heading" style={{ fontWeight: 700, fontSize: "1rem", color: "var(--text)" }}>🔔 Notifications</div><div style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{notifications.filter((n) => !n.read).length} unread</div></div>
-                <div style={{ display: "flex", gap: "0.5rem" }}>
-                  {notifications.some((n) => !n.read) && <button onClick={onMarkAllRead} style={{ padding: "0.3rem 0.75rem", borderRadius: "8px", border: "1px solid var(--border)", background: "var(--bg)", color: "var(--text2)", cursor: "pointer", fontSize: "0.7rem" }}>Mark all read</button>}
-                  <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text3)", cursor: "pointer", padding: "0.3rem" }}><Icon name="x" size={20} /></button>
-                </div>
-              </div>
-              <div className="notif-panel-body">
-                {notifications.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "3rem 0", color: "var(--text3)" }}><div style={{ fontSize: "2.5rem", marginBottom: "0.5rem" }}>🔕</div><div>No notifications</div></div>
-                ) : (
-                  notifications.map((n, i) => (
-                    <div key={i} className={`notif-item ${!n.read ? "unread" : ""}`} onClick={() => onMarkRead(i)}>
-                      <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
-                        <div style={{ fontSize: "1.1rem" }}>{n.icon || "📌"}</div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: 600, fontSize: "0.85rem", color: "var(--text)" }}>{n.title}</div>
-                          <div style={{ fontSize: "0.75rem", color: "var(--text2)" }}>{n.message}</div>
-                          <div className="notif-time">{fmtDate(n.timestamp)}</div>
-                        </div>
-                        {!n.read && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#0A3D91", flexShrink: 0, marginTop: "0.3rem" }} />}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </>
+        return React.createElement(
+          "div",
+          { style: { height: "160px", width: "100%" } },
+          React.createElement("canvas", { ref: canvasRef }),
         );
-      };
+      }
 
-      const sendWhatsAppReceipt = (sale) => {
-        const phone = sale.customerPhone || "+23278123456";
-        const cleanPhone = phone.replace(/\s/g, "").replace(/^\+/, "");
-        const items = sale.items.map((i) => `${i.name} × ${i.qty} = ${fmt(i.total)}`).join("\n");
-        const message = `🧾 *WHITE DOVE ENGINEERING FIRM*\n\nBuilding Your Vision, Powering Your Future.\n\nReceipt: ${sale.receiptNo}\nDate: ${fmtDate(sale.timestamp)}\nCustomer: ${sale.customer}\n\n*Items:*\n${items}\n\n${sale.discount > 0 ? `Discount: ${sale.discount}%\n` : ""}*Total: ${fmt(sale.total)}*\n\nPayment: ${sale.payment}\nSeller: ${sale.sellerName}\n\nThank you for choosing White Dove! 🕊️\nQuality Work · Reliable Solutions · Your Satisfaction, Our Mission.`;
-        window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, "_blank");
-      };
-
-      const EmployeeManagement = ({ users, onUpdateUsers, currentUser }) => {
-        const [showAddModal, setShowAddModal] = useState(false);
-        const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "seller", title: "Sales Representative", phone: "" });
-        const handleAddUser = () => {
-          if (!newUser.name || !newUser.email || !newUser.password) { alert("Please fill in all required fields"); return; }
-          const user = { id: `u${Date.now()}`, ...newUser, avatar: newUser.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase(), created: new Date().toISOString() };
-          onUpdateUsers([...users, user]);
-          setNewUser({ name: "", email: "", password: "", role: "seller", title: "Sales Representative", phone: "" });
-          setShowAddModal(false);
-        };
-        const handleDeleteUser = (id) => {
-          if (id === currentUser.userId) { alert("Cannot delete your own account"); return; }
-          if (confirm("Delete this user?")) { onUpdateUsers(users.filter((u) => u.id !== id)); }
-        };
-        return (
-          <div className="animate-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem" }}>
-              <div><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem" }}>User Management</div><div style={{ fontSize: "0.75rem", color: "var(--text3)" }}>{users.length} users total</div></div>
-              <button onClick={() => setShowAddModal(true)} style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem", borderRadius: "10px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", color: "white", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "0.875rem", boxShadow: "0 4px 12px rgba(10,61,145,0.3)" }}><Icon name="userPlus" size={16} /> Add User</button>
-            </div>
-            <div className="wd-card" style={{ borderRadius: "16px", overflow: "hidden" }}>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }} className="wd-table">
-                  <thead><tr><th style={{ textAlign: "left" }}>User</th><th style={{ textAlign: "left" }}>Email</th><th style={{ textAlign: "left" }}>Role</th><th style={{ textAlign: "left" }}>Phone</th><th style={{ textAlign: "left" }}>Joined</th><th style={{ textAlign: "right" }}>Actions</th></tr></thead>
-                  <tbody>
-                    {users.map((u) => (
-                      <tr key={u.id}>
-                        <td><div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}><div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: "white", fontSize: "0.75rem", flexShrink: 0 }}>{u.avatar || u.name.slice(0, 2).toUpperCase()}</div><div><div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text)" }}>{u.name}</div><div style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{u.title}</div></div></div></td>
-                        <td style={{ fontSize: "0.8rem", color: "var(--text2)" }}>{u.email}</td>
-                        <td><span style={{ fontSize: "0.7rem", fontWeight: 700, padding: "0.2rem 0.625rem", borderRadius: "100px", background: u.role === "manager" ? "rgba(10,61,145,0.15)" : "rgba(16,185,129,0.12)", color: u.role === "manager" ? "#60A5FA" : "#34D399" }}>{u.role}</span></td>
-                        <td style={{ fontSize: "0.8rem", color: "var(--text2)" }}>{u.phone || "—"}</td>
-                        <td style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{u.created ? fmtDate(u.created) : "—"}</td>
-                        <td style={{ textAlign: "right" }}><div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.375rem" }}>{u.id !== currentUser.userId && <button onClick={() => handleDeleteUser(u.id)} style={{ padding: "0.375rem", borderRadius: "8px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)", color: "#EF4444", cursor: "pointer" }}><Icon name="trash" size={15} /></button>}{u.id === currentUser.userId && <span style={{ fontSize: "0.65rem", color: "var(--text3)" }}>You</span>}</div></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            {showAddModal && (
-              <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setShowAddModal(false); }}>
-                <div className="modal-box">
-                  <div className="modal-header"><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "1.1rem" }}>Add New User</div><button onClick={() => setShowAddModal(false)} style={{ background: "none", border: "none", color: "var(--text3)", cursor: "pointer" }}><Icon name="x" size={20} /></button></div>
-                  <div className="modal-body">
-                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Full Name *</label><input className="wd-input" value={newUser.name} onChange={(e) => setNewUser({ ...newUser, name: e.target.value })} placeholder="John Doe" /></div>
-                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Email *</label><input type="email" className="wd-input" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} placeholder="john@whitedove.com" /></div>
-                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Password *</label><input type="password" className="wd-input" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} placeholder="••••••••" /></div>
-                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Role</label><select className="wd-input" value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}>{["manager", "seller"].map((r) => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}</select></div>
-                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Title</label><input className="wd-input" value={newUser.title} onChange={(e) => setNewUser({ ...newUser, title: e.target.value })} placeholder="Sales Representative" /></div>
-                    <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Phone</label><input className="wd-input" value={newUser.phone} onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })} placeholder="+232 78 123 456" /></div>
-                  </div>
-                  <div className="modal-footer"><button onClick={() => setShowAddModal(false)} style={{ padding: "0.625rem 1.25rem", borderRadius: "10px", background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text2)", fontWeight: 600, cursor: "pointer" }}>Cancel</button><button onClick={handleAddUser} style={{ padding: "0.625rem 1.5rem", borderRadius: "10px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", color: "white", border: "none", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(10,61,145,0.3)" }}><Icon name="check" size={16} style={{ marginRight: "0.5rem" }} /> Add User</button></div>
-                </div>
-              </div>
-            )}
-          </div>
+      // ─── MAIN MANAGER DASHBOARD ──────────────────────────────────
+      function ManagerDashboard({ session, onLogout, theme, onThemeChange }) {
+        // Load initial data from localStorage
+        const sharedData = getSharedData();
+        const [products, setProducts] = useState(
+          sharedData?.products || INITIAL_PRODUCTS,
         );
-      };
-
-      const OverviewSection = ({ products, sales, theme, liveNotifs, addToast }) => {
-        const todaySales = sales.filter((s) => isToday(s.timestamp));
-        const todayRevenue = todaySales.reduce((a, s) => a + s.total, 0);
-        const totalRevenue = sales.reduce((a, s) => a + s.total, 0);
-        const lowStock = products.filter((p) => p.stock > 0 && p.stock <= p.minStock).length;
-        const outStock = products.filter((p) => p.stock === 0).length;
-
-        return (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1rem" }}>
-              <KpiCard title="Today's Revenue" value={fmt(todayRevenue)} sub={`${todaySales.length} transactions`} icon="sales" color="#0A3D91" trend={0} />
-              <KpiCard title="Total Revenue" value={fmt(totalRevenue)} sub="all time" icon="trend" color="#1255C4" trend={0} />
-              <KpiCard title="Low Stock Alerts" value={lowStock} sub="items near minimum" icon="alert" color="#F59E0B" />
-              <KpiCard title="Out of Stock" value={outStock} sub="items need restocking" icon="x" color="#EF4444" />
-            </div>
-            <div className="chart-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-              <div className="wd-card" style={{ borderRadius: "16px", padding: "1.5rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", flexWrap: "wrap", gap: "0.5rem" }}>
-                  <div><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)" }}>Weekly Revenue</div><div style={{ fontSize: "0.75rem", color: "var(--text3)" }}>Last 7 days</div></div>
-                </div>
-                <RevenueChart theme={theme} />
-              </div>
-              <div className="wd-card" style={{ borderRadius: "16px", padding: "1.5rem" }}>
-                <div style={{ marginBottom: "1.25rem" }}><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)" }}>Stock by Category</div><div style={{ fontSize: "0.75rem", color: "var(--text3)" }}>Inventory distribution</div></div>
-                <CategoryChart products={products} theme={theme} />
-              </div>
-            </div>
-            <div className="chart-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-              <div className="wd-card" style={{ borderRadius: "16px", padding: "1.5rem" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}><div className="pulse-dot" /><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem" }}>Live Sales Feed</div></div>
-                  <span style={{ fontSize: "0.7rem", color: "var(--text3)", background: "var(--bg)", padding: "0.2rem 0.5rem", borderRadius: "4px", border: "1px solid var(--border)" }}>REALTIME</span>
-                </div>
-                {liveNotifs.length === 0 ? (
-                  <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--text3)" }}><div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>📡</div>Waiting for sales...</div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", maxHeight: "280px", overflowY: "auto" }}>
-                    {liveNotifs.slice(0, 8).map((n, i) => (
-                      <div key={i} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start", padding: "0.75rem", background: "var(--bg)", borderRadius: "10px", border: "1px solid var(--border)" }}>
-                        <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(18,85,196,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>⚡</div>
-                        <div style={{ minWidth: 0 }}>
-                          <div style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text)" }}><span style={{ color: "#60A5FA" }}>{n.sellerName}</span> logged a sale</div>
-                          <div style={{ fontSize: "0.75rem", color: "var(--text2)" }}>{n.items?.[0]?.name} × {n.items?.[0]?.qty}</div>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.25rem", flexWrap: "wrap", gap: "0.25rem" }}><span style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{fmtShort(n.timestamp)}</span><span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#10B981" }}>{fmt(n.total)}</span></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="wd-card" style={{ borderRadius: "16px", overflow: "hidden" }}>
-                <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--border)" }}><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem" }}>Recent Transactions</div></div>
-                <div style={{ maxHeight: "320px", overflowY: "auto" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse" }} className="wd-table">
-                    <thead><tr><th style={{ textAlign: "left" }}>Receipt</th><th style={{ textAlign: "left" }}>Seller</th><th style={{ textAlign: "right" }}>Total</th><th style={{ textAlign: "center" }}>Action</th></tr></thead>
-                    <tbody>
-                      {sales.slice(0, 8).map((s) => (
-                        <tr key={s.id}>
-                          <td><div style={{ fontWeight: 600, fontSize: "0.8rem", color: "var(--text)" }}>{s.receiptNo}</div><div style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{fmtDate(s.timestamp)}</div></td>
-                          <td style={{ fontSize: "0.8rem" }}>{s.sellerName}</td>
-                          <td style={{ textAlign: "right", fontWeight: 700, color: "#0A3D91", fontSize: "0.875rem" }}>{fmt(s.total)}</td>
-                          <td style={{ textAlign: "center" }}><button onClick={() => sendWhatsAppReceipt(s)} className="whatsapp-btn" style={{ padding: "0.25rem 0.625rem", fontSize: "0.7rem" }}><Icon name="whatsapp" size={14} /> Send</button></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
+        const [sales, setSales] = useState(sharedData?.sales || INITIAL_SALES);
+        const [liveFeed, setLiveFeed] = useState(
+          sharedData?.sales?.slice(0, 5) || [],
         );
-      };
-
-      const ProductModal = ({ product, onSave, onClose }) => {
-        const isEdit = !!product?.id;
-        const [form, setForm] = useState({
-          name: product?.name || "",
-          sku: product?.sku || "",
-          category: product?.category || "Cables",
-          price: product?.price || "",
-          stock: product?.stock || 0,
-          minStock: product?.minStock || 5,
-          description: product?.description || "",
-          emoji: product?.emoji || "📦"
-        });
-        const cats = ["Cables", "Lighting", "Distribution", "Boxes", "Extension", "Fans", "Sockets", "Switches", "Earthing", "Breakers", "Accessories", "Other"];
-        const emojis = ["📦", "🔌", "💡", "🔧", "📏", "🌀", "🔘", "⚡", "✨", "⚫", "📎", "⛓️"];
-        const handleSave = () => {
-          if (!form.name || !form.price) return;
-          onSave({ ...(product || {}), ...form, price: Number(form.price), stock: Number(form.stock), minStock: Number(form.minStock), id: product?.id || `p${Date.now()}`, sku: form.sku || `SKU-${Date.now().toString().slice(-6)}` });
-        };
-        return (
-          <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <div className="modal-box">
-              <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "1.1rem" }}>{isEdit ? "Edit Product" : "Add New Product"}</div>
-                <button onClick={onClose} style={{ background: "none", border: "none", color: "var(--text3)", cursor: "pointer" }}><Icon name="x" size={20} /></button>
-              </div>
-              <div style={{ padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.5rem" }}>Icon</label>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>{emojis.map((em) => <button key={em} onClick={() => setForm((f) => ({ ...f, emoji: em }))} style={{ fontSize: "1.25rem", padding: "0.375rem", borderRadius: "8px", border: `1px solid ${form.emoji === em ? "#0A3D91" : "var(--border)"}`, background: form.emoji === em ? "rgba(10,61,145,0.1)" : "transparent", cursor: "pointer" }}>{em}</button>)}</div>
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                  <div style={{ gridColumn: "span 2" }}><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Product Name *</label><input className="wd-input" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="e.g. 1.5 mm² Cable" /></div>
-                  <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>SKU</label><input className="wd-input" value={form.sku} onChange={(e) => setForm((f) => ({ ...f, sku: e.target.value }))} placeholder="CBL-1.5" /></div>
-                  <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Category</label><select className="wd-input" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>{cats.map((c) => <option key={c} value={c}>{c}</option>)}</select></div>
-                  <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Unit Price (SLE) *</label><input type="number" className="wd-input" value={form.price} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} placeholder="0.00" /></div>
-                  <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Stock Quantity</label><input type="number" className="wd-input" value={form.stock} onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))} placeholder="0" /></div>
-                  <div><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Min. Stock Level</label><input type="number" className="wd-input" value={form.minStock} onChange={(e) => setForm((f) => ({ ...f, minStock: e.target.value }))} placeholder="5" /></div>
-                  <div style={{ gridColumn: "span 2" }}><label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600, color: "var(--text2)", marginBottom: "0.375rem" }}>Description</label><textarea className="wd-input" rows={2} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Optional product description..." /></div>
-                </div>
-              </div>
-              <div style={{ padding: "1rem 1.5rem", borderTop: "1px solid var(--border)", display: "flex", gap: "0.75rem", justifyContent: "flex-end", flexWrap: "wrap" }}>
-                <button onClick={onClose} style={{ padding: "0.625rem 1.25rem", borderRadius: "10px", background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text2)", fontWeight: 600, cursor: "pointer" }}>Cancel</button>
-                <button onClick={handleSave} style={{ padding: "0.625rem 1.5rem", borderRadius: "10px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", color: "white", border: "none", fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 12px rgba(10,61,145,0.3)" }}>{isEdit ? "Save Changes" : "Add Product"}</button>
-              </div>
-            </div>
-          </div>
-        );
-      };
-
-      const InventorySection = ({ products, onUpdate }) => {
-        const [search, setSearch] = useState("");
-        const [catFilter, setCatFilter] = useState("All");
-        const [stockFilter, setStockFilter] = useState("All");
-        const [showModal, setShowModal] = useState(false);
-        const [editProduct, setEditProduct] = useState(null);
-        const cats = ["All", ...Array.from(new Set(products.map((p) => p.category)))];
-        const filtered = useMemo(() => products.filter((p) => {
-          const ms = search.toLowerCase();
-          const matchS = p.name.toLowerCase().includes(ms) || p.sku.toLowerCase().includes(ms);
-          const matchC = catFilter === "All" || p.category === catFilter;
-          const matchSt = stockFilter === "All" || (stockFilter === "Low" && p.stock > 0 && p.stock <= p.minStock) || (stockFilter === "Out" && p.stock === 0) || (stockFilter === "In" && p.stock > p.minStock);
-          return matchS && matchC && matchSt;
-        }), [products, search, catFilter, stockFilter]);
-        const handleSave = (prod) => { onUpdate((prev) => prev.some((p) => p.id === prod.id) ? prev.map((p) => (p.id === prod.id ? prod : p)) : [prod, ...prev]); setShowModal(false); setEditProduct(null); };
-        const handleDelete = (id) => { if (confirm("Delete this product from inventory?")) onUpdate((prev) => prev.filter((p) => p.id !== id)); };
-        const getBadge = (p) => { if (p.stock === 0) return { text: "Out of Stock", cls: "badge-out-stock" }; if (p.stock <= p.minStock) return { text: "Low Stock", cls: "badge-low-stock" }; return { text: "In Stock", cls: "badge-in-stock" }; };
-
-        return (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-                <div style={{ position: "relative" }}><Icon name="search" size={16} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--text3)" }} /><input className="wd-input" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products..." style={{ paddingLeft: "2.25rem", minWidth: "160px" }} /></div>
-                <select className="wd-input" value={catFilter} onChange={(e) => setCatFilter(e.target.value)} style={{ width: "auto" }}>{cats.map((c) => <option key={c}>{c}</option>)}</select>
-                <select className="wd-input" value={stockFilter} onChange={(e) => setStockFilter(e.target.value)} style={{ width: "auto" }}>{["All", "In", "Low", "Out"].map((s) => <option key={s} value={s}>{s === "All" ? "All Stock" : s === "In" ? "In Stock" : s === "Low" ? "Low Stock" : "Out of Stock"}</option>)}</select>
-              </div>
-              <button onClick={() => { setEditProduct(null); setShowModal(true); }} style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem", borderRadius: "10px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", color: "white", border: "none", fontWeight: 700, cursor: "pointer", fontSize: "0.875rem", boxShadow: "0 4px 12px rgba(10,61,145,0.3)" }}><Icon name="plus" size={16} /> Add Product</button>
-            </div>
-            <div className="wd-card" style={{ borderRadius: "16px", overflow: "hidden" }}>
-              <div style={{ padding: "1rem 1.5rem", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                <div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem" }}>Inventory ({filtered.length} products)</div>
-                <div style={{ fontSize: "0.75rem", color: "var(--text3)" }}>Low: <span style={{ color: "#F59E0B", fontWeight: 700 }}>{products.filter((p) => p.stock > 0 && p.stock <= p.minStock).length}</span> &nbsp; Out: <span style={{ color: "#EF4444", fontWeight: 700 }}>{products.filter((p) => p.stock === 0).length}</span></div>
-              </div>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }} className="wd-table">
-                  <thead><tr><th style={{ textAlign: "left" }}>Product</th><th style={{ textAlign: "left" }}>SKU</th><th style={{ textAlign: "left" }}>Category</th><th style={{ textAlign: "center" }}>Stock</th><th style={{ textAlign: "right" }}>Unit Price</th><th style={{ textAlign: "center" }}>Status</th><th style={{ textAlign: "right" }}>Actions</th></tr></thead>
-                  <tbody>
-                    {filtered.map((p) => {
-                      const badge = getBadge(p);
-                      return (
-                        <tr key={p.id}>
-                          <td><div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}><span style={{ fontSize: "1.25rem" }}>{p.emoji}</span><div><div style={{ fontWeight: 600, color: "var(--text)", fontSize: "0.875rem" }}>{p.name}</div><div style={{ fontSize: "0.7rem", color: "var(--text3)" }}>{p.description?.slice(0, 40)}...</div></div></div></td>
-                          <td style={{ fontFamily: "monospace", fontSize: "0.78rem", color: "var(--text2)" }}>{p.sku}</td>
-                          <td><span style={{ fontSize: "0.75rem", color: "var(--text2)", background: "var(--bg)", border: "1px solid var(--border)", padding: "0.2rem 0.5rem", borderRadius: "6px" }}>{p.category}</span></td>
-                          <td style={{ textAlign: "center", fontWeight: 700, fontSize: "0.9rem", color: p.stock === 0 ? "#EF4444" : p.stock <= p.minStock ? "#F59E0B" : "var(--text)" }}>{p.stock} <span style={{ fontWeight: 400, fontSize: "0.7rem", color: "var(--text3)" }}>/ {p.minStock} min</span></td>
-                          <td style={{ textAlign: "right", fontWeight: 700, color: "#0A3D91", fontSize: "0.875rem" }}>{fmt(p.price)}</td>
-                          <td style={{ textAlign: "center" }}><span className={badge.cls} style={{ fontSize: "0.7rem", fontWeight: 700, padding: "0.2rem 0.625rem", borderRadius: "100px" }}>{badge.text}</span></td>
-                          <td style={{ textAlign: "right" }}><div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.375rem" }}><button onClick={() => { setEditProduct(p); setShowModal(true); }} style={{ padding: "0.375rem", borderRadius: "8px", background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text2)", cursor: "pointer" }}><Icon name="edit" size={15} /></button><button onClick={() => handleDelete(p.id)} style={{ padding: "0.375rem", borderRadius: "8px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)", color: "#EF4444", cursor: "pointer" }}><Icon name="trash" size={15} /></button></div></td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            {showModal && <ProductModal product={editProduct} onSave={handleSave} onClose={() => { setShowModal(false); setEditProduct(null); }} />}
-          </div>
-        );
-      };
-
-      const SalesSection = ({ sales }) => {
-        const [search, setSearch] = useState("");
-        const [view, setView] = useState(null);
-        const filtered = useMemo(() => sales.filter((s) => s.receiptNo?.toLowerCase().includes(search.toLowerCase()) || s.sellerName?.toLowerCase().includes(search.toLowerCase()) || s.customer?.toLowerCase().includes(search.toLowerCase())), [sales, search]);
-
-        const generateReceiptPDF = (sale) => {
-          const { jsPDF } = window.jspdf;
-          const doc = new jsPDF({ unit: "mm", format: "a4" });
-          const pageWidth = 210;
-          let y = 20;
-          doc.setFontSize(20);
-          doc.setTextColor("#0A3D91");
-          doc.setFont("helvetica", "bold");
-          doc.text("WHITE DOVE", pageWidth / 2, y, { align: "center" });
-          y += 8;
-          doc.setFontSize(10);
-          doc.setTextColor("#475569");
-          doc.setFont("helvetica", "normal");
-          doc.text("ENGINEERING FIRM", pageWidth / 2, y, { align: "center" });
-          y += 6;
-          doc.text("Building Your Vision, Powering Your Future.", pageWidth / 2, y, { align: "center" });
-          y += 6;
-          doc.text("+232 75 862 299 · Freetown, Sierra Leone", pageWidth / 2, y, { align: "center" });
-          y += 10;
-          doc.setDrawColor("#0A3D91");
-          doc.line(20, y, pageWidth - 20, y);
-          y += 8;
-          doc.setFontSize(10);
-          doc.setTextColor("#0F172A");
-          doc.setFont("helvetica", "bold");
-          doc.text(`Receipt: ${sale.receiptNo}`, 20, y);
-          doc.text(`Date: ${fmtDate(sale.timestamp)}`, 110, y);
-          y += 6;
-          doc.text(`Customer: ${sale.customer}`, 20, y);
-          doc.text(`Payment: ${sale.payment}`, 110, y);
-          y += 6;
-          doc.text(`Seller: ${sale.sellerName}`, 20, y);
-          y += 10;
-          doc.line(20, y, pageWidth - 20, y);
-          y += 6;
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor("#64748B");
-          doc.text("Item", 20, y);
-          doc.text("Qty", 130, y);
-          doc.text("Price", 150, y);
-          doc.text("Total", 180, y);
-          y += 4;
-          doc.line(20, y, pageWidth - 20, y);
-          y += 6;
-          doc.setFont("helvetica", "normal");
-          doc.setTextColor("#0F172A");
-          sale.items.forEach((item) => {
-            const name = item.name.length > 25 ? item.name.substring(0, 23) + "..." : item.name;
-            doc.text(name, 20, y);
-            doc.text(item.qty.toString(), 130, y);
-            doc.text(fmt(item.unitPrice), 150, y);
-            doc.text(fmt(item.total), 180, y, { align: "right" });
-            y += 6;
-          });
-          y += 4;
-          doc.line(20, y, pageWidth - 20, y);
-          y += 6;
-          if (sale.discount > 0) {
-            doc.text(`Discount (${sale.discount}%)`, 20, y);
-            doc.text(`-${fmt((sale.subtotal * sale.discount) / 100)}`, pageWidth - 20, y, { align: "right" });
-            y += 6;
-          }
-          doc.setFont("helvetica", "bold");
-          doc.setTextColor("#0A3D91");
-          doc.setFontSize(14);
-          doc.text("TOTAL", 20, y);
-          doc.text(fmt(sale.total), pageWidth - 20, y, { align: "right" });
-          y += 10;
-          doc.setFontSize(9);
-          doc.setTextColor("#94A3B8");
-          doc.setFont("helvetica", "normal");
-          doc.text("Thank you for choosing White Dove Engineering Firm!", pageWidth / 2, y, { align: "center" });
-          y += 5;
-          doc.text("Quality Work · Reliable Solutions · Your Satisfaction, Our Mission.", pageWidth / 2, y, { align: "center" });
-          doc.save(`receipt_${sale.receiptNo}.pdf`);
-        };
-
-        return (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
-              <div style={{ position: "relative", flex: 1, maxWidth: "340px" }}><input className="wd-input" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by receipt, seller, customer..." style={{ paddingLeft: "2.25rem" }} /></div>
-              <div style={{ fontSize: "0.8rem", color: "var(--text3)" }}>Total: <strong style={{ color: "var(--text)" }}>{fmt(sales.reduce((a, s) => a + s.total, 0))}</strong></div>
-            </div>
-            <div className="wd-card" style={{ borderRadius: "16px", overflow: "hidden" }}>
-              <div style={{ padding: "1rem 1.5rem", borderBottom: "1px solid var(--border)" }}><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem" }}>Sales History ({filtered.length} records)</div></div>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }} className="wd-table">
-                  <thead><tr><th style={{ textAlign: "left" }}>Receipt</th><th style={{ textAlign: "left" }}>Seller</th><th style={{ textAlign: "left" }}>Customer</th><th style={{ textAlign: "left" }}>Items</th><th style={{ textAlign: "left" }}>Payment</th><th style={{ textAlign: "right" }}>Total</th><th style={{ textAlign: "left" }}>Date</th><th style={{ textAlign: "center" }}>Actions</th></tr></thead>
-                  <tbody>
-                    {filtered.map((s) => (
-                      <tr key={s.id}>
-                        <td><span style={{ fontWeight: 700, fontSize: "0.8rem", color: "#60A5FA", fontFamily: "monospace" }}>{s.receiptNo}</span></td>
-                        <td style={{ fontSize: "0.875rem" }}>{s.sellerName}</td>
-                        <td style={{ fontSize: "0.8rem", color: "var(--text2)" }}>{s.customer || "Walk-in"}</td>
-                        <td style={{ fontSize: "0.75rem", color: "var(--text3)" }}>{s.items?.map((i) => `${i.qty}×${i.name.slice(0, 20)}`).join(", ")}</td>
-                        <td><span style={{ fontSize: "0.75rem", background: "var(--bg)", border: "1px solid var(--border)", padding: "0.2rem 0.5rem", borderRadius: "6px", color: "var(--text2)" }}>{s.payment}</span></td>
-                        <td style={{ textAlign: "right", fontWeight: 700, color: "#10B981" }}>{fmt(s.total)}</td>
-                        <td style={{ fontSize: "0.75rem", color: "var(--text3)" }}>{fmtDate(s.timestamp)}</td>
-                        <td style={{ textAlign: "center" }}><div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.375rem", flexWrap: "wrap" }}><button onClick={() => setView(s)} style={{ padding: "0.3rem 0.625rem", borderRadius: "8px", background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text2)", cursor: "pointer", fontSize: "0.75rem", fontWeight: 600 }}>View</button><button onClick={() => sendWhatsAppReceipt(s)} className="whatsapp-btn" style={{ padding: "0.25rem 0.625rem", fontSize: "0.7rem" }}><Icon name="whatsapp" size={14} /></button><button onClick={() => generateReceiptPDF(s)} style={{ padding: "0.25rem 0.625rem", borderRadius: "8px", background: "#0A3D91", border: "none", color: "white", cursor: "pointer", fontSize: "0.7rem" }}><Icon name="download" size={14} /></button></div></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            {view && (
-              <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setView(null)}>
-                <div className="modal-box" id="receipt-print">
-                  <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                    <div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "1rem" }}>Receipt {view.receiptNo}</div>
-                    <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                      <button onClick={() => sendWhatsAppReceipt(view)} className="whatsapp-btn" style={{ padding: "0.4rem 0.875rem", fontSize: "0.8rem" }}><Icon name="whatsapp" size={14} /> WhatsApp</button>
-                      <button onClick={() => generateReceiptPDF(view)} style={{ display: "flex", alignItems: "center", gap: "0.375rem", padding: "0.5rem 0.875rem", borderRadius: "8px", background: "#0A3D91", border: "none", color: "white", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}><Icon name="download" size={14} /> PDF</button>
-                      <button onClick={() => window.print()} style={{ display: "flex", alignItems: "center", gap: "0.375rem", padding: "0.5rem 0.875rem", borderRadius: "8px", background: "var(--bg)", border: "1px solid var(--border)", color: "var(--text2)", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}><Icon name="print" size={14} /> Print</button>
-                      <button onClick={() => setView(null)} style={{ padding: "0.375rem", background: "none", border: "none", color: "var(--text3)", cursor: "pointer" }}><Icon name="x" size={18} /></button>
-                    </div>
-                  </div>
-                  <div className="receipt-print">
-                    <div style={{ textAlign: "center", marginBottom: "1.5rem", paddingBottom: "1.5rem", borderBottom: "2px dashed #E2E8F0" }}><Logo size={50} style={{ margin: "0 auto", display: "block" }} /><div className="company-name">WHITE DOVE</div><div className="company-sub">ENGINEERING FIRM</div><div style={{ fontSize: "0.65rem", color: "#94A3B8" }}>Building Your Vision, Powering Your Future.</div><div style={{ fontSize: "0.6rem", color: "#94A3B8" }}>+232 75 862 299 · Freetown, Sierra Leone</div></div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", fontSize: "0.75rem", marginBottom: "1rem" }}><div><span style={{ color: "#94A3B8" }}>Receipt:</span> <strong style={{ color: "#0A3D91" }}>{view.receiptNo}</strong></div><div><span style={{ color: "#94A3B8" }}>Date:</span> <strong>{fmtDate(view.timestamp)}</strong></div><div><span style={{ color: "#94A3B8" }}>Seller:</span> <strong>{view.sellerName}</strong></div><div><span style={{ color: "#94A3B8" }}>Customer:</span> <strong>{view.customer}</strong></div><div><span style={{ color: "#94A3B8" }}>Payment:</span> <strong>{view.payment}</strong></div></div>
-                    <div className="divider"></div>
-                    {view.items.map((item, i) => <div key={i} className="receipt-item"><span>{item.name} × {item.qty}</span><span>{fmt(item.total)}</span></div>)}
-                    <div className="divider"></div>
-                    {view.discount > 0 && <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "#64748B", padding: "0.25rem 0" }}><span>Discount ({view.discount}%)</span><span>-{fmt((view.subtotal * view.discount) / 100)}</span></div>}
-                    <div className="receipt-total"><span>TOTAL</span><span>{fmt(view.total)}</span></div>
-                    <div className="receipt-footer"><div style={{ fontWeight: 600, color: "#475569" }}>Thank you for choosing White Dove!</div><div>Quality Work · Reliable Solutions · Your Satisfaction, Our Mission.</div></div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      };
-
-      const AnalyticsSection = ({ products, sales, theme }) => {
-        const totalRevenue = sales.reduce((a, s) => a + s.total, 0);
-        const avgOrder = sales.length ? totalRevenue / sales.length : 0;
-
-        return (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-            <div className="stats-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: "1rem" }}>
-              <KpiCard title="Total Revenue" value={fmt(totalRevenue)} sub="All time" icon="sales" color="#0A3D91" />
-              <KpiCard title="Average Order" value={fmt(avgOrder)} sub={`${sales.length} orders`} icon="trend" color="#10B981" />
-              <KpiCard title="Total Products" value={products.length} sub="across all categories" icon="package" color="#8B5CF6" />
-              <KpiCard title="Stock Value" value={fmt(products.reduce((a, p) => a + p.price * p.stock, 0))} sub="total inventory value" icon="zap" color="#F59E0B" />
-            </div>
-            <div className="chart-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
-              <div className="wd-card" style={{ borderRadius: "16px", padding: "1.5rem" }}><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", marginBottom: "1.25rem" }}>Monthly Revenue Trend</div><RevenueChart theme={theme} /></div>
-              <div className="wd-card" style={{ borderRadius: "16px", padding: "1.5rem" }}><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", marginBottom: "1.25rem" }}>Inventory Breakdown</div><CategoryChart products={products} theme={theme} /></div>
-            </div>
-            <div className="wd-card" style={{ borderRadius: "16px", overflow: "hidden" }}>
-              <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--border)" }}><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem" }}>Top Value Products</div></div>
-              <table style={{ width: "100%", borderCollapse: "collapse" }} className="wd-table">
-                <thead><tr><th style={{ textAlign: "left" }}>Product</th><th style={{ textAlign: "right" }}>Unit Price</th><th style={{ textAlign: "center" }}>Stock</th><th style={{ textAlign: "right" }}>Stock Value</th></tr></thead>
-                <tbody>
-                  {[...products].sort((a, b) => b.price - a.price).slice(0, 7).map((p) => (
-                    <tr key={p.id}><td><div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}><span>{p.emoji}</span><span style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text)" }}>{p.name}</span></div></td><td style={{ textAlign: "right", fontWeight: 700, color: "#0A3D91" }}>{fmt(p.price)}</td><td style={{ textAlign: "center", color: p.stock === 0 ? "#EF4444" : p.stock <= p.minStock ? "#F59E0B" : "var(--text)" }}>{p.stock}</td><td style={{ textAlign: "right", fontWeight: 700, color: "#10B981" }}>{fmt(p.price * p.stock)}</td></tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        );
-      };
-
-      const LogsSection = ({ logs }) => (
-        <div className="animate-in">
-          <div className="wd-card" style={{ borderRadius: "16px", overflow: "hidden" }}>
-            <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid var(--border)" }}><div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem" }}>Activity Log ({logs.length} entries)</div></div>
-            <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
-              {logs.map((log, i) => (
-                <div key={i} style={{ padding: "0.875rem 1.5rem", borderBottom: "1px solid var(--border)", display: "flex", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}>
-                  <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: `${log.type === "sale" ? "rgba(16,185,129,0.1)" : log.type === "inventory" ? "rgba(10,61,145,0.1)" : "rgba(100,116,139,0.1)"}`, color: `${log.type === "sale" ? "#10B981" : log.type === "inventory" ? "#60A5FA" : "#64748B"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "0.9rem" }}>{log.type === "sale" ? "💰" : log.type === "inventory" ? "📦" : log.type === "auth" ? "🔐" : "📋"}</div>
-                  <div style={{ flex: 1, minWidth: "120px" }}><div style={{ fontSize: "0.875rem", fontWeight: 500, color: "var(--text)" }}>{log.action}</div><div style={{ fontSize: "0.75rem", color: "var(--text3)", marginTop: "0.125rem" }}>{log.detail}</div></div>
-                  <div style={{ fontSize: "0.7rem", color: "var(--text3)", whiteSpace: "nowrap", marginTop: "0.2rem" }}>{fmtDate(log.timestamp)}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
-
-      const SettingsSection = ({ theme, onThemeChange, session }) => (
-        <div className="settings-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", maxWidth: "900px" }}>
-          <div className="wd-card" style={{ borderRadius: "16px", padding: "1.5rem" }}>
-            <div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem", marginBottom: "1rem" }}>Display & Theme</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
-              {[{ val: "dark", icon: "moon", label: "Dark Theme" }, { val: "light", icon: "sun", label: "Light Theme" }, { val: "system", icon: "monitor", label: "System Default" }].map((t) => (
-                <button key={t.val} onClick={() => onThemeChange(t.val)} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.875rem 1rem", borderRadius: "12px", border: `1px solid ${theme === t.val ? "#0A3D91" : "var(--border)"}`, background: theme === t.val ? "rgba(10,61,145,0.1)" : "transparent", cursor: "pointer", textAlign: "left", width: "100%" }}>
-                  <Icon name={t.icon} size={18} style={{ color: theme === t.val ? "#60A5FA" : "var(--text3)" }} />
-                  <span style={{ fontSize: "0.875rem", fontWeight: theme === t.val ? 600 : 400, color: theme === t.val ? "#60A5FA" : "var(--text2)" }}>{t.label}</span>
-                  {theme === t.val && <span style={{ marginLeft: "auto", width: "8px", height: "8px", borderRadius: "50%", background: "#0A3D91" }} />}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="wd-card" style={{ borderRadius: "16px", padding: "1.5rem" }}>
-            <div className="font-heading" style={{ fontWeight: 700, color: "var(--text)", fontSize: "0.95rem", marginBottom: "1rem" }}>Account</div>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem", background: "var(--bg)", borderRadius: "12px", marginBottom: "1rem", flexWrap: "wrap" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "white", flexShrink: 0 }}>{session.avatar}</div>
-              <div><div style={{ fontWeight: 700, color: "var(--text)" }}>{session.userName}</div><div style={{ fontSize: "0.75rem", color: "var(--text3)" }}>{session.userTitle}</div></div>
-            </div>
-            <button style={{ width: "100%", padding: "0.625rem", borderRadius: "10px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", color: "white", border: "none", fontWeight: 700, cursor: "pointer" }}>Update Profile</button>
-          </div>
-        </div>
-      );
-
-      const Sidebar = ({ section, onSection, session, onLogout }) => {
-        const navItems = [
-          { id: "overview", icon: "dashboard", label: "Overview" },
-          { id: "inventory", icon: "inventory", label: "Inventory" },
-          { id: "sales", icon: "sales", label: "Sales History" },
-          { id: "analytics", icon: "analytics", label: "Analytics" },
-          { id: "employees", icon: "users", label: "Employees" },
-          { id: "logs", icon: "logs", label: "Activity Logs" },
-          { id: "settings", icon: "settings", label: "Settings" }
-        ];
-
-        return (
-          <div className="sidebar" style={{ width: "220px", flexShrink: 0, display: "flex", flexDirection: "column", height: "100vh", position: "sticky", top: 0, overflow: "hidden" }}>
-            <div style={{ padding: "1.25rem 1rem", borderBottom: "1px solid var(--border)" }}>
-              <a href="index.html" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "0.625rem" }}>
-                <Logo size={34} />
-                <div className="brand-text"><div className="font-heading" style={{ fontSize: "0.75rem", fontWeight: 800, color: "var(--text)", lineHeight: 1.1 }}>WHITE DOVE</div><div style={{ fontSize: "0.6rem", color: "var(--text3)", fontWeight: 500 }}>Engineering Firm</div></div>
-              </a>
-            </div>
-            <div style={{ padding: "0.875rem 1rem", borderBottom: "1px solid var(--border)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", padding: "0.625rem", background: "rgba(10,61,145,0.12)", borderRadius: "10px", border: "1px solid rgba(10,61,145,0.2)" }}>
-                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "linear-gradient(135deg, #0A3D91, #1255C4)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, color: "white", fontSize: "0.8rem", flexShrink: 0 }}>{session.avatar}</div>
-                <div className="seller-name" style={{ minWidth: 0 }}><div style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session.userName.split(" ")[0]}</div><div style={{ fontSize: "0.65rem", color: "#60A5FA", fontWeight: 600 }}>MANAGER</div></div>
-              </div>
-            </div>
-            <nav style={{ flex: 1, padding: "0.75rem 0.75rem", display: "flex", flexDirection: "column", gap: "0.25rem", overflowY: "auto" }}>
-              {navItems.map((item) => (<div key={item.id} className={`nav-item ${section === item.id ? "active" : ""}`} onClick={() => onSection(item.id)}><Icon name={item.icon} size={17} /><span className="nav-text" style={{ fontSize: "0.85rem" }}>{item.label}</span></div>))}
-            </nav>
-            <div style={{ padding: "0.75rem", borderTop: "1px solid var(--border)" }}>
-              <button onClick={onLogout} className="nav-item" style={{ width: "100%", background: "none", border: "none", cursor: "pointer", color: "#EF4444", justifyContent: "flex-start" }}><Icon name="logout" size={17} /><span className="nav-text" style={{ fontSize: "0.85rem" }}>Sign Out</span></button>
-            </div>
-          </div>
-        );
-      };
-
-      const Dashboard = ({ session, onLogout, theme, onThemeChange, addToast, dismissToast, toasts }) => {
         const [section, setSection] = useState("overview");
-        const [users, setUsers] = useState(() => { const stored = getUsers(); return stored || DEFAULT_USERS; });
-        const [products, setProducts] = useState(() => { const stored = getStoredData(); return stored?.products || INITIAL_PRODUCTS; });
-        const [sales, setSales] = useState(() => { const stored = getStoredData(); return stored?.sales || INITIAL_SALES; });
-        const [liveNotifs, setLiveNotifs] = useState([]);
-        const [logs, setLogs] = useState([{ type: "auth", action: "Manager logged in", detail: `${session.userName} signed in to Manager Portal`, timestamp: new Date().toISOString() }]);
-        const [notifications, setNotifications] = useState([{ icon: "📌", title: "Welcome back!", message: "All systems ready. No sales recorded yet.", timestamp: new Date().toISOString(), read: false }]);
-        const [notifPanelOpen, setNotifPanelOpen] = useState(false);
 
-        useEffect(() => { saveUsers(users); }, [users]);
-        useEffect(() => { saveData({ products, sales }); }, [products, sales]);
-
+        // Real-time Sync
         useEffect(() => {
           const bc = new BroadcastChannel(BROADCAST_KEY);
           bc.onmessage = (e) => {
-            if (e.data?.type === "SALE_LOGGED") {
-              const sale = e.data.sale;
-              setSales((prev) => [sale, ...prev]);
-              setLiveNotifs((prev) => [sale, ...prev].slice(0, 20));
-              setProducts((prev) => prev.map((p) => {
-                const item = sale.items?.find((i) => i.productId === p.id);
-                return item ? { ...p, stock: Math.max(0, p.stock - item.qty) } : p;
-              }));
-              setLogs((prev) => [{ type: "sale", action: `Live Sale — ${sale.sellerName}`, detail: `${sale.items?.[0]?.name} × ${sale.items?.[0]?.qty} | ${fmt(sale.total)}`, timestamp: sale.timestamp }, ...prev]);
-              addToast({ type: "sale", title: `⚡ Live Sale — ${sale.sellerName}`, message: `${sale.items?.[0]?.name} × ${sale.items?.[0]?.qty} · ${fmt(sale.total)}` });
-              setNotifications((prev) => [{ icon: "⚡", title: `Live Sale — ${sale.sellerName}`, message: `${sale.items?.[0]?.name} × ${sale.items?.[0]?.qty} · ${fmt(sale.total)}`, timestamp: sale.timestamp, read: false }, ...prev]);
+            const msg = e.data;
+            if (msg.type === "SYNC_STATE") {
+              setProducts(msg.products);
+              setSales(msg.sales);
+              setLiveFeed(msg.sales.slice(0, 8));
+              saveSharedData({ products: msg.products, sales: msg.sales });
+            }
+            if (msg.type === "PRODUCT_ADDED") {
+              setProducts((prev) => [msg.product, ...prev]);
+              const newData = { products: [msg.product, ...products], sales };
+              saveSharedData(newData);
+              bc.postMessage({
+                type: "SYNC_STATE",
+                products: newData.products,
+                sales: newData.sales,
+              });
             }
           };
+          // Broadcast current state on load
+          bc.postMessage({ type: "SYNC_STATE", products, sales });
           return () => bc.close();
-        }, []);
+        }, [products, sales]);
 
-        const handleInventoryUpdate = (updater) => {
-          setProducts(updater);
-          setLogs((prev) => [{ type: "inventory", action: "Inventory updated by manager", detail: `${session.userName} modified product list`, timestamp: new Date().toISOString() }, ...prev]);
-          addToast({ type: "success", title: "Inventory updated", message: "Changes saved successfully." });
-          setNotifications((prev) => [{ icon: "📦", title: "Inventory Updated", message: "Product list was modified by manager", timestamp: new Date().toISOString(), read: false }, ...prev]);
-        };
-
-        const handleUpdateUsers = (newUsers) => {
-          setUsers(newUsers);
-          setLogs((prev) => [{ type: "auth", action: "User management updated", detail: `${session.userName} modified user accounts`, timestamp: new Date().toISOString() }, ...prev]);
-          addToast({ type: "success", title: "Users updated", message: "Changes saved successfully." });
-        };
-
-        const markNotifRead = (index) => { setNotifications((prev) => prev.map((n, i) => (i === index ? { ...n, read: true } : n))); };
-        const markAllRead = () => { setNotifications((prev) => prev.map((n) => ({ ...n, read: true }))); addToast({ type: "success", title: "All marked read", message: "Notifications cleared" }); };
-        const unreadCount = notifications.filter((n) => !n.read).length;
-
-        return (
-          <>
-            <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "var(--bg)" }}>
-              <Sidebar section={section} onSection={setSection} session={session} onLogout={onLogout} />
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                <div style={{ padding: "0.875rem 1.5rem", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", background: "var(--bg2)", flexShrink: 0, flexWrap: "wrap", gap: "0.5rem" }}>
-                  <div><h1 className="font-heading" style={{ fontSize: "1.1rem", fontWeight: 800, color: "var(--text)" }}>{section === "overview" ? "Dashboard Overview" : section === "inventory" ? "Inventory Management" : section === "sales" ? "Sales History" : section === "analytics" ? "Analytics & Reports" : section === "employees" ? "Employee Management" : section === "logs" ? "Activity Logs" : "Settings"}</h1><p style={{ fontSize: "0.75rem", color: "var(--text3)", marginTop: "0.125rem" }}>White Dove Engineering Firm · Manager Portal</p></div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", flexWrap: "wrap" }}>
-                    <div style={{ display: "flex", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "10px", overflow: "hidden" }}>
-                      {[{ val: "dark", icon: "moon" }, { val: "light", icon: "sun" }, { val: "system", icon: "monitor" }].map((t) => (<button key={t.val} onClick={() => onThemeChange(t.val)} style={{ padding: "0.5rem", background: theme === t.val ? "rgba(10,61,145,0.2)" : "transparent", border: "none", color: theme === t.val ? "#60A5FA" : "var(--text3)", cursor: "pointer" }}><Icon name={t.icon} size={15} /></button>))}
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "0.75rem", fontWeight: 600, color: "#10B981", background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)", padding: "0.375rem 0.75rem", borderRadius: "100px" }}><div className="pulse-dot" style={{ width: "6px", height: "6px" }} />Live</div>
-                    <button onClick={() => setNotifPanelOpen(true)} style={{ position: "relative", background: "var(--bg)", border: "1px solid var(--border)", borderRadius: "10px", padding: "0.5rem", cursor: "pointer", color: "var(--text2)" }}><Icon name="bell" size={17} />{unreadCount > 0 && <span style={{ position: "absolute", top: "-4px", right: "-4px", minWidth: "16px", height: "16px", background: "#EF4444", color: "white", borderRadius: "50%", fontSize: "0.6rem", fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center", padding: "0 3px" }}>{unreadCount > 9 ? "9+" : unreadCount}</span>}</button>
-                  </div>
-                </div>
-                <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
-                  {section === "overview" && <OverviewSection products={products} sales={sales} theme={theme} liveNotifs={liveNotifs} addToast={addToast} />}
-                  {section === "inventory" && <InventorySection products={products} onUpdate={handleInventoryUpdate} />}
-                  {section === "sales" && <SalesSection sales={sales} />}
-                  {section === "analytics" && <AnalyticsSection products={products} sales={sales} theme={theme} />}
-                  {section === "employees" && <EmployeeManagement users={users} onUpdateUsers={handleUpdateUsers} currentUser={session} />}
-                  {section === "logs" && <LogsSection logs={logs} />}
-                  {section === "settings" && <SettingsSection theme={theme} onThemeChange={onThemeChange} session={session} />}
-                </div>
-              </div>
-            </div>
-            <NotificationPanel isOpen={notifPanelOpen} onClose={() => setNotifPanelOpen(false)} notifications={notifications} onMarkRead={markNotifRead} onMarkAllRead={markAllRead} />
-          </>
+        // Stats
+        const totalRevenue = sales.reduce((a, s) => a + s.total, 0);
+        const totalItems = sales.reduce(
+          (a, s) => a + s.items.reduce((b, i) => b + i.qty, 0),
+          0,
         );
-      };
+        const avgOrder = sales.length ? totalRevenue / sales.length : 0;
 
-      const App = () => {
-        const [session, setSession] = useState(() => getSession());
-        const [theme, setTheme] = useState(() => localStorage.getItem("wd_theme") || "dark");
-        const [toasts, setToasts] = useState([]);
+        // Weekly Chart Data
+        const weeklyData = useMemo(() => {
+          const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+          return days.map((_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - (6 - i));
+            return sales
+              .filter(
+                (s) =>
+                  new Date(s.timestamp).toDateString() === d.toDateString(),
+              )
+              .reduce((a, s) => a + s.total, 0);
+          });
+        }, [sales]);
 
-        const applyTheme = useCallback((t) => {
-          const resolved = t === "system" ? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : t;
-          document.documentElement.setAttribute("data-theme", resolved);
-          setTheme(t);
-          localStorage.setItem("wd_theme", t);
-        }, []);
+        return React.createElement(
+          "div",
+          { style: { minHeight: "100vh", background: "var(--bg)" } },
+          // Top Nav & Sidebar
+          React.createElement(
+            "div",
+            {
+              className: "sidebar-top",
+              style: {
+                padding: "1rem 2rem",
+                background: "var(--card)",
+                borderBottom: "1px solid var(--border)",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              },
+            },
+            React.createElement(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                },
+              },
+              React.createElement(Logo, { size: 32 }),
+              React.createElement(
+                "span",
+                {
+                  className: "font-heading",
+                  style: { fontWeight: 800, color: "#0A3D91" },
+                },
+                "White Dove Manager",
+              ),
+            ),
+            React.createElement(
+              "div",
+              { style: { display: "flex", gap: "1rem", alignItems: "center" } },
+              React.createElement(
+                "button",
+                {
+                  onClick: () =>
+                    onThemeChange(theme === "dark" ? "light" : "dark"),
+                  style: {
+                    background: "none",
+                    border: "none",
+                    fontSize: "1.2rem",
+                    cursor: "pointer",
+                  },
+                },
+                theme === "dark" ? "☀️" : "🌙",
+              ),
+              React.createElement(
+                "button",
+                {
+                  onClick: onLogout,
+                  style: {
+                    background: "none",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    padding: "0.3rem 0.8rem",
+                    color: "var(--text2)",
+                    cursor: "pointer",
+                  },
+                },
+                "Logout",
+              ),
+            ),
+          ),
 
-        useEffect(() => { applyTheme(theme); }, []);
+          // Mobile Sidebar
+          React.createElement(
+            "div",
+            { className: "sidebar", style: { padding: "0.5rem" } },
+            ["overview", "inventory", "sales"].map((tab) =>
+              React.createElement(
+                "div",
+                {
+                  key: tab,
+                  className: `nav-item ${section === tab ? "active" : ""}`,
+                  onClick: () => setSection(tab),
+                },
+                React.createElement(
+                  "span",
+                  null,
+                  tab === "overview" ? "📊" : tab === "inventory" ? "📦" : "💰",
+                ),
+                React.createElement(
+                  "span",
+                  { className: "nav-text", style: { fontSize: "0.65rem" } },
+                  tab === "overview"
+                    ? "Home"
+                    : tab === "inventory"
+                      ? "Stock"
+                      : "Sales",
+                ),
+              ),
+            ),
+            React.createElement(
+              "div",
+              {
+                className: "nav-item",
+                style: { color: "#EF4444" },
+                onClick: onLogout,
+              },
+              React.createElement("span", null, "🚪"),
+              React.createElement(
+                "span",
+                { className: "nav-text", style: { fontSize: "0.65rem" } },
+                "Exit",
+              ),
+            ),
+          ),
 
-        const addToast = useCallback((toast) => {
-          const id = Date.now() + Math.random();
-          setToasts((prev) => [{ ...toast, id }, ...prev].slice(0, 5));
-          setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 5000);
-        }, []);
+          // Main Layout
+          React.createElement(
+            "div",
+            {
+              className: "main-layout",
+              style: {
+                display: "grid",
+                gridTemplateColumns: "260px 1fr",
+                gap: "1.5rem",
+                padding: "1.5rem",
+                maxWidth: "1400px",
+                margin: "0 auto",
+              },
+            },
+            // Left Sidebar (Desktop)
+            React.createElement(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1rem",
+                },
+              },
+              React.createElement(
+                "div",
+                {
+                  className: "wd-card",
+                  style: { padding: "1.5rem", textAlign: "center" },
+                },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      width: "60px",
+                      height: "60px",
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #0A3D91, #3B82F6)",
+                      margin: "0 auto",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 800,
+                      color: "white",
+                      fontSize: "1.5rem",
+                    },
+                  },
+                  session.avatar || "M",
+                ),
+                React.createElement(
+                  "h2",
+                  {
+                    className: "font-heading",
+                    style: {
+                      fontSize: "1.2rem",
+                      fontWeight: 700,
+                      marginTop: "0.75rem",
+                    },
+                  },
+                  session.userName,
+                ),
+                React.createElement(
+                  "p",
+                  { style: { fontSize: "0.8rem", color: "var(--text2)" } },
+                  "General Manager",
+                ),
+              ),
+              React.createElement(
+                "div",
+                { className: "wd-card", style: { padding: "1rem" } },
+                React.createElement(
+                  "div",
+                  {
+                    className: "font-heading",
+                    style: {
+                      fontWeight: 600,
+                      fontSize: "0.9rem",
+                      marginBottom: "0.5rem",
+                    },
+                  },
+                  "📊 Quick Stats",
+                ),
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "0.3rem 0",
+                      fontSize: "0.8rem",
+                      borderBottom: "1px solid var(--border)",
+                    },
+                  },
+                  React.createElement(
+                    "span",
+                    { style: { color: "var(--text2)" } },
+                    "Revenue",
+                  ),
+                  React.createElement(
+                    "span",
+                    { style: { fontWeight: 600 } },
+                    fmt(totalRevenue),
+                  ),
+                ),
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "0.3rem 0",
+                      fontSize: "0.8rem",
+                      borderBottom: "1px solid var(--border)",
+                    },
+                  },
+                  React.createElement(
+                    "span",
+                    { style: { color: "var(--text2)" } },
+                    "Items Sold",
+                  ),
+                  React.createElement(
+                    "span",
+                    { style: { fontWeight: 600 } },
+                    totalItems,
+                  ),
+                ),
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      padding: "0.3rem 0",
+                      fontSize: "0.8rem",
+                    },
+                  },
+                  React.createElement(
+                    "span",
+                    { style: { color: "var(--text2)" } },
+                    "Avg. Order",
+                  ),
+                  React.createElement(
+                    "span",
+                    { style: { fontWeight: 600 } },
+                    fmt(avgOrder),
+                  ),
+                ),
+              ),
+            ),
 
-        const dismissToast = useCallback((id) => setToasts((prev) => prev.filter((t) => t.id !== id)), []);
-
-        const handleLogout = useCallback(() => {
-          sessionStorage.removeItem(AUTH_KEY);
-          localStorage.removeItem(AUTH_KEY + "_remember");
-          setSession(null);
-        }, []);
-
-        return (
-          <>
-            <ToastContainer toasts={toasts} onDismiss={dismissToast} />
-            {!session ? (
-              <LoginPage onLogin={(s) => { setSession(s); addToast({ type: "success", title: "Welcome back!", message: `Signed in as ${s.userName}` }); }} />
-            ) : (
-              <Dashboard session={session} onLogout={handleLogout} theme={theme} onThemeChange={applyTheme} addToast={addToast} dismissToast={dismissToast} toasts={toasts} />
-            )}
-          </>
+            // Right Panel
+            React.createElement(
+              "div",
+              {
+                className: "right-panel",
+                style: {
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1.5rem",
+                },
+              },
+              section === "overview" &&
+                React.createElement(
+                  React.Fragment,
+                  null,
+                  React.createElement(
+                    "div",
+                    {
+                      className: "stats-grid",
+                      style: {
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fit, minmax(160px, 1fr))",
+                        gap: "1rem",
+                      },
+                    },
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-blue",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Revenue",
+                        ),
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "1.2rem" } },
+                          "💰",
+                        ),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800 },
+                        },
+                        fmt(totalRevenue),
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-green",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Sales",
+                        ),
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "1.2rem" } },
+                          "📦",
+                        ),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800 },
+                        },
+                        sales.length,
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-orange",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Items",
+                        ),
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "1.2rem" } },
+                          "🔢",
+                        ),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800 },
+                        },
+                        totalItems,
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-purple",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Products",
+                        ),
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "1.2rem" } },
+                          "📁",
+                        ),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800 },
+                        },
+                        products.length,
+                      ),
+                    ),
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      className: "chart-grid",
+                      style: {
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: "1.5rem",
+                      },
+                    },
+                    React.createElement(
+                      "div",
+                      { className: "wd-card", style: { padding: "1.5rem" } },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: "1rem",
+                          },
+                        },
+                        React.createElement(
+                          "div",
+                          {
+                            className: "font-heading",
+                            style: { fontWeight: 600 },
+                          },
+                          "Weekly Revenue",
+                        ),
+                        React.createElement(
+                          "span",
+                          {
+                            style: {
+                              fontSize: "0.8rem",
+                              color: "var(--text2)",
+                            },
+                          },
+                          "Last 7 days",
+                        ),
+                      ),
+                      React.createElement(RevenueChart, {
+                        data: weeklyData,
+                        theme: theme,
+                      }),
+                    ),
+                    React.createElement(
+                      "div",
+                      { className: "wd-card", style: { padding: "1.5rem" } },
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontWeight: 600, marginBottom: "1rem" },
+                        },
+                        "Stock by Category",
+                      ),
+                      React.createElement(CategoryChart, {
+                        products: products,
+                        theme: theme,
+                      }),
+                    ),
+                  ),
+                  React.createElement(
+                    "div",
+                    { className: "wd-card", style: { padding: "1.5rem" } },
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                          marginBottom: "1rem",
+                        },
+                      },
+                      React.createElement("div", {
+                        className: "pulse-dot",
+                        style: { width: "8px", height: "8px" },
+                      }),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontWeight: 600 },
+                        },
+                        "Live Sales Feed",
+                      ),
+                    ),
+                    liveFeed.length === 0
+                      ? React.createElement(
+                          "div",
+                          {
+                            style: {
+                              textAlign: "center",
+                              color: "var(--text3)",
+                              padding: "1rem",
+                            },
+                          },
+                          "No live sales yet.",
+                        )
+                      : React.createElement(
+                          "div",
+                          {
+                            style: {
+                              maxHeight: "250px",
+                              overflowY: "auto",
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "0.5rem",
+                            },
+                          },
+                          liveFeed.map((s, i) =>
+                            React.createElement(
+                              "div",
+                              {
+                                key: i,
+                                style: {
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  padding: "0.5rem",
+                                  background: "var(--bg)",
+                                  borderRadius: "8px",
+                                  border: "1px solid var(--border)",
+                                },
+                              },
+                              React.createElement(
+                                "div",
+                                null,
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontWeight: 600,
+                                      fontSize: "0.85rem",
+                                    },
+                                  },
+                                  s.sellerName,
+                                ),
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontSize: "0.75rem",
+                                      color: "var(--text2)",
+                                    },
+                                  },
+                                  s.items?.[0]?.name,
+                                ),
+                              ),
+                              React.createElement(
+                                "div",
+                                { style: { textAlign: "right" } },
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontWeight: 700,
+                                      color: "#10B981",
+                                    },
+                                  },
+                                  fmt(s.total),
+                                ),
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontSize: "0.65rem",
+                                      color: "var(--text3)",
+                                    },
+                                  },
+                                  fmtDate(s.timestamp),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                  ),
+                ),
+              section === "inventory" &&
+                React.createElement(
+                  "div",
+                  { className: "wd-card", style: { padding: "1.5rem" } },
+                  React.createElement(
+                    "div",
+                    {
+                      className: "font-heading",
+                      style: { fontWeight: 700, marginBottom: "1rem" },
+                    },
+                    "📦 Inventory Management",
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        display: "grid",
+                        gridTemplateColumns:
+                          "repeat(auto-fill, minmax(150px, 1fr))",
+                        gap: "0.75rem",
+                        maxHeight: "500px",
+                        overflowY: "auto",
+                      },
+                    },
+                    products.map((p) =>
+                      React.createElement(
+                        "div",
+                        {
+                          key: p.id,
+                          style: {
+                            padding: "0.75rem",
+                            border: "1px solid var(--border)",
+                            borderRadius: "12px",
+                            textAlign: "center",
+                            background: "var(--bg)",
+                          },
+                        },
+                        React.createElement(
+                          "div",
+                          { style: { fontSize: "1.5rem" } },
+                          p.emoji,
+                        ),
+                        React.createElement(
+                          "div",
+                          {
+                            style: {
+                              fontWeight: 600,
+                              fontSize: "0.8rem",
+                              marginTop: "0.25rem",
+                            },
+                          },
+                          p.name,
+                        ),
+                        React.createElement(
+                          "div",
+                          {
+                            style: {
+                              fontWeight: 700,
+                              color: "#10B981",
+                              fontSize: "0.8rem",
+                            },
+                          },
+                          fmt(p.price),
+                        ),
+                        React.createElement(
+                          "div",
+                          {
+                            style: {
+                              fontSize: "0.7rem",
+                              color: p.stock <= 2 ? "#EF4444" : "var(--text3)",
+                              marginTop: "0.25rem",
+                            },
+                          },
+                          `Stock: ${p.stock}`,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              section === "sales" &&
+                React.createElement(
+                  "div",
+                  { className: "wd-card", style: { padding: "1.5rem" } },
+                  React.createElement(
+                    "div",
+                    {
+                      className: "font-heading",
+                      style: { fontWeight: 700, marginBottom: "1rem" },
+                    },
+                    "💰 Sales History",
+                  ),
+                  sales.length === 0
+                    ? React.createElement(
+                        "div",
+                        {
+                          style: {
+                            textAlign: "center",
+                            color: "var(--text2)",
+                            padding: "1rem",
+                          },
+                        },
+                        "No sales yet.",
+                      )
+                    : React.createElement(
+                        "div",
+                        { style: { maxHeight: "500px", overflowY: "auto" } },
+                        sales.map((s) =>
+                          React.createElement(
+                            "div",
+                            {
+                              key: s.id,
+                              style: {
+                                display: "flex",
+                                justifyContent: "space-between",
+                                padding: "0.75rem",
+                                borderBottom: "1px solid var(--border)",
+                              },
+                            },
+                            React.createElement(
+                              "div",
+                              null,
+                              React.createElement(
+                                "div",
+                                {
+                                  style: {
+                                    fontWeight: 600,
+                                    fontSize: "0.9rem",
+                                  },
+                                },
+                                s.customer,
+                              ),
+                              React.createElement(
+                                "div",
+                                {
+                                  style: {
+                                    fontSize: "0.75rem",
+                                    color: "var(--text3)",
+                                  },
+                                },
+                                s.sellerName,
+                              ),
+                            ),
+                            React.createElement(
+                              "div",
+                              { style: { textAlign: "right" } },
+                              React.createElement(
+                                "div",
+                                {
+                                  style: { fontWeight: 700, color: "#10B981" },
+                                },
+                                fmt(s.total),
+                              ),
+                              React.createElement(
+                                "div",
+                                {
+                                  style: {
+                                    fontSize: "0.75rem",
+                                    color: "var(--text3)",
+                                  },
+                                },
+                                fmtDate(s.timestamp),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                ),
+            ),
+          ),
         );
-      };
+      }
 
-      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+      // ─── APP ──────────────────────────────────────────────────────
+      function App() {
+        const [session, setSession] = useState(() => {
+          try {
+            const raw = sessionStorage.getItem(AUTH_KEY);
+            return raw ? JSON.parse(raw) : null;
+          } catch {
+            return null;
+          }
+        });
+        const [theme, setTheme] = useState(
+          () => localStorage.getItem("wd_theme") || "dark",
+        );
+        useEffect(() => {
+          document.documentElement.setAttribute("data-theme", theme);
+          localStorage.setItem("wd_theme", theme);
+        }, [theme]);
+
+        if (!session)
+          return React.createElement(LoginPage, { onLogin: setSession });
+        return React.createElement(ManagerDashboard, {
+          session: session,
+          onLogout: () => {
+            sessionStorage.removeItem(AUTH_KEY);
+            setSession(null);
+          },
+          theme: theme,
+          onThemeChange: (t) => setTheme(t),
+        });
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(
+        React.createElement(App),
+      );
     </script>
   </body>
 </html>
