@@ -6,15 +6,26 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes"
     />
-    <title>Seller POS — White Dove Engineering</title>
+    <title>White Dove Engineering — Seller POS Terminal</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Supabase JS Library & Unified Store -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="supabase-config.js"></script>
+
     <script>
       tailwind.config = {
         darkMode: "class",
@@ -37,6 +48,7 @@
               success: "#10B981",
               warning: "#F59E0B",
               danger: "#EF4444",
+              info: "#3B82F6",
             },
             fontFamily: {
               sans: ["Inter", "system-ui", "sans-serif"],
@@ -77,39 +89,70 @@
         font-family: "Inter", sans-serif;
         background: var(--bg);
         color: var(--text);
-        transition: all 0.3s;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      .sidebar {
+        background: var(--sidebar-bg);
+        border-right: 1px solid var(--border);
+        width: 240px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          width: 68px !important;
+        }
+        .sidebar .nav-text,
+        .sidebar .brand-text,
+        .sidebar .seller-name {
+          display: none;
+        }
+        .sidebar .nav-item {
+          justify-content: center;
+          padding: 0.6rem 0;
+        }
       }
 
       .wd-card {
         background: var(--card);
         border: 1px solid var(--border);
         border-radius: 16px;
-        transition: all 0.2s;
+        transition: all 0.25s ease;
       }
+      .wd-card:hover {
+        border-color: rgba(16, 185, 129, 0.3);
+      }
+
       .wd-input {
         background: var(--bg);
         border: 1px solid var(--border);
         color: var(--text);
         border-radius: 10px;
-        padding: 0.6rem 0.875rem;
+        padding: 0.65rem 0.875rem;
         font-size: 0.875rem;
         width: 100%;
         outline: none;
+        transition: all 0.2s;
       }
       .wd-input:focus {
-        border-color: #3b82f6;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
       }
 
       .nav-item {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.625rem 0.75rem;
-        border-radius: 10px;
+        padding: 0.65rem 0.85rem;
+        border-radius: 12px;
         font-size: 0.875rem;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.15s;
+        transition: all 0.2s;
         color: var(--text2);
         background: transparent;
         border: none;
@@ -118,52 +161,111 @@
       .nav-item:hover {
         background: var(--bg2);
         color: var(--text);
+        transform: translateX(3px);
       }
       .nav-item.active {
-        background: rgba(16, 185, 129, 0.12);
+        background: rgba(16, 185, 129, 0.14);
         color: #34d399;
         font-weight: 600;
       }
 
-      /* MOBILE RESPONSIVE */
-      @media (max-width: 768px) {
-        .sidebar {
-          position: fixed !important;
-          bottom: 0 !important;
-          top: auto !important;
-          left: 0 !important;
-          right: 0 !important;
-          width: 100% !important;
-          height: 65px !important;
-          flex-direction: row !important;
-          background: var(--card);
-          border-top: 1px solid var(--border);
-          z-index: 50;
-          padding: 0 0.5rem !important;
-          overflow-x: auto !important;
+      .cat-pill {
+        padding: 0.4rem 0.85rem;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text2);
+      }
+      .cat-pill:hover {
+        color: var(--text);
+        border-color: rgba(16, 185, 129, 0.4);
+      }
+      .cat-pill.active {
+        background: #10b981;
+        color: white;
+        border-color: #10b981;
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+      }
+
+      .product-card {
+        padding: 0.95rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.5rem;
+        border-radius: 16px;
+        position: relative;
+      }
+      .product-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .kpi-card-blue {
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        color: white;
+      }
+      .kpi-card-green {
+        background: linear-gradient(135deg, #064e3b, #10b981);
+        color: white;
+      }
+      .kpi-card-orange {
+        background: linear-gradient(135deg, #78350f, #f59e0b);
+        color: white;
+      }
+      .kpi-card-purple {
+        background: linear-gradient(135deg, #4c1d95, #8b5cf6);
+        color: white;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(40px) scale(0.95);
         }
-        .sidebar .nav-text {
-          display: none !important;
+        to {
+          opacity: 1;
+          transform: translateX(0) scale(1);
         }
-        .sidebar .nav-item {
-          padding: 0.4rem 0.6rem !important;
-          justify-content: center !important;
-          font-size: 0.7rem !important;
-          flex-shrink: 0;
-        }
-        .sidebar .brand-text {
-          display: none !important;
-        }
-        .main-content {
-          padding: 1rem !important;
-          padding-bottom: 80px !important;
-        }
-        .pos-layout {
-          grid-template-columns: 1fr !important;
-        }
-        .pos-cart {
-          height: 350px !important;
-        }
+      }
+
+      .toast-container {
+        position: fixed;
+        top: 1.5rem;
+        right: 1.5rem;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-width: 380px;
+      }
+      .toast {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 0.9rem 1.25rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 8px;
       }
     </style>
   </head>
@@ -171,80 +273,568 @@
     <div id="root"></div>
 
     <script>
-      const { useState, useEffect } = React;
+      const { useState, useEffect, useRef, useMemo } = React;
+      const fmt = (n) => (window.WD_STORE ? window.WD_STORE.fmt(n) : "SLE " + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
-      // ─── SHARED DATA (Matches Manager) ──────────────────────────
-      const BROADCAST_KEY = "wd_realtime_channel";
-      const STORAGE_KEY = "wd_shared_data";
-      const AUTH_KEY = "wd_seller_session";
-      const SELLER_USERS = [
-        {
-          id: "s1",
-          name: "White Dove Solutions",
-          email: "Solutionswhitedoveelectrical@gmail.com",
-          password: "Whitedove2026",
-          role: "seller",
-          avatar: "WD",
-        },
-      ];
-
-      const fmt = (n) =>
-        `SLE ${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      const getSharedData = () => {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          return raw ? JSON.parse(raw) : null;
-        } catch {
-          return null;
-        }
-      };
-      const saveSharedData = (data) => {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        } catch {}
-      };
-
-      // ─── LOGIN ────────────────────────────────────────────────────
-      function LoginPage({ onLogin }) {
-        const [email, setEmail] = useState(
-          "Solutionswhitedoveelectrical@gmail.com",
+      // ─── TOAST CONTAINER ──────────────────────────────────────────
+      function ToastContainer({ toasts, removeToast }) {
+        return React.createElement(
+          "div",
+          { className: "toast-container" },
+          toasts.map((t) =>
+            React.createElement(
+              "div",
+              {
+                key: t.id,
+                className: "toast",
+                style: {
+                  borderLeft: "4px solid " + (t.type === "success" ? "#10B981" : t.type === "warning" ? "#F59E0B" : "#3B82F6"),
+                },
+              },
+              React.createElement(
+                "span",
+                { style: { fontSize: "1.2rem" } },
+                t.type === "success" ? "✅" : t.type === "warning" ? "⚠️" : "📦",
+              ),
+              React.createElement(
+                "div",
+                { style: { flex: 1 } },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      fontWeight: 600,
+                      fontSize: "0.85rem",
+                      color: "var(--text)",
+                    },
+                  },
+                  t.title,
+                ),
+                React.createElement(
+                  "div",
+                  { style: { fontSize: "0.75rem", color: "var(--text2)" } },
+                  t.message,
+                ),
+              ),
+              React.createElement(
+                "button",
+                {
+                  onClick: () => removeToast(t.id),
+                  style: {
+                    background: "none",
+                    border: "none",
+                    color: "var(--text3)",
+                    cursor: "pointer",
+                    fontSize: "1rem",
+                  },
+                },
+                "✕",
+              ),
+            ),
+          ),
         );
+      }
+
+      // ─── LOGIN COMPONENT WITH QUICK DEMO ACCOUNTS ──────────────────
+      function LoginPage({ onLogin }) {
+        const [email, setEmail] = useState("Solutionswhitedoveelectrical@gmail.com");
         const [password, setPassword] = useState("Whitedove2026");
+        const [showPw, setShowPw] = useState(false);
         const [error, setError] = useState("");
         const [loading, setLoading] = useState(false);
+
+        const handleDemoClick = (demEmail, demPw) => {
+          setEmail(demEmail);
+          setPassword(demPw);
+          setError("");
+        };
+
         const handleSubmit = (e) => {
           e.preventDefault();
           setLoading(true);
           setError("");
+
           setTimeout(() => {
-            const user = SELLER_USERS.find(
-              (u) => u.email === email && u.password === password,
-            );
-            if (user) {
-              const session = {
-                userId: user.id,
-                userName: user.name,
-                avatar: user.avatar,
-                role: "seller",
-                expiresAt: Date.now() + 8 * 60 * 60 * 1000,
-              };
-              sessionStorage.setItem(AUTH_KEY, JSON.stringify(session));
-              onLogin(session);
+            const res = window.WD_STORE ? window.WD_STORE.authenticate(email, password, "seller") : { success: false, message: "Store initializing..." };
+            if (res.success) {
+              onLogin(res.session);
             } else {
-              setError("Invalid credentials.");
+              setError(res.message || "Invalid credentials. Please select a valid seller account.");
             }
             setLoading(false);
-          }, 600);
+          }, 350);
         };
+
         return React.createElement(
           "div",
           {
             style: {
               minHeight: "100vh",
+              background: "var(--bg)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "var(--bg)",
+              padding: "1.5rem",
+            },
+          },
+          React.createElement(
+            "div",
+            { style: { width: "100%", maxWidth: "440px" } },
+            React.createElement(
+              "div",
+              {
+                className: "wd-card",
+                style: {
+                  borderRadius: "24px",
+                  padding: "2.25rem 2rem",
+                  boxShadow: "0 40px 120px rgba(0,0,0,0.5)",
+                },
+              },
+              React.createElement(
+                "div",
+                { style: { textAlign: "center", marginBottom: "1.5rem" } },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      width: "64px",
+                      height: "64px",
+                      borderRadius: "20px",
+                      background: "linear-gradient(135deg, #065f46, #10b981)",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "1.9rem",
+                      color: "white",
+                      marginBottom: "0.75rem",
+                      boxShadow: "0 8px 30px rgba(16, 185, 129, 0.4)",
+                    },
+                  },
+                  "🛒",
+                ),
+                React.createElement(
+                  "div",
+                  {
+                    className: "font-heading",
+                    style: {
+                      fontSize: "1.65rem",
+                      fontWeight: 900,
+                      color: "var(--text)",
+                      letterSpacing: "-0.02em",
+                    },
+                  },
+                  "WHITE DOVE",
+                ),
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                      color: "#10B981",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase",
+                    },
+                  },
+                  "Seller POS Terminal",
+                ),
+              ),
+              // Demo Accounts Pills
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    background: "var(--bg)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "14px",
+                    padding: "0.75rem",
+                    marginBottom: "1.25rem",
+                  },
+                },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      color: "var(--text3)",
+                      marginBottom: "0.5rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    },
+                  },
+                  "⚡ Quick Demo Accounts (Click to Fill)",
+                ),
+                React.createElement(
+                  "div",
+                  { style: { display: "flex", flexDirection: "column", gap: "0.4rem" } },
+                  React.createElement(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => handleDemoClick("Solutionswhitedoveelectrical@gmail.com", "Whitedove2026"),
+                      style: {
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "0.45rem 0.65rem",
+                        borderRadius: "8px",
+                        border: "1px solid var(--border)",
+                        background: "var(--card)",
+                        color: "var(--text)",
+                        fontSize: "0.75rem",
+                        cursor: "pointer",
+                        textAlign: "left",
+                      },
+                    },
+                    React.createElement("span", { style: { fontWeight: 600 } }, "🛍️ White Dove Solutions"),
+                    React.createElement("span", { style: { fontSize: "0.7rem", color: "#10b981" } }, "Primary Seller"),
+                  ),
+                  React.createElement(
+                    "button",
+                    {
+                      type: "button",
+                      onClick: () => handleDemoClick("mohamed@whitedove.com", "seller123"),
+                      style: {
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        padding: "0.45rem 0.65rem",
+                        borderRadius: "8px",
+                        border: "1px solid var(--border)",
+                        background: "var(--card)",
+                        color: "var(--text)",
+                        fontSize: "0.75rem",
+                        cursor: "pointer",
+                        textAlign: "left",
+                      },
+                    },
+                    React.createElement("span", { style: { fontWeight: 600 } }, "👤 Mohamed Bangura"),
+                    React.createElement("span", { style: { fontSize: "0.7rem", color: "var(--text3)" } }, "Sales Officer"),
+                  ),
+                ),
+              ),
+              React.createElement(
+                "form",
+                {
+                  onSubmit: handleSubmit,
+                  style: {
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.9rem",
+                  },
+                },
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "label",
+                    {
+                      style: {
+                        display: "block",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        color: "var(--text2)",
+                        marginBottom: "0.25rem",
+                      },
+                    },
+                    "Email Address",
+                  ),
+                  React.createElement("input", {
+                    type: "email",
+                    className: "wd-input",
+                    value: email,
+                    onChange: (e) => setEmail(e.target.value),
+                    placeholder: "Email Address",
+                    required: true,
+                  }),
+                ),
+                React.createElement(
+                  "div",
+                  null,
+                  React.createElement(
+                    "label",
+                    {
+                      style: {
+                        display: "block",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        color: "var(--text2)",
+                        marginBottom: "0.25rem",
+                      },
+                    },
+                    "Password",
+                  ),
+                  React.createElement(
+                    "div",
+                    { style: { position: "relative" } },
+                    React.createElement("input", {
+                      type: showPw ? "text" : "password",
+                      className: "wd-input",
+                      style: { paddingRight: "2.5rem" },
+                      value: password,
+                      onChange: (e) => setPassword(e.target.value),
+                      placeholder: "Password",
+                      required: true,
+                    }),
+                    React.createElement(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: () => setShowPw(!showPw),
+                        style: {
+                          position: "absolute",
+                          right: "0.75rem",
+                          top: "50%",
+                          transform: "translateY(-50%)",
+                          background: "none",
+                          border: "none",
+                          color: "var(--text3)",
+                          cursor: "pointer",
+                          fontSize: "0.9rem",
+                        },
+                      },
+                      showPw ? "👁️" : "👁️‍🗨️",
+                    ),
+                  ),
+                ),
+                error &&
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        color: "#EF4444",
+                        fontSize: "0.8rem",
+                        textAlign: "center",
+                        background: "rgba(239, 68, 68, 0.15)",
+                        padding: "0.55rem",
+                        borderRadius: "8px",
+                      },
+                    },
+                    error,
+                  ),
+                React.createElement(
+                  "button",
+                  {
+                    type: "submit",
+                    disabled: loading,
+                    style: {
+                      marginTop: "0.5rem",
+                      background: loading
+                        ? "#1A3050"
+                        : "linear-gradient(135deg, #059669, #10B981)",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "12px",
+                      padding: "0.85rem",
+                      fontSize: "0.95rem",
+                      fontWeight: 700,
+                      cursor: loading ? "not-allowed" : "pointer",
+                      boxShadow: "0 6px 20px rgba(16, 185, 129, 0.35)",
+                    },
+                  },
+                  loading ? "Authenticating..." : "Sign In to POS",
+                ),
+              ),
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    marginTop: "1.25rem",
+                    paddingTop: "1rem",
+                    borderTop: "1px solid var(--border)",
+                    textAlign: "center",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  },
+                },
+                React.createElement(
+                  "a",
+                  {
+                    href: "index.html",
+                    style: {
+                      color: "#60A5FA",
+                      fontSize: "0.8rem",
+                      textDecoration: "none",
+                      fontWeight: 600,
+                    },
+                  },
+                  "← Portal Home",
+                ),
+                React.createElement(
+                  "a",
+                  {
+                    href: "manager.html",
+                    style: {
+                      color: "var(--text3)",
+                      fontSize: "0.8rem",
+                      textDecoration: "none",
+                      fontWeight: 500,
+                    },
+                  },
+                  "Manager Portal →",
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+
+      // ─── DASHBOARD CHARTS ────────────────────────────────────────
+      function DashboardCharts({ sales }) {
+        const doughnutRef = useRef(null);
+        const lineRef = useRef(null);
+        const doughnutInstance = useRef(null);
+        const lineInstance = useRef(null);
+
+        useEffect(() => {
+          if (!doughnutRef.current || !lineRef.current) return;
+          if (doughnutInstance.current) doughnutInstance.current.destroy();
+          if (lineInstance.current) lineInstance.current.destroy();
+
+          const catMap = {};
+          (sales || []).forEach((s) =>
+            (s.items || []).forEach((i) => {
+              catMap[i.name] = (catMap[i.name] || 0) + (i.qty || 1);
+            }),
+          );
+          const labels = Object.keys(catMap).slice(0, 5);
+          const data = Object.values(catMap).slice(0, 5);
+          if (labels.length === 0) {
+            labels.push("No Sales Yet");
+            data.push(1);
+          }
+
+          const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+          const textColor = isDark ? "#94a3b8" : "#475569";
+
+          doughnutInstance.current = new Chart(doughnutRef.current, {
+            type: "doughnut",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  data: data,
+                  backgroundColor: ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"],
+                  borderWidth: 0,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "bottom",
+                  labels: { color: textColor, boxWidth: 12, padding: 12 },
+                },
+              },
+              cutout: "65%",
+            },
+          });
+
+          const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+          const weeklyData = [0, 0, 0, 0, 0, 0, 0];
+          (sales || []).forEach((s) => {
+            const dayIndex = new Date(s.timestamp).getDay();
+            if (dayIndex >= 0 && dayIndex <= 6) {
+              const mapped = dayIndex === 0 ? 6 : dayIndex - 1;
+              weeklyData[mapped] += Number(s.total || 0);
+            }
+          });
+
+          lineInstance.current = new Chart(lineRef.current, {
+            type: "line",
+            data: {
+              labels: days,
+              datasets: [
+                {
+                  label: "Revenue (SLE)",
+                  data: weeklyData,
+                  borderColor: "#10B981",
+                  backgroundColor: "rgba(16, 185, 129, 0.12)",
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)" },
+                  ticks: { color: textColor },
+                },
+                x: { grid: { display: false }, ticks: { color: textColor } },
+              },
+            },
+          });
+
+          return () => {
+            if (doughnutInstance.current) doughnutInstance.current.destroy();
+            if (lineInstance.current) lineInstance.current.destroy();
+          };
+        }, [sales]);
+
+        return React.createElement(
+          "div",
+          {
+            style: {
+              display: "grid",
+              gridTemplateColumns: "1fr 2fr",
+              gap: "1.5rem",
+            },
+          },
+          React.createElement(
+            "div",
+            { className: "wd-card", style: { padding: "1.5rem" } },
+            React.createElement(
+              "h3",
+              { style: { fontWeight: 700, marginBottom: "1rem" } },
+              "Top Selling Items",
+            ),
+            React.createElement(
+              "div",
+              { style: { height: "220px", width: "100%", position: "relative" } },
+              React.createElement("canvas", { ref: doughnutRef }),
+            ),
+          ),
+          React.createElement(
+            "div",
+            { className: "wd-card", style: { padding: "1.5rem" } },
+            React.createElement(
+              "h3",
+              { style: { fontWeight: 700, marginBottom: "1rem" } },
+              "Weekly Revenue Trends (SLE)",
+            ),
+            React.createElement(
+              "div",
+              { style: { height: "220px", width: "100%" } },
+              React.createElement("canvas", { ref: lineRef }),
+            ),
+          ),
+        );
+      }
+
+      // ─── RECEIPT MODAL ────────────────────────────────────────────
+      function ReceiptModal({ sale, onClose, onPrint, onWhatsApp }) {
+        if (!sale) return null;
+        return React.createElement(
+          "div",
+          {
+            style: {
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0,0,0,0.75)",
+              backdropFilter: "blur(6px)",
+              zIndex: 10000,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               padding: "1.5rem",
             },
           },
@@ -253,656 +843,1717 @@
             {
               className: "wd-card",
               style: {
-                maxWidth: "400px",
+                maxWidth: "460px",
                 width: "100%",
                 padding: "2rem",
-                borderRadius: "20px",
+                maxHeight: "90vh",
+                overflowY: "auto",
+                borderRadius: "24px",
+                boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
               },
             },
             React.createElement(
               "div",
-              { style: { textAlign: "center", marginBottom: "2rem" } },
-              React.createElement("div", { style: { fontSize: "3rem" } }, "🕊️"),
+              {
+                style: {
+                  textAlign: "center",
+                  borderBottom: "2px dashed var(--border)",
+                  paddingBottom: "1.25rem",
+                  marginBottom: "1.25rem",
+                },
+              },
               React.createElement(
-                "h1",
+                "div",
                 {
                   className: "font-heading",
-                  style: { fontSize: "1.5rem", fontWeight: 700 },
+                  style: {
+                    fontSize: "1.6rem",
+                    fontWeight: 900,
+                    color: "#0A3D91",
+                    letterSpacing: "-0.01em",
+                  },
                 },
-                "Seller POS",
+                "WHITE DOVE",
+              ),
+              React.createElement(
+                "div",
+                { style: { fontSize: "0.75rem", color: "var(--text2)", fontWeight: 600 } },
+                "Electrical & Engineering Company",
+              ),
+              React.createElement(
+                "div",
+                { style: { fontSize: "0.7rem", color: "var(--text3)", marginTop: "2px" } },
+                "Freetown, Sierra Leone · +232 75 862 299",
+              ),
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    display: "inline-block",
+                    marginTop: "0.75rem",
+                    padding: "0.25rem 0.75rem",
+                    background: "rgba(16,185,129,0.15)",
+                    color: "#10b981",
+                    borderRadius: "100px",
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                  },
+                },
+                "Receipt: " + sale.receiptNo,
               ),
             ),
             React.createElement(
-              "form",
+              "div",
               {
-                onSubmit: handleSubmit,
                 style: {
                   display: "flex",
-                  flexDirection: "column",
-                  gap: "1rem",
+                  justifyContent: "space-between",
+                  fontSize: "0.82rem",
+                  color: "var(--text2)",
+                  marginBottom: "0.4rem",
                 },
               },
-              React.createElement("input", {
-                type: "email",
-                className: "wd-input",
-                value: email,
-                onChange: (e) => setEmail(e.target.value),
-                placeholder: "Email",
-                required: true,
-              }),
-              React.createElement("input", {
-                type: "password",
-                className: "wd-input",
-                value: password,
-                onChange: (e) => setPassword(e.target.value),
-                placeholder: "Password",
-                required: true,
-              }),
-              error &&
+              React.createElement("span", null, "Customer: " + sale.customer),
+              React.createElement(
+                "span",
+                null,
+                new Date(sale.timestamp).toLocaleString("en-US", { dateStyle: "short", timeStyle: "short" }),
+              ),
+            ),
+            React.createElement(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "0.78rem",
+                  color: "var(--text3)",
+                  marginBottom: "0.75rem",
+                },
+              },
+              React.createElement("span", null, "Seller: " + sale.sellerName),
+              React.createElement("span", null, "Payment: " + sale.payment),
+            ),
+            React.createElement(
+              "div",
+              {
+                style: {
+                  borderTop: "1px solid var(--border)",
+                  borderBottom: "1px solid var(--border)",
+                  padding: "0.75rem 0",
+                  margin: "0.75rem 0",
+                  maxHeight: "180px",
+                  overflowY: "auto",
+                },
+              },
+              (sale.items || []).map((item, i) =>
                 React.createElement(
                   "div",
-                  { style: { color: "#EF4444", fontSize: "0.8rem" } },
-                  error,
+                  {
+                    key: i,
+                    style: {
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontSize: "0.82rem",
+                      padding: "0.3rem 0",
+                    },
+                  },
+                  React.createElement(
+                    "span",
+                    null,
+                    item.qty + " × " + item.name,
+                  ),
+                  React.createElement(
+                    "span",
+                    { style: { fontWeight: 600 } },
+                    fmt(item.total),
+                  ),
                 ),
+              ),
+            ),
+            React.createElement(
+              "div",
+              {
+                style: {
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: "1.3rem",
+                  fontWeight: 900,
+                  color: "#10B981",
+                  margin: "1.25rem 0 1.5rem",
+                },
+              },
+              React.createElement("span", null, "TOTAL AMOUNT"),
+              React.createElement("span", null, fmt(sale.total)),
+            ),
+            React.createElement(
+              "div",
+              { style: { display: "flex", gap: "0.5rem" } },
               React.createElement(
                 "button",
                 {
-                  type: "submit",
-                  disabled: loading,
+                  onClick: onClose,
                   style: {
-                    padding: "0.875rem",
-                    background: loading ? "#1A3050" : "#0A3D91",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "12px",
+                    flex: 1,
+                    padding: "0.75rem",
+                    borderRadius: "10px",
+                    border: "1px solid var(--border)",
+                    background: "transparent",
+                    color: "var(--text)",
+                    cursor: "pointer",
                     fontWeight: 600,
-                    cursor: loading ? "not-allowed" : "pointer",
                   },
                 },
-                loading ? "Signing in..." : "Sign In",
+                "Close",
+              ),
+              React.createElement(
+                "button",
+                {
+                  onClick: () => {
+                    onPrint(sale);
+                  },
+                  style: {
+                    flex: 1,
+                    padding: "0.75rem",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "#0A3D91",
+                    color: "white",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.4rem",
+                  },
+                },
+                "📄 PDF",
+              ),
+              React.createElement(
+                "button",
+                {
+                  onClick: () => {
+                    onWhatsApp(sale);
+                  },
+                  style: {
+                    flex: 1,
+                    padding: "0.75rem",
+                    borderRadius: "10px",
+                    border: "none",
+                    background: "#25D366",
+                    color: "white",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "0.4rem",
+                  },
+                },
+                "💬 WhatsApp",
               ),
             ),
           ),
         );
       }
 
-      // ─── POS DASHBOARD ──────────────────────────────────────────
+      // ─── MAIN POS DASHBOARD ──────────────────────────────────────
       function POSDashboard({ session, onLogout, theme, onThemeChange }) {
-        const sharedData = getSharedData() || { products: [], sales: [] };
-        const [products, setProducts] = useState(sharedData.products);
         const [cart, setCart] = useState([]);
+        const [searchTerm, setSearchTerm] = useState("");
+        const [categoryFilter, setCategoryFilter] = useState("All");
+        const [sales, setSales] = useState(() => (window.WD_STORE ? window.WD_STORE.getStoredData().sales : []));
+        const [products, setProducts] = useState(() => (window.WD_STORE ? window.WD_STORE.getStoredData().products : []));
+        const [section, setSection] = useState("pos");
         const [customerName, setCustomerName] = useState("");
         const [customerPhone, setCustomerPhone] = useState("");
-        const [toast, setToast] = useState(null);
+        const [paymentMethod, setPaymentMethod] = useState("Cash");
+        const [toasts, setToasts] = useState([]);
+        const [receiptSale, setReceiptSale] = useState(null);
 
-        // Real-time Sync from Manager
+        const addToast = (title, message, type = "success") => {
+          const id = Date.now();
+          setToasts((prev) => [...prev, { id, title, message, type }]);
+          setTimeout(
+            () => setToasts((prev) => prev.filter((t) => t.id !== id)),
+            4000,
+          );
+        };
+
+        // Real-Time Sync Subscription (BroadcastChannel + Local Storage + Supabase)
         useEffect(() => {
-          const bc = new BroadcastChannel(BROADCAST_KEY);
-          bc.onmessage = (e) => {
-            if (e.data.type === "SYNC_STATE") {
-              setProducts(e.data.products);
-              saveSharedData(e.data);
+          if (!window.WD_STORE) return;
+
+          const unsubscribe = window.WD_STORE.subscribeBroadcast((msg) => {
+            if (msg.type === "SYNC_INVENTORY" || msg.type === "DATA_UPDATED") {
+              if (Array.isArray(msg.products)) {
+                setProducts(msg.products);
+                addToast("Catalog Updated", "Manager modified products or stock.", "info");
+              }
+              if (Array.isArray(msg.sales)) {
+                setSales(msg.sales);
+              }
+            } else if (msg.type === "SALE_LOGGED" && msg.sale) {
+              setSales((prev) => [msg.sale, ...prev.filter((s) => s.id !== msg.sale.id)]);
+              if (Array.isArray(msg.products)) {
+                setProducts(msg.products);
+              }
             }
+          });
+
+          const unsubSupabase = window.WD_STORE.setupSupabaseRealtime(
+            (newSaleRow) => {
+              window.WD_STORE.syncFromSupabase().then((res) => {
+                if (res) {
+                  setProducts(res.products);
+                  setSales(res.sales);
+                }
+              });
+            },
+            (invChange) => {
+              window.WD_STORE.syncFromSupabase().then((res) => {
+                if (res) {
+                  setProducts(res.products);
+                  setSales(res.sales);
+                }
+              });
+            }
+          );
+
+          window.WD_STORE.syncFromSupabase().then((res) => {
+            if (res) {
+              setProducts(res.products);
+              setSales(res.sales);
+            }
+          });
+
+          return () => {
+            if (unsubscribe) unsubscribe();
+            if (unsubSupabase) unsubSupabase();
           };
-          // Request initial sync
-          bc.postMessage({ type: "SYNC_REQUEST" });
-          return () => bc.close();
         }, []);
 
-        useEffect(() => {
-          if (toast) setTimeout(() => setToast(null), 3000);
-        }, [toast]);
+        const categories = useMemo(() => {
+          const cats = ["All", ...new Set(products.map((p) => p.category || "Other"))];
+          return cats;
+        }, [products]);
+
+        const filteredProducts = useMemo(() => {
+          return products.filter((p) => {
+            const matchesSearch =
+              p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              (p.sku && p.sku.toLowerCase().includes(searchTerm.toLowerCase()));
+            const matchesCat = categoryFilter === "All" || p.category === categoryFilter;
+            return matchesSearch && matchesCat;
+          });
+        }, [products, searchTerm, categoryFilter]);
 
         const addToCart = (product) => {
           if (product.stock <= 0) {
-            setToast({ type: "error", msg: "Out of stock!" });
+            addToast("Out of Stock", product.name + " is currently out of stock.", "warning");
             return;
           }
           const existing = cart.find((i) => i.id === product.id);
-          if (existing)
+          if (existing) {
+            if (existing.qty >= product.stock) {
+              addToast("Stock Limit", "Only " + product.stock + " units available in stock.", "warning");
+              return;
+            }
             setCart(
               cart.map((i) =>
                 i.id === product.id ? { ...i, qty: i.qty + 1 } : i,
               ),
             );
-          else setCart([...cart, { ...product, qty: 1 }]);
-          setToast({
-            type: "success",
-            msg: `Added ${product.emoji} ${product.name}`,
-          });
+          } else {
+            setCart([...cart, { ...product, qty: 1 }]);
+          }
+          addToast("Added to Cart", (product.emoji || "📦") + " " + product.name);
         };
 
-        const completeSale = () => {
-          if (cart.length === 0 || !customerName.trim()) {
-            setToast({ type: "error", msg: "Fill name and cart!" });
+        const updateCartQty = (productId, delta) => {
+          const existing = cart.find((i) => i.id === productId);
+          if (!existing) return;
+          const prod = products.find((p) => p.id === productId);
+          const maxStock = prod ? prod.stock : 999;
+
+          if (delta > 0 && existing.qty >= maxStock) {
+            addToast("Stock Limit", "Only " + maxStock + " units available.", "warning");
             return;
           }
-          const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-          const sale = {
-            id: `s${Date.now()}`,
-            receiptNo: `WD-${Date.now().toString().slice(-4)}`,
+
+          if (existing.qty + delta <= 0) {
+            setCart(cart.filter((i) => i.id !== productId));
+          } else {
+            setCart(
+              cart.map((i) =>
+                i.id === productId ? { ...i, qty: i.qty + delta } : i,
+              ),
+            );
+          }
+        };
+
+        const removeFromCart = (productId) => {
+          setCart(cart.filter((i) => i.id !== productId));
+        };
+
+        const handleCheckout = () => {
+          if (cart.length === 0) {
+            addToast("Empty Cart", "Please add items to cart first.", "warning");
+            return;
+          }
+          if (!customerName.trim()) {
+            addToast("Customer Required", "Please enter the customer name.", "warning");
+            return;
+          }
+
+          const saleItems = cart.map((item) => ({
+            productId: item.id,
+            name: item.name,
+            qty: item.qty,
+            unitPrice: Number(item.price),
+            total: Number(item.price) * item.qty,
+          }));
+          const total = cart.reduce((sum, i) => sum + Number(i.price) * i.qty, 0);
+
+          const newSale = {
+            id: "s" + Date.now(),
+            receiptNo: "WD-" + String(sales.length + 1).padStart(4, "0"),
+            sellerId: session.userId,
             sellerName: session.userName,
-            items: cart.map((i) => ({
-              productId: i.id,
-              name: i.name,
-              qty: i.qty,
-              unitPrice: i.price,
-              total: i.price * i.qty,
-            })),
-            total,
-            payment: "Cash",
+            sellerEmail: session.userEmail || "",
+            items: saleItems,
+            total: total,
+            payment: paymentMethod,
             customer: customerName.trim(),
             customerPhone: customerPhone.trim() || "N/A",
             timestamp: new Date().toISOString(),
           };
 
-          // 1. Update Local State
           const updatedProducts = products.map((p) => {
             const sold = cart.find((i) => i.id === p.id);
-            return sold ? { ...p, stock: Math.max(0, p.stock - sold.qty) } : p;
+            return sold
+              ? { ...p, stock: Math.max(0, p.stock - sold.qty) }
+              : p;
           });
+
+          const updatedSales = [newSale, ...sales];
+
           setProducts(updatedProducts);
+          setSales(updatedSales);
           setCart([]);
           setCustomerName("");
           setCustomerPhone("");
+          setReceiptSale(newSale);
+          addToast("Sale Completed!", "Receipt " + newSale.receiptNo + " generated.");
 
-          // 2. Broadcast to Manager
-          const bc = new BroadcastChannel(BROADCAST_KEY);
-          const sharedData = getSharedData();
-          const newSales = [sale, ...(sharedData?.sales || [])];
-          bc.postMessage({
-            type: "SYNC_STATE",
-            products: updatedProducts,
-            sales: newSales,
-          });
-          setToast({ type: "success", msg: `✅ Sale Complete! ${fmt(total)}` });
+          if (window.WD_STORE) {
+            window.WD_STORE.saveData({ products: updatedProducts, sales: updatedSales }, true);
+            window.WD_STORE.broadcastMessage({
+              type: "SALE_LOGGED",
+              sale: newSale,
+              products: updatedProducts,
+            });
+
+            window.WD_STORE.pushSaleToSupabase(newSale);
+            saleItems.forEach((item) => {
+              const prod = updatedProducts.find((p) => p.id === item.productId);
+              if (prod) window.WD_STORE.pushProductToSupabase(prod);
+            });
+          }
         };
+
+        const generateReceiptPDF = (sale) => {
+          if (!window.jspdf) {
+            alert("PDF generator initializing. Please retry.");
+            return;
+          }
+          try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: "mm", format: "a4" });
+            const pw = 210;
+            let y = 20;
+            doc.setFontSize(18);
+            doc.setTextColor("#0A3D91");
+            doc.setFont("helvetica", "bold");
+            doc.text("WHITE DOVE", pw / 2, y, { align: "center" });
+            y += 6;
+            doc.setFontSize(9);
+            doc.setTextColor("#475569");
+            doc.setFont("helvetica", "normal");
+            doc.text("ENGINEERING FIRM", pw / 2, y, { align: "center" });
+            y += 5;
+            doc.text("Building Your Vision, Powering Your Future.", pw / 2, y, {
+              align: "center",
+            });
+            y += 5;
+            doc.text("+232 75 862 299 · Freetown, Sierra Leone", pw / 2, y, {
+              align: "center",
+            });
+            y += 6;
+            doc.line(20, y, pw - 20, y);
+            y += 6;
+            doc.setFontSize(9);
+            doc.setTextColor("#0F172A");
+            doc.setFont("helvetica", "bold");
+            doc.text("Receipt: " + sale.receiptNo, 20, y);
+            doc.text(
+              "Date: " + new Date(sale.timestamp).toLocaleDateString() + " " + new Date(sale.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              110,
+              y,
+            );
+            y += 5;
+            doc.text("Customer: " + sale.customer, 20, y);
+            doc.text("Seller: " + sale.sellerName, 110, y);
+            y += 5;
+            doc.line(20, y, pw - 20, y);
+            y += 5;
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor("#64748B");
+            doc.text("Item", 20, y);
+            doc.text("Qty", 130, y);
+            doc.text("Total", 180, y);
+            y += 4;
+            doc.line(20, y, pw - 20, y);
+            y += 5;
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor("#0F172A");
+            (sale.items || []).forEach((item) => {
+              doc.text(
+                item.name.length > 28
+                  ? item.name.substring(0, 26) + "…"
+                  : item.name,
+                20,
+                y,
+              );
+              doc.text(item.qty.toString(), 130, y);
+              doc.text(fmt(item.total), 180, y, { align: "right" });
+              y += 5;
+            });
+            y += 4;
+            doc.line(20, y, pw - 20, y);
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor("#0A3D91");
+            doc.setFontSize(13);
+            doc.text("TOTAL AMOUNT", 20, y);
+            doc.text(fmt(sale.total), pw - 20, y, { align: "right" });
+            doc.save("receipt_" + sale.receiptNo + ".pdf");
+          } catch (err) {
+            console.error("PDF Generation error:", err);
+          }
+        };
+
+        const sendWhatsAppReceipt = (sale) => {
+          const phone = sale.customerPhone && sale.customerPhone !== "N/A" ? sale.customerPhone : "+23275862299";
+          const cleanPhone = phone.replace(/[^0-9]/g, "");
+          const items = (sale.items || [])
+            .map((i) => "• " + i.name + " × " + i.qty + " = " + fmt(i.total))
+            .join("\n");
+          const msg = "🧾 *WHITE DOVE ELECTRICAL & ENGINEERING CO.*\n\n" +
+                      "*Receipt:* " + sale.receiptNo + "\n" +
+                      "*Date:* " + new Date(sale.timestamp).toLocaleString() + "\n" +
+                      "*Customer:* " + sale.customer + "\n" +
+                      "*Seller:* " + sale.sellerName + "\n\n" +
+                      "*Purchased Items:*\n" + items + "\n\n" +
+                      "*Total Amount: " + fmt(sale.total) + "*\n" +
+                      "*Payment:* " + sale.payment + "\n\n" +
+                      "Thank you for choosing White Dove Engineering!";
+          window.open(
+            "https://wa.me/" + cleanPhone + "?text=" + encodeURIComponent(msg),
+            "_blank",
+          );
+        };
+
+        const totalRevenue = sales.reduce((a, s) => a + Number(s.total || 0), 0);
+        const totalItemsSold = sales.reduce(
+          (a, s) => a + (s.items || []).reduce((b, i) => b + Number(i.qty || 0), 0),
+          0,
+        );
+        const avgOrderValue = sales.length > 0 ? totalRevenue / sales.length : 0;
+
+        const navItems = [
+          { id: "pos", label: "🛒 POS Register" },
+          { id: "dashboard", label: "📊 Sales Summary" },
+          { id: "history", label: "📄 Receipts History" },
+        ];
 
         return React.createElement(
           "div",
           {
             style: {
-              minHeight: "100vh",
+              display: "flex",
+              height: "100vh",
+              overflow: "hidden",
               background: "var(--bg)",
-              paddingBottom: "80px",
             },
           },
-          // Top Bar
+          // SIDEBAR
           React.createElement(
             "div",
-            {
-              style: {
-                padding: "1rem 2rem",
-                background: "var(--card)",
-                borderBottom: "1px solid var(--border)",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                flexWrap: "wrap",
-              },
-            },
+            { className: "sidebar" },
             React.createElement(
               "div",
               {
-                style: { display: "flex", alignItems: "center", gap: "0.5rem" },
+                style: {
+                  padding: "1.25rem 1rem",
+                  borderBottom: "1px solid var(--border)",
+                },
               },
               React.createElement(
-                "span",
-                { style: { fontSize: "1.5rem" } },
-                "🕊️",
-              ),
-              React.createElement(
-                "span",
+                "a",
                 {
-                  className: "font-heading",
-                  style: { fontWeight: 800, color: "#0A3D91" },
+                  href: "index.html",
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.65rem",
+                    textDecoration: "none",
+                  },
                 },
-                "White Dove POS",
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      width: "36px",
+                      height: "36px",
+                      borderRadius: "10px",
+                      background: "linear-gradient(135deg, #065f46, #10b981)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontSize: "1.1rem",
+                    },
+                  },
+                  "🕊️",
+                ),
+                React.createElement(
+                  "div",
+                  { className: "brand-text" },
+                  React.createElement(
+                    "div",
+                    {
+                      className: "font-heading",
+                      style: {
+                        fontSize: "0.85rem",
+                        fontWeight: 800,
+                        color: "var(--text)",
+                      },
+                    },
+                    "WHITE DOVE",
+                  ),
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        fontSize: "0.62rem",
+                        color: "#10b981",
+                        fontWeight: 700,
+                      },
+                    },
+                    "SELLER POS",
+                  ),
+                ),
               ),
             ),
             React.createElement(
               "div",
-              { style: { display: "flex", gap: "1rem" } },
+              {
+                style: {
+                  padding: "0.75rem 1rem",
+                  borderBottom: "1px solid var(--border)",
+                },
+              },
+              React.createElement(
+                "div",
+                {
+                  style: {
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    padding: "0.5rem",
+                    background: "rgba(16,185,129,0.1)",
+                    borderRadius: "10px",
+                  },
+                },
+                React.createElement(
+                  "div",
+                  {
+                    style: {
+                      width: "28px",
+                      height: "28px",
+                      borderRadius: "8px",
+                      background: "#10b981",
+                      color: "white",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: 800,
+                      fontSize: "0.75rem",
+                    },
+                  },
+                  session.avatar || "WD",
+                ),
+                React.createElement(
+                  "div",
+                  { className: "seller-name", style: { minWidth: 0, overflow: "hidden" } },
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        fontSize: "0.78rem",
+                        fontWeight: 700,
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                      },
+                    },
+                    session.userName,
+                  ),
+                  React.createElement(
+                    "div",
+                    { style: { fontSize: "0.65rem", color: "var(--text3)" } },
+                    "Sales Terminal",
+                  ),
+                ),
+              ),
+            ),
+            React.createElement(
+              "nav",
+              {
+                style: {
+                  flex: 1,
+                  padding: "0.75rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.25rem",
+                  overflowY: "auto",
+                },
+              },
+              navItems.map((item) =>
+                React.createElement(
+                  "div",
+                  {
+                    key: item.id,
+                    className: "nav-item " + (section === item.id ? "active" : ""),
+                    onClick: () => setSection(item.id),
+                  },
+                  React.createElement("span", null, item.label),
+                ),
+              ),
+            ),
+            React.createElement(
+              "div",
+              {
+                style: {
+                  padding: "0.75rem",
+                  borderTop: "1px solid var(--border)",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.4rem",
+                },
+              },
               React.createElement(
                 "button",
                 {
-                  onClick: () =>
-                    onThemeChange(theme === "dark" ? "light" : "dark"),
-                  style: {
-                    background: "none",
-                    border: "none",
-                    fontSize: "1.2rem",
-                    cursor: "pointer",
-                  },
+                  onClick: onThemeChange,
+                  className: "nav-item",
                 },
-                theme === "dark" ? "☀️" : "🌙",
+                React.createElement("span", null, theme === "dark" ? "☀️" : "🌙"),
+                React.createElement(
+                  "span",
+                  { className: "nav-text" },
+                  theme === "dark" ? "Light Mode" : "Dark Mode",
+                ),
               ),
               React.createElement(
                 "button",
                 {
                   onClick: onLogout,
-                  style: {
-                    background: "none",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    padding: "0.3rem 0.8rem",
-                    color: "var(--text2)",
-                    cursor: "pointer",
-                  },
+                  className: "nav-item",
+                  style: { color: "#EF4444" },
                 },
-                "Logout",
+                React.createElement("span", null, "🚪"),
+                React.createElement(
+                  "span",
+                  { className: "nav-text" },
+                  "Sign Out",
+                ),
               ),
             ),
           ),
-
-          // Mobile Sidebar
-          React.createElement(
-            "div",
-            { className: "sidebar", style: { padding: "0.5rem" } },
-            React.createElement(
-              "div",
-              {
-                className: "nav-item active",
-                style: { justifyContent: "center" },
-              },
-              React.createElement("span", null, "🛒"),
-              React.createElement("span", { className: "nav-text" }, "POS"),
-            ),
-            React.createElement(
-              "div",
-              {
-                className: "nav-item",
-                onClick: onLogout,
-                style: { color: "#EF4444", justifyContent: "center" },
-              },
-              React.createElement("span", null, "🚪"),
-              React.createElement("span", { className: "nav-text" }, "Exit"),
-            ),
-          ),
-
-          // Main POS Area
+          // MAIN CONTENT AREA
           React.createElement(
             "div",
             {
-              className: "main-content",
-              style: { padding: "2rem", maxWidth: "1300px", margin: "0 auto" },
+              style: {
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+              },
             },
             React.createElement(
               "div",
               {
-                className: "pos-layout",
                 style: {
-                  display: "grid",
-                  gridTemplateColumns: "1fr 340px",
-                  gap: "1.5rem",
+                  padding: "0.85rem 1.75rem",
+                  borderBottom: "1px solid var(--border)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  background: "var(--card)",
                 },
               },
-              // Product List
               React.createElement(
                 "div",
-                {
-                  style: {
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1rem",
+                { style: { display: "flex", alignItems: "center", gap: "0.75rem" } },
+                React.createElement(
+                  "h1",
+                  {
+                    className: "font-heading",
+                    style: { fontSize: "1.2rem", fontWeight: 800 },
                   },
-                },
-                React.createElement("input", {
-                  className: "wd-input",
-                  placeholder: "🔍 Search products...",
-                  style: { fontSize: "1rem", padding: "0.8rem" },
-                }),
+                  section === "pos"
+                    ? "Point of Sale Register"
+                    : section === "dashboard"
+                      ? "Performance Dashboard"
+                      : "Transaction History",
+                ),
+                React.createElement(
+                  "span",
+                  {
+                    style: {
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "0.4rem",
+                      padding: "0.25rem 0.65rem",
+                      borderRadius: "100px",
+                      background: "rgba(16,185,129,0.15)",
+                      color: "#10b981",
+                      fontSize: "0.72rem",
+                      fontWeight: 600,
+                    },
+                  },
+                  React.createElement("span", {
+                    style: {
+                      width: "6px",
+                      height: "6px",
+                      borderRadius: "50%",
+                      background: "#10b981",
+                      boxShadow: "0 0 8px #10b981",
+                    },
+                  }),
+                  "Live Sync Active",
+                ),
+              ),
+              React.createElement(
+                "div",
+                { style: { display: "flex", alignItems: "center", gap: "0.75rem" } },
+                React.createElement(
+                  "span",
+                  { style: { fontSize: "0.8rem", color: "var(--text2)" } },
+                  "Catalog: " + products.length + " items",
+                ),
+                React.createElement(
+                  "a",
+                  {
+                    href: "manager.html",
+                    style: {
+                      padding: "0.35rem 0.75rem",
+                      borderRadius: "8px",
+                      background: "rgba(10,61,145,0.15)",
+                      border: "1px solid rgba(74,144,226,0.3)",
+                      color: "#60a5fa",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      textDecoration: "none",
+                    },
+                  },
+                  "Manager Portal →",
+                ),
+              ),
+            ),
+            React.createElement(
+              "div",
+              { style: { flex: 1, overflowY: "auto", padding: "1.25rem 1.75rem" } },
+              // 1. POS REGISTER VIEW
+              section === "pos" &&
                 React.createElement(
                   "div",
                   {
                     style: {
                       display: "grid",
-                      gridTemplateColumns:
-                        "repeat(auto-fill, minmax(150px, 1fr))",
-                      gap: "0.75rem",
-                      maxHeight: "600px",
-                      overflowY: "auto",
-                      padding: "0.2rem",
+                      gridTemplateColumns: "1fr 360px",
+                      gap: "1.5rem",
+                      alignItems: "start",
                     },
-                  },
-                  products.map((p) =>
-                    React.createElement(
-                      "div",
-                      {
-                        key: p.id,
-                        className: "wd-card",
-                        style: {
-                          padding: "0.8rem",
-                          textAlign: "center",
-                          background: "var(--bg)",
-                        },
-                      },
-                      React.createElement(
-                        "div",
-                        { style: { fontSize: "1.5rem" } },
-                        p.emoji,
-                      ),
-                      React.createElement(
-                        "div",
-                        {
-                          style: {
-                            fontWeight: 600,
-                            fontSize: "0.8rem",
-                            margin: "0.25rem 0",
-                          },
-                        },
-                        p.name,
-                      ),
-                      React.createElement(
-                        "div",
-                        { style: { fontWeight: 700, color: "#10B981" } },
-                        fmt(p.price),
-                      ),
-                      React.createElement(
-                        "div",
-                        {
-                          style: {
-                            fontSize: "0.7rem",
-                            color: p.stock <= 2 ? "#EF4444" : "var(--text3)",
-                          },
-                        },
-                        p.stock <= 0 ? "Out of Stock" : `${p.stock} left`,
-                      ),
-                      React.createElement(
-                        "button",
-                        {
-                          onClick: () => addToCart(p),
-                          disabled: p.stock <= 0,
-                          style: {
-                            marginTop: "0.5rem",
-                            width: "100%",
-                            padding: "0.3rem",
-                            borderRadius: "8px",
-                            border: "none",
-                            background:
-                              p.stock > 0
-                                ? "linear-gradient(135deg, #0A3D91, #1255C4)"
-                                : "var(--bg)",
-                            color: p.stock > 0 ? "white" : "var(--text3)",
-                            fontWeight: 600,
-                            cursor: p.stock > 0 ? "pointer" : "not-allowed",
-                          },
-                        },
-                        p.stock > 0 ? "Add +" : "Sold Out",
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              // Cart
-              React.createElement(
-                "div",
-                {
-                  className: "wd-card pos-cart",
-                  style: {
-                    padding: "1.25rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.75rem",
-                    height: "fit-content",
-                    maxHeight: "500px",
-                    position: "sticky",
-                    top: "1.5rem",
-                  },
-                },
-                React.createElement(
-                  "div",
-                  {
-                    style: { display: "flex", justifyContent: "space-between" },
                   },
                   React.createElement(
                     "div",
-                    { className: "font-heading", style: { fontWeight: 700 } },
-                    "🛒 Order",
-                  ),
-                  React.createElement(
-                    "span",
-                    { style: { fontSize: "0.8rem", color: "var(--text3)" } },
-                    cart.length + " items",
-                  ),
-                ),
-                React.createElement("input", {
-                  className: "wd-input",
-                  placeholder: "Customer Name *",
-                  value: customerName,
-                  onChange: (e) => setCustomerName(e.target.value),
-                }),
-                React.createElement("input", {
-                  className: "wd-input",
-                  placeholder: "Phone (Optional)",
-                  value: customerPhone,
-                  onChange: (e) => setCustomerPhone(e.target.value),
-                }),
-                React.createElement(
-                  "div",
-                  {
-                    style: {
-                      flex: 1,
-                      maxHeight: "200px",
-                      overflowY: "auto",
-                      borderTop: "1px solid var(--border)",
-                      borderBottom: "1px solid var(--border)",
-                      padding: "0.5rem 0",
+                    {
+                      style: {
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "1rem",
+                      },
                     },
-                  },
-                  cart.length === 0
-                    ? React.createElement(
-                        "div",
-                        {
-                          style: {
-                            textAlign: "center",
-                            padding: "1rem",
-                            color: "var(--text3)",
-                          },
+                    React.createElement("input", {
+                      className: "wd-input",
+                      placeholder: "🔍 Search products by name, SKU, or category...",
+                      value: searchTerm,
+                      onChange: (e) => setSearchTerm(e.target.value),
+                    }),
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          display: "flex",
+                          gap: "0.5rem",
+                          overflowX: "auto",
+                          paddingBottom: "0.4rem",
                         },
-                        "Add items to start",
-                      )
-                    : cart.map((item) =>
+                      },
+                      categories.map((cat) =>
                         React.createElement(
-                          "div",
+                          "button",
                           {
-                            key: item.id,
-                            style: {
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              padding: "0.3rem 0",
-                              borderBottom: "1px solid var(--border)",
-                            },
+                            key: cat,
+                            type: "button",
+                            className: "cat-pill " + (categoryFilter === cat ? "active" : ""),
+                            onClick: () => setCategoryFilter(cat),
                           },
-                          React.createElement(
-                            "div",
-                            null,
-                            React.createElement(
-                              "div",
-                              {
-                                style: { fontWeight: 600, fontSize: "0.8rem" },
-                              },
-                              item.emoji,
-                              " ",
-                              item.name,
-                            ),
-                            React.createElement(
-                              "div",
-                              {
-                                style: {
-                                  fontSize: "0.7rem",
-                                  color: "var(--text3)",
-                                },
-                              },
-                              fmt(item.price),
-                            ),
-                          ),
-                          React.createElement(
+                          cat,
+                        ),
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          display: "grid",
+                          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+                          gap: "0.9rem",
+                          maxHeight: "calc(100vh - 270px)",
+                          overflowY: "auto",
+                          paddingRight: "0.2rem",
+                        },
+                      },
+                      filteredProducts.length === 0
+                        ? React.createElement(
                             "div",
                             {
                               style: {
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.3rem",
+                                gridColumn: "1 / -1",
+                                textAlign: "center",
+                                padding: "3rem 1rem",
+                                color: "var(--text3)",
                               },
                             },
+                            "No products found matching your search.",
+                          )
+                        : filteredProducts.map((p) =>
                             React.createElement(
-                              "button",
+                              "div",
                               {
-                                onClick: () =>
-                                  setCart(
-                                    cart
-                                      .map((i) =>
-                                        i.id === item.id
-                                          ? {
-                                              ...i,
-                                              qty: Math.max(1, i.qty - 1),
-                                            }
-                                          : i,
-                                      )
-                                      .filter((i) => i.qty > 0),
+                                key: p.id,
+                                className: "wd-card product-card",
+                              },
+                              React.createElement(
+                                "div",
+                                null,
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "space-between",
+                                      marginBottom: "0.3rem",
+                                    },
+                                  },
+                                  React.createElement(
+                                    "span",
+                                    { style: { fontSize: "1.6rem" } },
+                                    p.emoji || "📦",
                                   ),
-                                style: {
-                                  width: "20px",
-                                  height: "20px",
-                                  borderRadius: "4px",
-                                  border: "1px solid var(--border)",
-                                  background: "transparent",
-                                  cursor: "pointer",
-                                },
-                              },
-                              "-",
-                            ),
-                            React.createElement(
-                              "span",
-                              {
-                                style: {
-                                  minWidth: "20px",
-                                  textAlign: "center",
-                                },
-                              },
-                              item.qty,
-                            ),
-                            React.createElement(
-                              "button",
-                              {
-                                onClick: () =>
-                                  setCart(
-                                    cart.map((i) =>
-                                      i.id === item.id
-                                        ? { ...i, qty: i.qty + 1 }
-                                        : i,
-                                    ),
+                                  React.createElement(
+                                    "span",
+                                    {
+                                      style: {
+                                        fontSize: "0.65rem",
+                                        fontWeight: 700,
+                                        padding: "0.2rem 0.5rem",
+                                        borderRadius: "6px",
+                                        background:
+                                          p.stock === 0
+                                            ? "rgba(239, 68, 68, 0.15)"
+                                            : p.stock <= (p.minStock || 5)
+                                              ? "rgba(245, 158, 11, 0.15)"
+                                              : "rgba(16, 185, 129, 0.15)",
+                                        color:
+                                          p.stock === 0
+                                            ? "#ef4444"
+                                            : p.stock <= (p.minStock || 5)
+                                              ? "#f59e0b"
+                                              : "#10b981",
+                                      },
+                                    },
+                                    p.stock === 0
+                                      ? "Out of Stock"
+                                      : p.stock + " left",
                                   ),
-                                style: {
-                                  width: "20px",
-                                  height: "20px",
-                                  borderRadius: "4px",
-                                  border: "1px solid var(--border)",
-                                  background: "transparent",
-                                  cursor: "pointer",
-                                },
-                              },
-                              "+",
+                                ),
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontWeight: 700,
+                                      fontSize: "0.82rem",
+                                      color: "var(--text)",
+                                      lineHeight: 1.3,
+                                      marginBottom: "0.2rem",
+                                    },
+                                  },
+                                  p.name,
+                                ),
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontSize: "0.65rem",
+                                      color: "var(--text3)",
+                                    },
+                                  },
+                                  p.sku || p.category,
+                                ),
+                              ),
+                              React.createElement(
+                                "div",
+                                { style: { marginTop: "auto" } },
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontWeight: 800,
+                                      color: "#10B981",
+                                      fontSize: "0.95rem",
+                                      marginBottom: "0.4rem",
+                                    },
+                                  },
+                                  fmt(p.price),
+                                ),
+                                React.createElement(
+                                  "button",
+                                  {
+                                    type: "button",
+                                    onClick: () => addToCart(p),
+                                    disabled: p.stock <= 0,
+                                    style: {
+                                      width: "100%",
+                                      padding: "0.45rem",
+                                      borderRadius: "8px",
+                                      border: "none",
+                                      background:
+                                        p.stock > 0
+                                          ? "linear-gradient(135deg, #059669, #10b981)"
+                                          : "var(--bg)",
+                                      color: p.stock > 0 ? "white" : "var(--text3)",
+                                      cursor: p.stock > 0 ? "pointer" : "not-allowed",
+                                      fontWeight: 700,
+                                      fontSize: "0.75rem",
+                                      transition: "all 0.2s",
+                                    },
+                                  },
+                                  p.stock > 0 ? "+ Add to Cart" : "Out of Stock",
+                                ),
+                              ),
                             ),
                           ),
+                    ),
+                  ),
+                  // Cart Side
+                  React.createElement(
+                    "div",
+                    {
+                      className: "wd-card",
+                      style: {
+                        padding: "1.25rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.9rem",
+                        position: "sticky",
+                        top: 0,
+                      },
+                    },
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          borderBottom: "1px solid var(--border)",
+                          paddingBottom: "0.75rem",
+                        },
+                      },
+                      React.createElement(
+                        "span",
+                        {
+                          className: "font-heading",
+                          style: { fontWeight: 800, fontSize: "1.05rem" },
+                        },
+                        "🛒 Current Order",
+                      ),
+                      React.createElement(
+                        "span",
+                        {
+                          style: {
+                            fontSize: "0.75rem",
+                            fontWeight: 700,
+                            padding: "0.2rem 0.6rem",
+                            borderRadius: "100px",
+                            background: "rgba(16,185,129,0.15)",
+                            color: "#10b981",
+                          },
+                        },
+                        cart.reduce((a, i) => a + i.qty, 0) + " items",
+                      ),
+                    ),
+                    React.createElement("input", {
+                      className: "wd-input",
+                      placeholder: "Customer Name *",
+                      value: customerName,
+                      onChange: (e) => setCustomerName(e.target.value),
+                    }),
+                    React.createElement("input", {
+                      className: "wd-input",
+                      placeholder: "Customer Phone (WhatsApp)",
+                      value: customerPhone,
+                      onChange: (e) => setCustomerPhone(e.target.value),
+                    }),
+                    React.createElement(
+                      "div",
+                      null,
+                      React.createElement(
+                        "label",
+                        {
+                          style: {
+                            fontSize: "0.72rem",
+                            color: "var(--text3)",
+                            fontWeight: 600,
+                            display: "block",
+                            marginBottom: "0.3rem",
+                          },
+                        },
+                        "Payment Method",
+                      ),
+                      React.createElement(
+                        "select",
+                        {
+                          className: "wd-input",
+                          value: paymentMethod,
+                          onChange: (e) => setPaymentMethod(e.target.value),
+                        },
+                        [
+                          "Cash",
+                          "Orange Money",
+                          "Afrimoney",
+                          "Bank Transfer",
+                          "Credit",
+                        ].map((m) =>
                           React.createElement(
-                            "span",
-                            { style: { fontWeight: 700, color: "#10B981" } },
-                            fmt(item.price * item.qty),
+                            "option",
+                            { key: m, value: m },
+                            m,
                           ),
                         ),
                       ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          maxHeight: "220px",
+                          overflowY: "auto",
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "0.5rem",
+                          borderTop: "1px solid var(--border)",
+                          borderBottom: "1px solid var(--border)",
+                          padding: "0.6rem 0",
+                        },
+                      },
+                      cart.length === 0
+                        ? React.createElement(
+                            "div",
+                            {
+                              style: {
+                                textAlign: "center",
+                                color: "var(--text3)",
+                                padding: "1rem 0",
+                                fontSize: "0.8rem",
+                              },
+                            },
+                            "Cart is empty. Tap items to add.",
+                          )
+                        : cart.map((item) =>
+                            React.createElement(
+                              "div",
+                              {
+                                key: item.id,
+                                style: {
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  fontSize: "0.8rem",
+                                },
+                              },
+                              React.createElement(
+                                "div",
+                                { style: { flex: 1, minWidth: 0 } },
+                                React.createElement(
+                                  "div",
+                                  {
+                                    style: {
+                                      fontWeight: 600,
+                                      whiteSpace: "nowrap",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                    },
+                                  },
+                                  item.name,
+                                ),
+                                React.createElement(
+                                  "div",
+                                  { style: { color: "var(--text3)", fontSize: "0.72rem" } },
+                                  fmt(item.price) + " each",
+                                ),
+                              ),
+                              React.createElement(
+                                "div",
+                                {
+                                  style: {
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.35rem",
+                                  },
+                                },
+                                React.createElement(
+                                  "button",
+                                  {
+                                    type: "button",
+                                    onClick: () => updateCartQty(item.id, -1),
+                                    style: {
+                                      width: "22px",
+                                      height: "22px",
+                                      borderRadius: "6px",
+                                      border: "1px solid var(--border)",
+                                      background: "transparent",
+                                      color: "var(--text)",
+                                      cursor: "pointer",
+                                      fontSize: "0.8rem",
+                                    },
+                                  },
+                                  "-",
+                                ),
+                                React.createElement(
+                                  "span",
+                                  { style: { fontWeight: 700, minWidth: "18px", textAlign: "center" } },
+                                  item.qty,
+                                ),
+                                React.createElement(
+                                  "button",
+                                  {
+                                    type: "button",
+                                    onClick: () => updateCartQty(item.id, 1),
+                                    style: {
+                                      width: "22px",
+                                      height: "22px",
+                                      borderRadius: "6px",
+                                      border: "1px solid var(--border)",
+                                      background: "transparent",
+                                      color: "var(--text)",
+                                      cursor: "pointer",
+                                      fontSize: "0.8rem",
+                                    },
+                                  },
+                                  "+",
+                                ),
+                                React.createElement(
+                                  "span",
+                                  {
+                                    style: {
+                                      fontWeight: 700,
+                                      color: "#10b981",
+                                      marginLeft: "0.3rem",
+                                      minWidth: "65px",
+                                      textAlign: "right",
+                                    },
+                                  },
+                                  fmt(item.price * item.qty),
+                                ),
+                                React.createElement(
+                                  "button",
+                                  {
+                                    type: "button",
+                                    onClick: () => removeFromCart(item.id),
+                                    style: {
+                                      background: "none",
+                                      border: "none",
+                                      color: "#ef4444",
+                                      cursor: "pointer",
+                                      marginLeft: "0.2rem",
+                                      fontSize: "0.75rem",
+                                    },
+                                  },
+                                  "✕",
+                                ),
+                              ),
+                            ),
+                          ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        style: {
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          fontSize: "1.15rem",
+                          fontWeight: 800,
+                        },
+                      },
+                      React.createElement("span", null, "Total"),
+                      React.createElement(
+                        "span",
+                        { style: { color: "#10B981" } },
+                        fmt(cart.reduce((s, i) => s + Number(i.price) * i.qty, 0)),
+                      ),
+                    ),
+                    React.createElement(
+                      "button",
+                      {
+                        type: "button",
+                        onClick: handleCheckout,
+                        disabled: cart.length === 0,
+                        style: {
+                          width: "100%",
+                          padding: "0.85rem",
+                          borderRadius: "12px",
+                          border: "none",
+                          background:
+                            cart.length > 0
+                              ? "linear-gradient(135deg, #059669, #10B981)"
+                              : "var(--bg)",
+                          color: cart.length > 0 ? "white" : "var(--text3)",
+                          fontWeight: 800,
+                          fontSize: "0.95rem",
+                          cursor: cart.length > 0 ? "pointer" : "not-allowed",
+                          boxShadow:
+                            cart.length > 0
+                              ? "0 6px 20px rgba(16, 185, 129, 0.4)"
+                              : "none",
+                        },
+                      },
+                      "✅ Complete & Print Receipt",
+                    ),
+                  ),
                 ),
+
+              // 2. DASHBOARD VIEW
+              section === "dashboard" &&
                 React.createElement(
                   "div",
                   {
                     style: {
                       display: "flex",
-                      justifyContent: "space-between",
-                      fontSize: "1.1rem",
-                      fontWeight: 800,
+                      flexDirection: "column",
+                      gap: "1.5rem",
                     },
                   },
-                  React.createElement("span", null, "Total"),
                   React.createElement(
-                    "span",
-                    { style: { color: "#10B981" } },
-                    fmt(cart.reduce((s, i) => s + i.price * i.qty, 0)),
+                    "div",
+                    {
+                      style: {
+                        display: "grid",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                        gap: "1rem",
+                      },
+                    },
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-blue",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Total Revenue",
+                        ),
+                        React.createElement("span", { style: { fontSize: "1.2rem" } }, "💰"),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800, marginTop: "0.3rem" },
+                        },
+                        fmt(totalRevenue),
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-green",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Total Transactions",
+                        ),
+                        React.createElement("span", { style: { fontSize: "1.2rem" } }, "📦"),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800, marginTop: "0.3rem" },
+                        },
+                        sales.length,
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-orange",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Items Sold",
+                        ),
+                        React.createElement("span", { style: { fontSize: "1.2rem" } }, "🔢"),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800, marginTop: "0.3rem" },
+                        },
+                        totalItemsSold,
+                      ),
+                    ),
+                    React.createElement(
+                      "div",
+                      {
+                        className: "wd-card kpi-card-purple",
+                        style: { padding: "1.25rem" },
+                      },
+                      React.createElement(
+                        "div",
+                        {
+                          style: {
+                            display: "flex",
+                            justifyContent: "space-between",
+                          },
+                        },
+                        React.createElement(
+                          "span",
+                          { style: { fontSize: "0.8rem", opacity: 0.8 } },
+                          "Average Sale Value",
+                        ),
+                        React.createElement("span", { style: { fontSize: "1.2rem" } }, "📊"),
+                      ),
+                      React.createElement(
+                        "div",
+                        {
+                          className: "font-heading",
+                          style: { fontSize: "1.5rem", fontWeight: 800, marginTop: "0.3rem" },
+                        },
+                        fmt(avgOrderValue),
+                      ),
+                    ),
+                  ),
+                  React.createElement(DashboardCharts, { sales: sales }),
+                ),
+
+              // 3. HISTORY VIEW
+              section === "history" &&
+                React.createElement(
+                  "div",
+                  { className: "wd-card", style: { overflow: "hidden" } },
+                  React.createElement(
+                    "div",
+                    {
+                      style: {
+                        padding: "1.25rem 1.5rem",
+                        borderBottom: "1px solid var(--border)",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      },
+                    },
+                    React.createElement(
+                      "span",
+                      { className: "font-heading", style: { fontWeight: 800, fontSize: "1.05rem" } },
+                      "📄 Transaction & Receipt History",
+                    ),
+                    React.createElement(
+                      "span",
+                      { style: { fontSize: "0.8rem", color: "var(--text3)" } },
+                      sales.length + " total logged sales",
+                    ),
+                  ),
+                  React.createElement(
+                    "div",
+                    { style: { maxHeight: "550px", overflowY: "auto" } },
+                    sales.length === 0
+                      ? React.createElement(
+                          "div",
+                          {
+                            style: {
+                              textAlign: "center",
+                              padding: "3rem",
+                              color: "var(--text3)",
+                            },
+                          },
+                          "No transactions recorded yet.",
+                        )
+                      : React.createElement(
+                          "table",
+                          {
+                            style: {
+                              width: "100%",
+                              borderCollapse: "collapse",
+                            },
+                          },
+                          React.createElement(
+                            "thead",
+                            null,
+                            React.createElement(
+                              "tr",
+                              null,
+                              [
+                                "Receipt #",
+                                "Customer",
+                                "Items",
+                                "Payment",
+                                "Total",
+                                "Date / Time",
+                                "Actions",
+                              ].map((h) =>
+                                React.createElement(
+                                  "th",
+                                  {
+                                    key: h,
+                                    style: {
+                                      textAlign: "left",
+                                      padding: "0.85rem 1rem",
+                                      borderBottom: "1px solid var(--border)",
+                                      color: "var(--text3)",
+                                      fontSize: "0.75rem",
+                                      fontWeight: 700,
+                                      textTransform: "uppercase",
+                                    },
+                                  },
+                                  h,
+                                ),
+                              ),
+                            ),
+                          ),
+                          React.createElement(
+                            "tbody",
+                            null,
+                            sales.map((s) =>
+                              React.createElement(
+                                "tr",
+                                {
+                                  key: s.id,
+                                  style: {
+                                    borderBottom: "1px solid var(--border)",
+                                  },
+                                },
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.85rem 1rem",
+                                      fontWeight: 700,
+                                      color: "#60A5FA",
+                                    },
+                                  },
+                                  s.receiptNo,
+                                ),
+                                React.createElement(
+                                  "td",
+                                  { style: { padding: "0.85rem 1rem", fontWeight: 600 } },
+                                  s.customer,
+                                ),
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.85rem 1rem",
+                                      fontSize: "0.8rem",
+                                    },
+                                  },
+                                  (s.items || []).reduce((a, i) => a + i.qty, 0) + " items",
+                                ),
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.85rem 1rem",
+                                      fontSize: "0.8rem",
+                                      color: "var(--text2)",
+                                    },
+                                  },
+                                  s.payment,
+                                ),
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.85rem 1rem",
+                                      fontWeight: 800,
+                                      color: "#10B981",
+                                    },
+                                  },
+                                  fmt(s.total),
+                                ),
+                                React.createElement(
+                                  "td",
+                                  {
+                                    style: {
+                                      padding: "0.85rem 1rem",
+                                      fontSize: "0.78rem",
+                                      color: "var(--text3)",
+                                    },
+                                  },
+                                  new Date(s.timestamp).toLocaleString("en-US", {
+                                    dateStyle: "short",
+                                    timeStyle: "short",
+                                  }),
+                                ),
+                                React.createElement(
+                                  "td",
+                                  { style: { padding: "0.85rem 1rem" } },
+                                  React.createElement(
+                                    "div",
+                                    {
+                                      style: { display: "flex", gap: "0.4rem" },
+                                    },
+                                    React.createElement(
+                                      "button",
+                                      {
+                                        onClick: () => generateReceiptPDF(s),
+                                        style: {
+                                          padding: "0.3rem 0.6rem",
+                                          borderRadius: "6px",
+                                          background: "#0A3D91",
+                                          color: "white",
+                                          border: "none",
+                                          cursor: "pointer",
+                                          fontWeight: 600,
+                                          fontSize: "0.72rem",
+                                        },
+                                      },
+                                      "PDF",
+                                    ),
+                                    React.createElement(
+                                      "button",
+                                      {
+                                        onClick: () => sendWhatsAppReceipt(s),
+                                        style: {
+                                          padding: "0.3rem 0.6rem",
+                                          borderRadius: "6px",
+                                          background: "#25D366",
+                                          color: "white",
+                                          border: "none",
+                                          cursor: "pointer",
+                                          fontWeight: 600,
+                                          fontSize: "0.72rem",
+                                        },
+                                      },
+                                      "WhatsApp",
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                   ),
                 ),
-                React.createElement(
-                  "button",
-                  {
-                    onClick: completeSale,
-                    disabled: cart.length === 0,
-                    style: {
-                      width: "100%",
-                      padding: "0.7rem",
-                      borderRadius: "12px",
-                      border: "none",
-                      background: cart.length > 0 ? "#0A3D91" : "var(--bg)",
-                      color: cart.length > 0 ? "white" : "var(--text3)",
-                      fontWeight: 700,
-                      cursor: cart.length > 0 ? "pointer" : "not-allowed",
-                    },
-                  },
-                  "✅ Complete Sale",
-                ),
-              ),
             ),
           ),
-          toast &&
-            React.createElement(
-              "div",
-              {
-                style: {
-                  position: "fixed",
-                  bottom: "2rem",
-                  right: "2rem",
-                  background: toast.type === "success" ? "#10B981" : "#EF4444",
-                  color: "white",
-                  padding: "0.75rem 1.5rem",
-                  borderRadius: "12px",
-                  fontWeight: 600,
-                  boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-                  zIndex: 100,
-                },
-              },
-              toast.msg,
-            ),
+          React.createElement(ToastContainer, {
+            toasts: toasts,
+            removeToast: (id) => setToasts((prev) => prev.filter((t) => t.id !== id)),
+          }),
+          React.createElement(ReceiptModal, {
+            sale: receiptSale,
+            onClose: () => setReceiptSale(null),
+            onPrint: generateReceiptPDF,
+            onWhatsApp: sendWhatsAppReceipt,
+          }),
         );
       }
 
-      // ─── APP ──────────────────────────────────────────────────────
+      // ─── ROOT APP COMPONENT ──────────────────────────────────────
       function App() {
         const [session, setSession] = useState(() => {
-          try {
-            const raw = sessionStorage.getItem(AUTH_KEY);
-            return raw ? JSON.parse(raw) : null;
-          } catch {
-            return null;
-          }
+          return window.WD_STORE ? window.WD_STORE.getSellerSession() : null;
         });
         const [theme, setTheme] = useState(
           () => localStorage.getItem("wd_theme") || "dark",
         );
+
         useEffect(() => {
           document.documentElement.setAttribute("data-theme", theme);
           localStorage.setItem("wd_theme", theme);
         }, [theme]);
 
-        if (!session)
+        if (!session) {
           return React.createElement(LoginPage, { onLogin: setSession });
+        }
+
         return React.createElement(POSDashboard, {
           session: session,
           onLogout: () => {
-            sessionStorage.removeItem(AUTH_KEY);
+            if (window.WD_STORE) window.WD_STORE.clearSellerSession();
             setSession(null);
           },
           theme: theme,
-          onThemeChange: (t) => setTheme(t),
+          onThemeChange: () => setTheme(theme === "dark" ? "light" : "dark"),
         });
       }
 
